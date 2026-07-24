@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Input Regional Sumbagut</title>
+    <title>Form Input Cabang Banda Aceh</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
@@ -28,29 +28,40 @@
 <div class="form-container">
     <div class="header">
         <h1>FORM UPDATE HARIAN</h1>
-        <p>Regional Branch & Mufnet Sumbagut</p>
+        <p>Cabang Banda Aceh</p>
     </div>
 
     <form id="formInputAdmin">
+        <div class="form-group">
+            <label><i class="far fa-calendar-alt" style="color: #0a1d56;"></i> Tanggal Data:</label>
+            <input type="date" id="tanggal" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-bullseye" style="color: #f59e0b;"></i> Target Amount Cabang:</label>
+            <input type="number" id="target_amount" placeholder="Contoh: 25889" value="25889" required>
+            <small style="color: #666; font-size: 11px;">Masukkan angka tanpa titik/koma (misal: 25889 untuk 25,889 M).</small>
+        </div>
+
         <div class="section-title"><i class="fas fa-car"></i> 1. BOOKING BY PORTOFOLIO (Kumulatif)</div>
         <p style="font-size: 11px; color: #666; margin-bottom: 15px;">*Masukkan total angka tanpa koma/titik (misal: 37249 untuk 37,249 M).</p>
         
         <div class="grid-2">
-            <div class="form-group"><label>CCAR</label><input type="number" id="ccar" placeholder="Contoh: 37249" required></div>
-            <div class="form-group"><label>NCAR</label><input type="number" id="ncar" placeholder="Contoh: 31610" required></div>
-            <div class="form-group"><label>CBSICAR</label><input type="number" id="cbsicar" placeholder="0" required></div>
-            <div class="form-group"><label>NMCY</label><input type="number" id="nmcy" placeholder="0" required></div>
-            <div class="form-group"><label>MCAR</label><input type="number" id="mcar" placeholder="0" required></div>
-            <div class="form-group"><label>Lainnya</label><input type="number" id="lainnya" placeholder="0" required></div>
+            <div class="form-group"><label>CCAR</label><input type="number" id="ccar" placeholder="0" value="0" required></div>
+            <div class="form-group"><label>NCAR</label><input type="number" id="ncar" placeholder="0" value="0" required></div>
+            <div class="form-group"><label>CBSICAR</label><input type="number" id="cbsicar" placeholder="0" value="0" required></div>
+            <div class="form-group"><label>NMCY</label><input type="number" id="nmcy" placeholder="0" value="0" required></div>
+            <div class="form-group"><label>MCAR</label><input type="number" id="mcar" placeholder="0" value="0" required></div>
+            <div class="form-group"><label>Lainnya</label><input type="number" id="lainnya" placeholder="0" value="0" required></div>
         </div>
 
-        <div class="section-title"><i class="fas fa-chart-line"></i> 2. INDIKATOR KINERJA REGIONAL</div>
+        <div class="section-title"><i class="fas fa-chart-line"></i> 2. INDIKATOR KINERJA CABANG</div>
         
         <div class="grid-2">
-            <div class="form-group"><label>Captive Rate (%)</label><input type="number" step="0.01" id="captive" placeholder="Misal: 54.30" required></div>
-            <div class="form-group"><label>WALR (%)</label><input type="number" step="0.01" id="walr" placeholder="Misal: 15.89" required></div>
-            <div class="form-group"><label>PO + FDE</label><input type="number" id="pofde" placeholder="Misal: 77620" required></div>
-            <div class="form-group"><label>IA</label><input type="number" id="ia" placeholder="Misal: 206221" required></div>
+            <div class="form-group"><label>Captive Rate (%)</label><input type="number" step="0.01" id="captive" placeholder="0" value="0" required></div>
+            <div class="form-group"><label>WALR (%)</label><input type="number" step="0.01" id="walr" placeholder="0" value="0" required></div>
+            <div class="form-group"><label>PO + FDE</label><input type="number" id="pofde" placeholder="0" value="0" required></div>
+            <div class="form-group"><label>IA</label><input type="number" id="ia" placeholder="0" value="0" required></div>
         </div>
 
         <button type="submit" class="btn-submit" id="btnSimpan"><i class="fas fa-save"></i> SIMPAN & UPDATE DASHBOARD</button>
@@ -83,6 +94,8 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> MENYIMPAN...';
 
         const dataInput = {
+            tanggal: document.getElementById('tanggal').value,
+            target_amount: Number(document.getElementById('target_amount').value),
             ccar: Number(document.getElementById('ccar').value),
             ncar: Number(document.getElementById('ncar').value),
             cbsicar: Number(document.getElementById('cbsicar').value),
