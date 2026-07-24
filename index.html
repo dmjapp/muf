@@ -348,6 +348,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Safety fallback timer untuk menghilangkan splash screen jika firebase lambat (maksimal 2 detik)
     setTimeout(() => {
         const splash = document.getElementById('splash-screen');
         if (splash) {
@@ -379,7 +380,7 @@
             beforeDraw: chart => {
                 const ctx = chart.ctx; const xAxis = chart.scales.x; const yAxis = chart.scales.y;
                 const latestVal = chart.data.datasets[0].data[4];
-                const targetVal = chart.options.plugins.customLine.targetVal || 0;
+                const targetVal = chart.options.plugins.customLine.targetVal || 25889;
                 
                 ctx.save(); ctx.beginPath(); ctx.moveTo(xAxis.getPixelForValue(0), yAxis.getPixelForValue(0)); ctx.lineTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(targetVal));
                 ctx.lineWidth = 1.5; ctx.strokeStyle = '#dc2626'; ctx.setLineDash([4, 4]); ctx.stroke();
@@ -403,7 +404,7 @@
         if (docSnap.exists()) {
             const rawData = docSnap.data();
             const data = {
-                target_amount: Number(rawData.target_amount) || 0,
+                target_amount: Number(rawData.target_amount) || 25889,
                 ccar: Number(rawData.ccar) || 0,
                 ncar: Number(rawData.ncar) || 0,
                 cbsicar: Number(rawData.cbsicar) || 0,
