@@ -2,14 +2,24 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1200">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Executive Summary Performance Booking - Cabang Banda Aceh</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, Helvetica, sans-serif; background-color: #f3f4f6; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; color: #333; }
+        /* Memaksa body memenuhi 100% layar tanpa scroll */
+        html, body { 
+            width: 100vw; 
+            height: 100vh; 
+            overflow: hidden; 
+            background-color: #f3f4f6; 
+            font-family: Arial, Helvetica, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
         
         /* SPLASH SCREEN LOADING */
         #splash-screen {
@@ -21,28 +31,26 @@
             transition: opacity 0.5s ease;
             color: white;
         }
-        #splash-screen img { width: 180px; height: auto; margin-bottom: 20px; animation: pulse 1.5s infinite; }
+        #splash-screen img { width: 200px; height: auto; margin-bottom: 20px; animation: pulse 1.5s infinite; }
         #splash-screen .spinner {
-            width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3);
+            width: 45px; height: 45px; border: 4px solid rgba(255,255,255,0.3);
             border-top: 4px solid #f59e0b; border-radius: 50%;
             animation: spin 1s linear infinite; margin-top: 15px;
         }
-        #splash-screen h2 { font-size: 16px; letter-spacing: 1px; font-weight: bold; margin-top: 10px; color: #f59e0b; text-transform: uppercase; }
+        #splash-screen h2 { font-size: 18px; letter-spacing: 1px; font-weight: bold; margin-top: 10px; color: #f59e0b; text-transform: uppercase; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* POSTER UTAMA (PAS 1 LAYAR PENUH) */
+        /* POSTER UTAMA: FULL 1 HALAMAN WEB (100% Width & Height) */
         .poster { 
-            width: 1180px; 
-            height: 96vh;
+            width: 100vw; 
+            height: 100vh; 
             background-color: #ffffff; 
-            border: 3px solid #0a1d56; 
-            padding: 10px 14px; 
+            padding: 1vh 1.5vw; 
             position: relative;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         /* WATERMARK PNG */
@@ -50,7 +58,7 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 550px;
+            width: 45vw;
             opacity: 0.04;
             pointer-events: none;
             z-index: 0;
@@ -66,24 +74,25 @@
         
         .flex { display: flex; } .flex-col { display: flex; flex-direction: column; }
         .items-center { align-items: center; } .justify-between { justify-content: space-between; } .justify-center { justify-content: center; }
-        .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } 
+        .gap-1 { gap: 6px; } .gap-2 { gap: 10px; } 
         .text-center { text-align: center; } .font-bold { font-weight: bold; } .font-extrabold { font-weight: 800; }
-        .text-xxs { font-size: 9px; } .text-xs { font-size: 11px; } .text-sm { font-size: 13px; }
-        .text-md { font-size: 15px; } .text-lg { font-size: 17px; } .text-xl { font-size: 22px; }
+        
+        /* UKURAN FONT & PANEL DIPERBESAR AGAR PENUH */
+        .text-xxs { font-size: 0.7rem; } .text-xs { font-size: 0.85rem; } .text-sm { font-size: 1rem; }
+        .text-md { font-size: 1.15rem; } .text-lg { font-size: 1.35rem; } .text-xl { font-size: 1.65rem; }
         
         .border-navy { border: 2px solid #0a1d56; } .border-red { border: 2px solid #dc2626; } .border-orange { border: 2px solid #f97316; }
-        .rounded { border-radius: 4px; } .rounded-full { border-radius: 50%; }
-        .p-1 { padding: 4px; } .p-2 { padding: 8px; } 
+        .rounded { border-radius: 6px; } .rounded-full { border-radius: 50%; }
         
-        .header-border { border-bottom: 2px solid #0a1d56; padding-bottom: 6px; margin-bottom: 6px; }
-        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 2px solid #0a1d56; border-bottom: 1px solid #ccc; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; } 
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .header-border { border-bottom: 3px solid #0a1d56; padding-bottom: 0.8vh; margin-bottom: 1vh; }
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 3px solid #0a1d56; border-bottom: 1px solid #ccc; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1vw; flex-grow: 1; } 
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1vw; }
         
-        .prog-bg { background-color: #e5e7eb; width: 100%; height: 6px; border-radius: 3px; overflow: hidden; } 
+        .prog-bg { background-color: #e5e7eb; width: 100%; height: 10px; border-radius: 5px; overflow: hidden; } 
         .prog-fill { background-color: #16a34a; height: 100%; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 15px; height: 15px; border-radius: 50%; color: white; font-size: 8px; font-weight: bold; margin-right: 4px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6vh; }
+        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 20px; height: 20px; border-radius: 50%; color: white; font-size: 0.75rem; font-weight: bold; margin-right: 6px; }
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-4, .b-5 { background-color: #2563eb; }
     </style>
 </head>
@@ -104,92 +113,92 @@
         <!-- HEADER -->
         <div class="flex justify-between items-center header-border">
             <div style="width: 25%;">
-                <img src="logo.png" alt="Mandiri Utama Finance" style="max-height: 40px; width: auto;">
+                <img src="logo.png" alt="Mandiri Utama Finance" style="max-height: 55px; width: auto;">
             </div>
             <div style="width: 50%;" class="text-center">
                 <h2 class="text-sm font-bold c-navy">EXECUTIVE SUMMARY</h2>
-                <h1 class="font-extrabold c-navy" style="font-size: 26px; line-height: 1.1; letter-spacing: 0.5px;">PERFORMANCE BOOKING</h1>
-                <h3 class="text-xs font-bold c-navy" style="margin-bottom: 2px;">CABANG BANDA ACEH</h3>
-                <div class="bg-gold font-extrabold" style="display: inline-block; padding: 2px 12px; border-radius: 3px; font-size: 11px;">
+                <h1 class="font-extrabold c-navy" style="font-size: 2.2vw; line-height: 1.1; letter-spacing: 0.5px;">PERFORMANCE BOOKING</h1>
+                <h3 class="text-xs font-bold c-navy" style="margin-bottom: 0.3vh;">CABANG BANDA ACEH</h3>
+                <div class="bg-gold font-extrabold" style="display: inline-block; padding: 0.3vh 1.2vw; border-radius: 4px; font-size: 0.85rem;">
                     <i class="far fa-calendar-alt"></i> PERIODE : <span id="val-periode">-</span>
                 </div>
             </div>
             <div style="width: 25%; display: flex; justify-content: flex-end;">
-                <div class="bg-navy flex items-center gap-2 rounded p-1">
-                    <i class="fas fa-bullseye" style="font-size: 22px;"></i>
-                    <div style="line-height: 1.1;"><div class="font-bold text-xxs">TARGET BERSAMA</div><div style="font-size: 7px; font-weight: normal;">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
+                <div class="bg-navy flex items-center gap-2 rounded" style="padding: 0.8vh 1vw;">
+                    <i class="fas fa-bullseye" style="font-size: 2rem;"></i>
+                    <div style="line-height: 1.1;"><div class="font-bold text-xxs">TARGET BERSAMA</div><div style="font-size: 0.6rem; font-weight: normal;">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
                 </div>
             </div>
         </div>
 
         <!-- 1. OVERVIEW -->
-        <div class="mb-2">
-            <div class="bg-navy font-bold text-xxs text-center" style="display: inline-block; padding: 2px 10px; border-radius: 3px 3px 0 0;">OVERVIEW CABANG</div>
+        <div style="margin-bottom: 1vh;">
+            <div class="bg-navy font-bold text-xxs text-center" style="display: inline-block; padding: 0.3vh 1.2vw; border-radius: 4px 4px 0 0;">OVERVIEW CABANG</div>
             <div class="grid-7">
-                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
+                <div class="text-center" style="padding: 1vh 0.2vw; border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> BOOKING AMOUNT</div>
-                    <h3 id="val-booking-amount" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,000 M</h3>
+                    <h3 id="val-booking-amount" class="text-lg font-extrabold c-navy" style="margin: 0.5vh 0;">0,000 M</h3>
                 </div>
-                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
+                <div class="text-center" style="padding: 1vh 0.2vw; border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET AMOUNT</div>
-                    <h3 id="val-target-atas" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">25,889 M</h3>
+                    <h3 id="val-target-atas" class="text-lg font-extrabold c-navy" style="margin: 0.5vh 0;">25,889 M</h3>
                 </div>
-                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
+                <div class="text-center" style="padding: 1vh 0.2vw; border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-chart-line" style="color:#16a34a;"></i> ACHIEVEMENT</div>
-                    <h3 id="val-achievement" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,00%</h3>
+                    <h3 id="val-achievement" class="text-lg font-extrabold c-navy" style="margin: 0.5vh 0;">0,00%</h3>
                 </div>
-                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
+                <div class="text-center" style="padding: 1vh 0.2vw; border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-users" style="color:#a855f7;"></i> CAPTIVE RATE</div>
-                    <h3 id="val-captive" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,00%</h3>
+                    <h3 id="val-captive" class="text-lg font-extrabold c-navy" style="margin: 0.5vh 0;">0,00%</h3>
                 </div>
-                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
+                <div class="text-center" style="padding: 1vh 0.2vw; border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-handshake" style="color:#60a5fa;"></i> PO + FDE</div>
-                    <h3 id="val-pofde" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,000 M</h3>
+                    <h3 id="val-pofde" class="text-lg font-extrabold c-navy" style="margin: 0.5vh 0;">0,000 M</h3>
                 </div>
-                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
+                <div class="text-center" style="padding: 1vh 0.2vw; border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-file-invoice" style="color:#fb923c;"></i> IA</div>
-                    <h3 id="val-ia" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,000 M</h3>
+                    <h3 id="val-ia" class="text-lg font-extrabold c-navy" style="margin: 0.5vh 0;">0,000 M</h3>
                 </div>
-                <div class="text-center p-1">
+                <div class="text-center" style="padding: 1vh 0.2vw;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-percent" style="color:#2563eb;"></i> WALR</div>
-                    <h3 id="val-walr" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,00%</h3>
+                    <h3 id="val-walr" class="text-lg font-extrabold c-navy" style="margin: 0.5vh 0;">0,00%</h3>
                 </div>
             </div>
-            <div class="font-bold text-center text-xxs c-navy p-1 mt-1" style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 3px;">
+            <div class="font-bold text-center text-xs c-navy" style="padding: 0.6vh; margin-top: 0.5vh; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 4px;">
                 <i class="fas fa-star" style="color: #3b82f6;"></i> Achievement Cabang Banda Aceh telah mencapai <span id="val-achiev-text">0,00%</span>. Terus akselerasi untuk capai target!
             </div>
         </div>
 
         <!-- 2. PORTOFOLIO & TOP 5 -->
-        <div class="grid-3 mb-2">
+        <div class="grid-3" style="margin-bottom: 1vh;">
             <!-- Donut -->
             <div class="border-navy rounded flex-col">
-                <div class="bg-navy text-center font-bold text-xxs p-1">BOOKING BY PORTOFOLIO</div>
-                <div class="flex items-center p-1.5">
+                <div class="bg-navy text-center font-bold text-xs" style="padding: 0.5vh;">BOOKING BY PORTOFOLIO</div>
+                <div class="flex items-center" style="padding: 1vh;">
                     <div style="width: 42%; position: relative;">
-                        <canvas id="portoChart" height="95"></canvas>
+                        <canvas id="portoChart" height="130"></canvas>
                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                            <span style="font-size: 6px; font-weight: bold; color: #555;">TOTAL BOOKING</span>
-                            <span id="val-booking-donut" class="font-extrabold c-navy text-xxs">0,000 M</span>
+                            <span style="font-size: 0.65rem; font-weight: bold; color: #555;">TOTAL BOOKING</span>
+                            <span id="val-booking-donut" class="font-extrabold c-navy text-sm">0,000 M</span>
                         </div>
                     </div>
-                    <div style="width: 58%; padding-left: 6px; font-size: 9px; font-weight: bold;">
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#16a34a">●</span> CCAR</div> <span id="val-ccar" style="width: 50px; text-align: right;">0,000 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#3b82f6">●</span> NCAR</div> <span id="val-ncar" style="width: 50px; text-align: right;">0,000 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#f97316">●</span> CBSICAR</div> <span id="val-cbsicar" style="width: 50px; text-align: right;">0,000 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#a855f7">●</span> NMCY</div> <span id="val-nmcy" style="width: 50px; text-align: right;">0,000 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#93c5fd">●</span> MCAR</div> <span id="val-mcar" style="width: 50px; text-align: right;">0,000 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#9ca3af">●</span> Lainnya</div> <span id="val-lainnya" style="width: 50px; text-align: right;">0,000 M</span></div>
+                    <div style="width: 58%; padding-left: 1vw; font-size: 0.8rem; font-weight: bold;">
+                        <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#16a34a">●</span> CCAR</div> <span id="val-ccar" style="width: 60px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#3b82f6">●</span> NCAR</div> <span id="val-ncar" style="width: 60px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#f97316">●</span> CBSICAR</div> <span id="val-cbsicar" style="width: 60px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#a855f7">●</span> NMCY</div> <span id="val-nmcy" style="width: 60px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#93c5fd">●</span> MCAR</div> <span id="val-mcar" style="width: 60px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#9ca3af">●</span> Lainnya</div> <span id="val-lainnya" style="width: 60px; text-align: right;">0,000 M</span></div>
                     </div>
                 </div>
-                <div class="text-center font-bold" style="background-color: #fef3c7; border: 1px solid #fde68a; margin: 0 5px 5px 5px; padding: 2px; font-size: 7.5px; border-radius: 3px;">
+                <div class="text-center font-bold" style="background-color: #fef3c7; border: 1px solid #fde68a; margin: 0 1vw 1vh 1vw; padding: 0.5vh; font-size: 0.75rem; border-radius: 4px;">
                     3 portofolio utama berkontribusi dari total booking.
                 </div>
             </div>
 
             <div class="border-navy rounded flex-col">
-                <div class="bg-navy text-center font-bold text-xxs p-1 flex justify-center items-center gap-1"><i class="fas fa-trophy c-gold"></i> TOP 5 SALES - ACHIEVEMENT</div>
-                <div class="p-1.5 text-xxs font-bold" style="display: flex; flex-direction: column; justify-content: space-around; height: 100%;">
+                <div class="bg-navy text-center font-bold text-xs" style="padding: 0.5vh; display: flex; justify-content: center; align-items: center; gap: 5px;"><i class="fas fa-trophy c-gold"></i> TOP 5 SALES - ACHIEVEMENT</div>
+                <div style="padding: 1.2vh 1vw; display: flex; flex-direction: column; justify-content: space-around; height: 100%; font-size: 0.85rem; font-weight: bold;">
                     <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-1">1</span> SALES A</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
                     <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-2">2</span> SALES B</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
                     <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-3">3</span> SALES C</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
@@ -199,8 +208,8 @@
             </div>
 
             <div class="border-navy rounded flex-col">
-                <div class="bg-navy text-center font-bold text-xxs p-1 flex justify-center items-center gap-1"><i class="fas fa-star c-gold"></i> TOP 5 DEALER - ACHIEVEMENT</div>
-                <div class="p-1.5 text-xxs font-bold" style="display: flex; flex-direction: column; justify-content: space-around; height: 100%;">
+                <div class="bg-navy text-center font-bold text-xs" style="padding: 0.5vh; display: flex; justify-content: center; align-items: center; gap: 5px;"><i class="fas fa-star c-gold"></i> TOP 5 DEALER - ACHIEVEMENT</div>
+                <div style="padding: 1.2vh 1vw; display: flex; flex-direction: column; justify-content: space-around; height: 100%; font-size: 0.85rem; font-weight: bold;">
                     <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-1">1</span> DEALER 1</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
                     <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-2">2</span> DEALER 2</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
                     <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-3">3</span> DEALER 3</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
@@ -211,10 +220,10 @@
         </div>
 
         <!-- 3. PERINGATAN & PORTOFOLIO TAMBAHAN -->
-        <div class="grid-4 mb-2">
+        <div class="grid-4" style="margin-bottom: 1vh;">
             <div class="border-navy rounded">
-                <div class="bg-navy text-center font-bold text-xxs p-1"><i class="fas fa-chart-pie"></i> TOP 5 PORTOFOLIO</div>
-                <div class="p-1 text-xxs font-bold" style="display: flex; flex-direction: column; gap: 2.5px;">
+                <div class="bg-navy text-center font-bold text-xxs" style="padding: 0.5vh;"><i class="fas fa-chart-pie"></i> TOP 5 PORTOFOLIO</div>
+                <div style="padding: 1vh; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.6vh;">
                     <div class="flex justify-between items-center"><span>1. CCAR</span> <span id="val-top-porto-1" class="c-navy">0,000 M</span></div>
                     <div class="flex justify-between items-center"><span>2. NCAR</span> <span id="val-top-porto-2" class="c-navy">0,000 M</span></div>
                     <div class="flex justify-between items-center"><span>3. CBSICAR</span> <span id="val-top-porto-3" class="c-navy">0,000 M</span></div>
@@ -224,8 +233,8 @@
             </div>
             
             <div class="border-red rounded" style="background-color: #fef2f2;">
-                <div class="bg-red text-center font-bold text-xxs p-1"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> PORTOFOLIO PERHATIAN</div>
-                <div class="p-1 text-xxs font-bold c-red" style="display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">
+                <div class="bg-red text-center font-bold text-xxs" style="padding: 0.5vh;"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> PORTOFOLIO PERHATIAN</div>
+                <div style="padding: 1vh; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.8vh; color: #dc2626;">
                     <div class="flex justify-between"><span>1. MCAR (0,000 M)</span></div>
                     <div class="flex justify-between"><span>2. NMCY (0,000 M)</span></div>
                     <div class="flex justify-between"><span>3. Lainnya (0,000 M)</span></div>
@@ -233,8 +242,8 @@
             </div>
 
             <div class="border-red rounded" style="background-color: #fef2f2;">
-                <div class="bg-red text-center font-bold text-xxs p-1"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> SALES - PERHATIAN</div>
-                <div class="p-1 text-xxs font-bold c-red" style="display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">
+                <div class="bg-red text-center font-bold text-xxs" style="padding: 0.5vh;"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> SALES - PERHATIAN</div>
+                <div style="padding: 1vh; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.8vh; color: #dc2626;">
                     <div class="flex justify-between"><span>1. SALES K.</span> <span>0,00%</span></div>
                     <div class="flex justify-between"><span>2. SALES L.</span> <span>0,00%</span></div>
                     <div class="flex justify-between"><span>3. SALES M.</span> <span>0,00%</span></div>
@@ -242,8 +251,8 @@
             </div>
 
             <div class="border-orange rounded" style="background-color: #fff7ed;">
-                <div class="bg-orange text-center font-bold text-xxs p-1"><i class="fas fa-bullseye"></i> CAPTIVE RATE RENDAH</div>
-                <div class="p-1 text-xxs font-bold c-orange" style="display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">
+                <div class="bg-orange text-center font-bold text-xxs" style="padding: 0.5vh;"><i class="fas fa-bullseye"></i> CAPTIVE RATE RENDAH</div>
+                <div style="padding: 1vh; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.8vh; color: #f97316;">
                     <div class="flex justify-between"><span>1. SHOWROOM A</span> <span>0,00%</span></div>
                     <div class="flex justify-between"><span>2. SHOWROOM B</span> <span>0,00%</span></div>
                     <div class="flex justify-between"><span>3. SHOWROOM C</span> <span>0,00%</span></div>
@@ -252,20 +261,20 @@
         </div>
 
         <!-- 4. TREND SUMMARY -->
-        <div style="border: 2px solid #e5e7eb; border-radius: 4px; padding: 6px; margin-bottom: 4px;">
-            <div class="flex items-center gap-2 mb-1">
-                <div class="bg-navy rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 22px; height: 22px;">1</div>
+        <div style="border: 2px solid #e5e7eb; border-radius: 6px; padding: 1vh 1vw; margin-bottom: 0.5vh;">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.8vh;">
+                <div class="bg-navy rounded-full flex items-center justify-center font-extrabold text-md" style="width: 28px; height: 28px;">1</div>
                 <div>
-                    <h2 class="font-extrabold c-navy text-xs" style="line-height: 1;">EXSUM SUMMARY BY TREND</h2>
-                    <p class="font-bold text-xxs" style="color: #555; margin-top: 1px;">APAKAH TARGET BISA TERCAPAI?</p>
+                    <h2 class="font-extrabold c-navy text-sm" style="line-height: 1;">EXSUM SUMMARY BY TREND</h2>
+                    <p class="font-bold text-xxs" style="color: #555; margin-top: 0.2vh;">APAKAH TARGET BISA TERCAPAI?</p>
                 </div>
             </div>
             
             <div class="flex justify-between gap-2">
-                <div style="width: 25%; display: flex; flex-direction: column; gap: 4px;">
+                <div style="width: 25%; display: flex; flex-direction: column; gap: 0.8vh;">
                     <div class="border-navy rounded">
-                        <div class="bg-navy text-center font-bold text-xxs p-1">POSISI SAAT INI</div>
-                        <div class="p-1 text-xxs font-bold" style="display: flex; flex-direction: column; gap: 2.5px;">
+                        <div class="bg-navy text-center font-bold text-xxs" style="padding: 0.4vh;">POSISI SAAT INI</div>
+                        <div style="padding: 0.8vh 1vw; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.5vh;">
                             <div class="flex justify-between" style="color: #666;"><span id="val-target-bulan" style="font-weight: normal;">Target Bulan</span><span id="val-target-kiri">25,889 M</span></div>
                             <div class="flex justify-between c-navy"><span id="val-trend-realisasi-tgl" style="font-weight: normal;">Realisasi</span><span id="val-trend-realisasi">0,000 M</span></div>
                             <div class="flex justify-between c-green"><span style="font-weight: normal;">Achievement</span><span id="val-trend-achiev">0,00%</span></div>
@@ -274,43 +283,43 @@
                             <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
                         </div>
                     </div>
-                    <div id="box-kesimpulan" class="border-red flex items-center justify-center gap-2 rounded p-1" style="background-color: #fef2f2;">
-                        <i class="fas fa-exclamation-triangle c-red text-sm"></i>
+                    <div id="box-kesimpulan" class="border-red flex items-center justify-center gap-2 rounded" style="padding: 0.6vh; background-color: #fef2f2;">
+                        <i class="fas fa-exclamation-triangle c-red text-md"></i>
                         <div class="font-extrabold c-red text-xxs" style="line-height: 1.1;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>
                     </div>
                 </div>
 
                 <div style="width: 20%;">
-                    <div style="border: 2px solid #15803d; border-radius: 4px; background-color: #f0fdf4; height: 100%; display: flex; flex-direction: column;">
-                        <div style="background-color: #15803d; color: white; text-align: center; font-weight: bold; font-size: 8.5px; padding: 2px;">TREND HARIAN SAAT INI</div>
-                        <div class="text-center p-1" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="border: 2px solid #15803d; border-radius: 6px; background-color: #f0fdf4; height: 100%; display: flex; flex-direction: column;">
+                        <div style="background-color: #15803d; color: white; text-align: center; font-weight: bold; font-size: 0.75rem; padding: 0.4vh;">TREND HARIAN SAAT INI</div>
+                        <div class="text-center" style="padding: 1vh 0.5vw; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
                             <div class="font-bold text-xxs" style="color: #555;">Rata-rata booking per hari:</div>
-                            <div id="val-rata-harian" class="font-extrabold text-xs" style="color: #15803d; margin: 2px 0;">0,000 M / hari</div>
-                            <hr style="border-color: #86efac; margin: 3px 0;">
+                            <div id="val-rata-harian" class="font-extrabold text-sm" style="color: #15803d; margin: 0.3vh 0;">0,000 M / hari</div>
+                            <hr style="border-color: #86efac; margin: 0.5vh 0;">
                             <div class="font-bold text-xxs" style="color: #555;">Proyeksi dipertahankan:</div>
-                            <div id="val-proyeksi" class="font-extrabold text-xxs" style="color: #15803d; margin: 2px 0;">0,000 M (0,0%)</div>
+                            <div id="val-proyeksi" class="font-extrabold text-xs" style="color: #15803d; margin: 0.3vh 0;">0,000 M (0,0%)</div>
                         </div>
                     </div>
                 </div>
 
                 <div style="width: 40%; position: relative;">
                     <div class="font-bold text-xxs text-center" style="color: #555; position: absolute; width: 100%; top: 0;">TREND BOOKING HARIAN (AKUMULATIF)</div>
-                    <canvas id="trendChart" style="margin-top: 10px;" height="90"></canvas>
+                    <canvas id="trendChart" style="margin-top: 1.5vh;" height="120"></canvas>
                 </div>
 
-                <div style="width: 15%; display: flex; flex-direction: column; gap: 4px;">
-                    <div class="font-bold text-center text-xxs c-navy rounded" style="background-color: #f3f4f6; border: 1px solid #d1d5db; padding: 3px;">BERAPA YANG HARUS DICAPAI?</div>
-                    <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 4px;">
+                <div style="width: 15%; display: flex; flex-direction: column; gap: 0.8vh;">
+                    <div class="font-bold text-center text-xxs c-navy rounded" style="background-color: #f3f4f6; border: 1px solid #d1d5db; padding: 0.4vh;">BERAPA YANG HARUS DICAPAI?</div>
+                    <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 0.7vh 0.8vw;">
                         <div class="flex items-center gap-1 c-navy"><i class="fas fa-chart-pie text-xxs"></i> Sisa Target</div>
                         <div id="val-kanan-sisa">25,889 M</div>
                     </div>
-                    <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 4px;">
+                    <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 0.7vh 0.8vw;">
                         <div class="flex items-center gap-1 c-navy"><i class="far fa-calendar-alt text-xxs"></i> Sisa Hari</div>
                         <div id="val-sisa-hari-kanan">0 Hari</div>
                     </div>
-                    <div class="text-center rounded" style="border: 1px solid #d1d5db; padding: 4px; margin-top: auto;">
+                    <div class="text-center rounded" style="border: 1px solid #d1d5db; padding: 0.8vh; margin-top: auto;">
                         <div class="font-bold text-xxs" style="color: #555;">Kebutuhan rata-rata / hari:</div>
-                        <div id="val-keb-harian" class="font-extrabold text-xs" style="color: #15803d; margin: 2px 0;">0,000 M</div>
+                        <div id="val-keb-harian" class="font-extrabold text-sm" style="color: #15803d; margin: 0.3vh 0;">0,000 M</div>
                     </div>
                 </div>
             </div>
@@ -318,7 +327,7 @@
     </div>
 
     <!-- 5. FOOTER & COPYRIGHT -->
-    <div class="bg-navy flex justify-between font-bold" style="padding: 5px 10px; font-size: 9.5px; border-radius: 3px;">
+    <div class="bg-navy flex justify-between font-bold" style="padding: 0.8vh 1vw; font-size: 0.75rem; border-radius: 4px;">
         <span style="font-style: italic;">#MUF Wujudkan semua mimpi</span>
         <span>Versi 1.0 | Copyright © SRISP x DMJ 2026</span>
     </div>
@@ -362,7 +371,7 @@
                 { label: 'Trend', data: [0, 0, 0, 0, 0], borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 30000, ticks: { callback: function(v) { return (v/1000) + ' M'; }, font: { size: 8 } } }, x: { ticks: { font: { size: 8 } } } }, plugins: { legend: { display: false } } },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 30000, ticks: { callback: function(v) { return (v/1000) + ' M'; }, font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } }, plugins: { legend: { display: false } } },
         plugins: [{ 
             id: 'customLine',
             beforeDraw: chart => {
@@ -382,7 +391,6 @@
     function toM(val) { return (val / 1000).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M'; }
 
     onSnapshot(doc(db, "regional_data", "sumbagut"), (docSnap) => {
-        // Hilangkan splash screen setelah data berhasil di-load
         const splash = document.getElementById('splash-screen');
         if (splash) {
             splash.style.opacity = '0';
