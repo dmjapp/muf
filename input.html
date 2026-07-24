@@ -88,6 +88,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Otomatis isi tanggal hari ini saat form dimuat
+    document.getElementById('tanggal').valueAsDate = new Date();
+
     document.getElementById('formInputAdmin').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSimpan');
@@ -106,7 +109,7 @@
             walr: Number(document.getElementById('walr').value),
             pofde: Number(document.getElementById('pofde').value),
             ia: Number(document.getElementById('ia').value),
-            last_update: new Date()
+            last_update: new Date().toISOString()
         };
 
         try {
