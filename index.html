@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200, initial-scale=1.0">
-    <title>Dashboard Cabang Banda Aceh</title>
+    <title>Executive Summary Performance Booking - Cabang Banda Aceh</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -226,7 +226,7 @@
     </div>
 </div>
 
-<!-- FIREBASE & LOGIKA REAL-TIME (TANGGAL OTOMATIS) -->
+<!-- FIREBASE & LOGIKA REAL-TIME -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -243,7 +243,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // TARGET KHUSUS CABANG
     const TARGET_AMOUNT = 25889; 
     document.getElementById('val-target-atas').innerText = toM(TARGET_AMOUNT);
     document.getElementById('val-target-kiri').innerText = toM(TARGET_AMOUNT);
@@ -261,8 +260,8 @@
         data: {
             labels: ['1', '7', '13', '19', 'Update Terakhir'],
             datasets: [
-                { label: 'Realisasi', data: [0, 2000, 5000, 9000, 0], borderColor: '#16a34a', backgroundColor: '#16a34a', borderWidth: 2, tension: 0.1, pointRadius: 3 },
-                { label: 'Trend', data: [0, 2000, 5000, 9000, 0], borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 }
+                { label: 'Realisasi', data: [0, 0, 0, 0, 0], borderColor: '#16a34a', backgroundColor: '#16a34a', borderWidth: 2, tension: 0.1, pointRadius: 3 },
+                { label: 'Trend', data: [0, 0, 0, 0, 0], borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 }
             ]
         },
         options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 30000, ticks: { callback: function(v) { return (v/1000) + ' M'; }, font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } }, plugins: { legend: { display: false } } },
@@ -271,12 +270,14 @@
             beforeDraw: chart => {
                 const ctx = chart.ctx; const xAxis = chart.scales.x; const yAxis = chart.scales.y;
                 const latestVal = chart.data.datasets[0].data[4];
+                
                 // Garis Merah Target
                 ctx.save(); ctx.beginPath(); ctx.moveTo(xAxis.getPixelForValue(0), yAxis.getPixelForValue(0)); ctx.lineTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(TARGET_AMOUNT));
                 ctx.lineWidth = 1.5; ctx.strokeStyle = '#dc2626'; ctx.setLineDash([4, 4]); ctx.stroke();
                 ctx.beginPath(); ctx.arc(xAxis.getPixelForValue(4), yAxis.getPixelForValue(TARGET_AMOUNT), 4, 0, 2 * Math.PI); ctx.fillStyle = '#dc2626'; ctx.fill();
-                // Garis Biru Proyeksi
-                ctx.beginPath(); ctx.moveTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(latestVal)); ctx.lineTo(xAxis.getPixelForValue(4.5), yAxis.getPixelForValue(17330));
+                
+                // Garis Biru Proyeksi (jika nilai 0, garis biru rata mengikuti nilai 0)
+                ctx.beginPath(); ctx.moveTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(latestVal)); ctx.lineTo(xAxis.getPixelForValue(4.5), yAxis.getPixelForValue(latestVal));
                 ctx.lineWidth = 1.5; ctx.strokeStyle = '#3b82f6'; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.restore();
             }
         }]
@@ -288,9 +289,8 @@
         if (docSnap.exists()) {
             const data = docSnap.data();
             const totalBooking = data.ccar + data.ncar + data.cbsicar + data.nmcy + data.mcar + data.lainnya;
-            const achiev = ((totalBooking / TARGET_AMOUNT) * 100).toFixed(2);
+            const achiev = targetAmountCalc => ((totalBooking / targetAmountCalc) * 100).toFixed(2);
             
-            // --- LOGIKA TANGGAL OTOMATIS ---
             let dateObj = new Date();
             if (data.tanggal) { dateObj = new Date(data.tanggal); } 
             
@@ -299,24 +299,23 @@
             const bln = months[dateObj.getMonth()];
             const thn = dateObj.getFullYear();
             
-            // Hitung Hari di bulan tersebut
             const hariBerjalan = tgl;
             const lastDay = new Date(thn, dateObj.getMonth() + 1, 0).getDate();
             const sisaHari = lastDay - hariBerjalan;
 
-            // Set Tanggal ke HTML
-            const stringTanggal = `${tgl} ${bln} ${thn}`;
-            document.getElementById('val-periode').innerText = stringTanggal;
+            document.getElementById('val-periode').innerText = `${tgl} ${bln} ${thn}`;
             document.getElementById('val-target-bulan').innerText = `Target ${bln} ${thn}`;
-            document.getElementById('val-trend-realisasi-tgl').innerText = `Realisasi ${stringTanggal}`;
+            document.getElementById('val-target-kiri').innerText = toM(TARGET_AMOUNT);
+            document.getElementById('val-target-atas').innerText = toM(TARGET_AMOUNT);
+            document.getElementById('val-trend-realisasi-tgl').innerText = `Realisasi ${tgl} ${bln} ${thn}`;
             document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
             document.getElementById('val-sisa-hari').innerText = `${sisaHari} Hari`;
             document.getElementById('val-sisa-hari-kanan').innerText = `${sisaHari} Hari`;
 
-            // --- UPDATE ANGKA ---
+            const currentAchiev = achiev(TARGET_AMOUNT);
             document.getElementById('val-booking-amount').innerText = toM(totalBooking);
-            document.getElementById('val-achievement').innerText = achiev + "%";
-            document.getElementById('val-achiev-text').innerText = achiev + "%";
+            document.getElementById('val-achievement').innerText = currentAchiev + "%";
+            document.getElementById('val-achiev-text').innerText = currentAchiev + "%";
             document.getElementById('val-captive').innerText = (data.captive || 0).toFixed(2) + "%";
             document.getElementById('val-walr').innerText = (data.walr || 0).toFixed(2) + "%";
             document.getElementById('val-pofde').innerText = toM(data.pofde || 0);
@@ -333,15 +332,14 @@
             portoChart.data.datasets[0].data = [data.ccar, data.ncar, data.cbsicar, data.nmcy, data.mcar, data.lainnya];
             portoChart.update();
 
-            // --- KALKULASI PROYEKSI TREN ---
             const sisaTarget = TARGET_AMOUNT - totalBooking;
-            const rataHarian = totalBooking / (hariBerjalan || 1); 
+            const rataHarian = hariBerjalan > 0 ? (totalBooking / hariBerjalan) : 0; 
             const proyeksi = rataHarian * lastDay;
-            const persentaseProyeksi = ((proyeksi / TARGET_AMOUNT) * 100).toFixed(1);
+            const persentaseProyeksi = TARGET_AMOUNT > 0 ? ((proyeksi / TARGET_AMOUNT) * 100).toFixed(1) : 0;
             const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
 
             document.getElementById('val-trend-realisasi').innerText = toM(totalBooking);
-            document.getElementById('val-trend-achiev').innerText = achiev + "%";
+            document.getElementById('val-trend-achiev').innerText = currentAchiev + "%";
             document.getElementById('val-trend-sisa').innerText = toM(sisaTarget);
             document.getElementById('val-kanan-sisa').innerText = toM(sisaTarget);
             
@@ -359,8 +357,9 @@
                 boxKesimpulan.innerHTML = '<i class="fas fa-exclamation-triangle c-red text-xl"></i><div class="font-extrabold c-red text-xxs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>';
             }
 
-            trendChart.data.datasets[0].data[4] = totalBooking;
-            trendChart.data.datasets[1].data[4] = totalBooking;
+            // Grafik diperbarui murni sesuai input (tanpa lonjakan tengah)
+            trendChart.data.datasets[0].data = [0, 0, 0, 0, totalBooking];
+            trendChart.data.datasets[1].data = [0, 0, 0, 0, totalBooking];
             trendChart.update();
         }
     });
