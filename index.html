@@ -9,29 +9,49 @@
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, Helvetica, sans-serif; background-color: #f3f4f6; padding: 10px; color: #333; display: flex; justify-content: center; min-width: 1220px; }
+        body { font-family: Arial, Helvetica, sans-serif; background-color: #f3f4f6; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; color: #333; }
         
+        /* SPLASH SCREEN LOADING */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #0a1d56;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+            color: white;
+        }
+        #splash-screen img { width: 180px; height: auto; margin-bottom: 20px; animation: pulse 1.5s infinite; }
+        #splash-screen .spinner {
+            width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #f59e0b; border-radius: 50%;
+            animation: spin 1s linear infinite; margin-top: 15px;
+        }
+        #splash-screen h2 { font-size: 16px; letter-spacing: 1px; font-weight: bold; margin-top: 10px; color: #f59e0b; text-transform: uppercase; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* POSTER UTAMA (PAS 1 LAYAR PENUH) */
         .poster { 
-            width: 1200px; 
+            width: 1180px; 
+            height: 96vh;
             background-color: #ffffff; 
-            border: 4px solid #0a1d56; 
-            padding: 14px; 
+            border: 3px solid #0a1d56; 
+            padding: 10px 14px; 
             position: relative;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 820px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        /* WATERMARK VECTOR SVG */
+        /* WATERMARK PNG */
         .watermark {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 750px;
-            opacity: 0.045;
+            width: 550px;
+            opacity: 0.04;
             pointer-events: none;
             z-index: 0;
         }
@@ -46,150 +66,146 @@
         
         .flex { display: flex; } .flex-col { display: flex; flex-direction: column; }
         .items-center { align-items: center; } .justify-between { justify-content: space-between; } .justify-center { justify-content: center; }
-        .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .gap-3 { gap: 15px; }
+        .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } 
         .text-center { text-align: center; } .font-bold { font-weight: bold; } .font-extrabold { font-weight: 800; }
-        .text-xxs { font-size: 10px; } .text-xs { font-size: 12px; } .text-sm { font-size: 14px; }
-        .text-md { font-size: 16px; } .text-lg { font-size: 18px; } .text-xl { font-size: 24px; }
+        .text-xxs { font-size: 9px; } .text-xs { font-size: 11px; } .text-sm { font-size: 13px; }
+        .text-md { font-size: 15px; } .text-lg { font-size: 17px; } .text-xl { font-size: 22px; }
         
         .border-navy { border: 2px solid #0a1d56; } .border-red { border: 2px solid #dc2626; } .border-orange { border: 2px solid #f97316; }
-        .rounded { border-radius: 6px; } .rounded-full { border-radius: 50%; }
-        .p-1 { padding: 5px; } .p-2 { padding: 10px; } .p-3 { padding: 15px; } .mb-1 { margin-bottom: 5px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 10px; }
+        .rounded { border-radius: 4px; } .rounded-full { border-radius: 50%; }
+        .p-1 { padding: 4px; } .p-2 { padding: 8px; } 
         
-        .header-border { border-bottom: 3px solid #0a1d56; padding-bottom: 8px; margin-bottom: 10px; }
+        .header-border { border-bottom: 2px solid #0a1d56; padding-bottom: 6px; margin-bottom: 6px; }
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 2px solid #0a1d56; border-bottom: 1px solid #ccc; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; } 
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; } 
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         
-        .prog-bg { background-color: #e5e7eb; width: 100%; height: 7px; border-radius: 4px; overflow: hidden; } 
+        .prog-bg { background-color: #e5e7eb; width: 100%; height: 6px; border-radius: 3px; overflow: hidden; } 
         .prog-fill { background-color: #16a34a; height: 100%; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 16px; height: 16px; border-radius: 50%; color: white; font-size: 9px; font-weight: bold; margin-right: 4px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 15px; height: 15px; border-radius: 50%; color: white; font-size: 8px; font-weight: bold; margin-right: 4px; }
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-4, .b-5 { background-color: #2563eb; }
     </style>
 </head>
 <body>
 
-<div class="poster">
-    <!-- WATERMARK VECTOR SVG -->
-    <div class="watermark">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width="100%" height="100%">
-            <path d="M50,28 Q110,2 170,32 T290,28" fill="none" stroke="#ffb300" stroke-width="22" stroke-linecap="round"/>
-            <text x="5" y="78" font-family="Arial, sans-serif" font-weight="900" font-size="65" fill="#0a1d56" letter-spacing="-1">mandiri</text>
-            <text x="5" y="112" font-family="Arial, sans-serif" font-weight="bold" font-size="34" fill="#cc0000" letter-spacing="0.5">utama finance</text>
-        </svg>
+    <!-- SPLASH SCREEN ANIMASI -->
+    <div id="splash-screen">
+        <img src="logo.png" alt="Logo">
+        <div class="spinner"></div>
+        <h2>Database Management Journal</h2>
     </div>
+
+<div class="poster">
+    <!-- WATERMARK PNG -->
+    <img src="logo.png" class="watermark" alt="Watermark">
 
     <div>
         <!-- HEADER -->
         <div class="flex justify-between items-center header-border">
             <div style="width: 25%;">
-                <!-- LOGO UTAMA VECTOR SVG (Jelas & Besar) -->
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" style="height: 48px; width: auto;">
-                    <path d="M50,28 Q110,2 170,32 T290,28" fill="none" stroke="#ffb300" stroke-width="22" stroke-linecap="round"/>
-                    <text x="5" y="78" font-family="Arial, sans-serif" font-weight="900" font-size="65" fill="#0a1d56" letter-spacing="-1">mandiri</text>
-                    <text x="5" y="112" font-family="Arial, sans-serif" font-weight="bold" font-size="34" fill="#cc0000" letter-spacing="0.5">utama finance</text>
-                </svg>
+                <img src="logo.png" alt="Mandiri Utama Finance" style="max-height: 40px; width: auto;">
             </div>
             <div style="width: 50%;" class="text-center">
-                <h2 class="text-md font-bold c-navy">EXECUTIVE SUMMARY</h2>
-                <h1 class="font-extrabold c-navy" style="font-size: 30px; line-height: 1.1; letter-spacing: 1px;">PERFORMANCE BOOKING</h1>
-                <h3 class="text-sm font-bold c-navy" style="margin-bottom: 3px;">CABANG BANDA ACEH</h3>
-                <div class="bg-gold font-extrabold" style="display: inline-block; padding: 2px 15px; border-radius: 4px; font-size: 12px;">
+                <h2 class="text-sm font-bold c-navy">EXECUTIVE SUMMARY</h2>
+                <h1 class="font-extrabold c-navy" style="font-size: 26px; line-height: 1.1; letter-spacing: 0.5px;">PERFORMANCE BOOKING</h1>
+                <h3 class="text-xs font-bold c-navy" style="margin-bottom: 2px;">CABANG BANDA ACEH</h3>
+                <div class="bg-gold font-extrabold" style="display: inline-block; padding: 2px 12px; border-radius: 3px; font-size: 11px;">
                     <i class="far fa-calendar-alt"></i> PERIODE : <span id="val-periode">-</span>
                 </div>
             </div>
             <div style="width: 25%; display: flex; justify-content: flex-end;">
-                <div class="bg-navy flex items-center gap-2 rounded p-1.5">
-                    <i class="fas fa-bullseye" style="font-size: 26px;"></i>
-                    <div style="line-height: 1.1;"><div class="font-bold text-xxs">TARGET BERSAMA</div><div style="font-size: 8px; font-weight: normal;">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
+                <div class="bg-navy flex items-center gap-2 rounded p-1">
+                    <i class="fas fa-bullseye" style="font-size: 22px;"></i>
+                    <div style="line-height: 1.1;"><div class="font-bold text-xxs">TARGET BERSAMA</div><div style="font-size: 7px; font-weight: normal;">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
                 </div>
             </div>
         </div>
 
         <!-- 1. OVERVIEW -->
         <div class="mb-2">
-            <div class="bg-navy font-bold text-xxs text-center" style="display: inline-block; padding: 2px 10px; border-radius: 4px 4px 0 0;">OVERVIEW CABANG</div>
+            <div class="bg-navy font-bold text-xxs text-center" style="display: inline-block; padding: 2px 10px; border-radius: 3px 3px 0 0;">OVERVIEW CABANG</div>
             <div class="grid-7">
-                <div class="text-center p-1.5" style="border-right: 1px solid #ccc;">
+                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> BOOKING AMOUNT</div>
-                    <h3 id="val-booking-amount" class="text-md font-extrabold c-navy" style="margin: 2px 0;">0 M</h3>
+                    <h3 id="val-booking-amount" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,000 M</h3>
                 </div>
-                <div class="text-center p-1.5" style="border-right: 1px solid #ccc;">
+                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET AMOUNT</div>
-                    <h3 id="val-target-atas" class="text-md font-extrabold c-navy" style="margin: 2px 0;">25,889 M</h3>
+                    <h3 id="val-target-atas" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">25,889 M</h3>
                 </div>
-                <div class="text-center p-1.5" style="border-right: 1px solid #ccc;">
+                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-chart-line" style="color:#16a34a;"></i> ACHIEVEMENT</div>
-                    <h3 id="val-achievement" class="text-md font-extrabold c-navy" style="margin: 2px 0;">0%</h3>
+                    <h3 id="val-achievement" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,00%</h3>
                 </div>
-                <div class="text-center p-1.5" style="border-right: 1px solid #ccc;">
+                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-users" style="color:#a855f7;"></i> CAPTIVE RATE</div>
-                    <h3 id="val-captive" class="text-md font-extrabold c-navy" style="margin: 2px 0;">0%</h3>
+                    <h3 id="val-captive" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,00%</h3>
                 </div>
-                <div class="text-center p-1.5" style="border-right: 1px solid #ccc;">
+                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-handshake" style="color:#60a5fa;"></i> PO + FDE</div>
-                    <h3 id="val-pofde" class="text-md font-extrabold c-navy" style="margin: 2px 0;">0 M</h3>
+                    <h3 id="val-pofde" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,000 M</h3>
                 </div>
-                <div class="text-center p-1.5" style="border-right: 1px solid #ccc;">
+                <div class="text-center p-1" style="border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-file-invoice" style="color:#fb923c;"></i> IA</div>
-                    <h3 id="val-ia" class="text-md font-extrabold c-navy" style="margin: 2px 0;">0 M</h3>
+                    <h3 id="val-ia" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,000 M</h3>
                 </div>
-                <div class="text-center p-1.5">
+                <div class="text-center p-1">
                     <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-percent" style="color:#2563eb;"></i> WALR</div>
-                    <h3 id="val-walr" class="text-md font-extrabold c-navy" style="margin: 2px 0;">0%</h3>
+                    <h3 id="val-walr" class="text-sm font-extrabold c-navy" style="margin: 2px 0;">0,00%</h3>
                 </div>
             </div>
-            <div class="font-bold text-center text-xs c-navy p-1.5 mt-1" style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 4px;">
-                <i class="fas fa-star" style="color: #3b82f6;"></i> Achievement Cabang Banda Aceh telah mencapai <span id="val-achiev-text">0%</span>. Terus akselerasi untuk capai target!
+            <div class="font-bold text-center text-xxs c-navy p-1 mt-1" style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 3px;">
+                <i class="fas fa-star" style="color: #3b82f6;"></i> Achievement Cabang Banda Aceh telah mencapai <span id="val-achiev-text">0,00%</span>. Terus akselerasi untuk capai target!
             </div>
         </div>
 
         <!-- 2. PORTOFOLIO & TOP 5 -->
         <div class="grid-3 mb-2">
-            <!-- Portofolio Donut -->
+            <!-- Donut -->
             <div class="border-navy rounded flex-col">
-                <div class="bg-navy text-center font-bold text-xs p-1">BOOKING BY PORTOFOLIO</div>
-                <div class="flex items-center p-2">
+                <div class="bg-navy text-center font-bold text-xxs p-1">BOOKING BY PORTOFOLIO</div>
+                <div class="flex items-center p-1.5">
                     <div style="width: 42%; position: relative;">
-                        <canvas id="portoChart" height="115"></canvas>
+                        <canvas id="portoChart" height="95"></canvas>
                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                            <span style="font-size: 7px; font-weight: bold; color: #555;">TOTAL BOOKING</span>
-                            <span id="val-booking-donut" class="font-extrabold c-navy text-xs">0 M</span>
+                            <span style="font-size: 6px; font-weight: bold; color: #555;">TOTAL BOOKING</span>
+                            <span id="val-booking-donut" class="font-extrabold c-navy text-xxs">0,000 M</span>
                         </div>
                     </div>
-                    <div style="width: 58%; padding-left: 6px; font-size: 10px; font-weight: bold;">
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#16a34a">●</span> CCAR</div> <span id="val-ccar" style="width: 50px; text-align: right;">0 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#3b82f6">●</span> NCAR</div> <span id="val-ncar" style="width: 50px; text-align: right;">0 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#f97316">●</span> CBSICAR</div> <span id="val-cbsicar" style="width: 50px; text-align: right;">0 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#a855f7">●</span> NMCY</div> <span id="val-nmcy" style="width: 50px; text-align: right;">0 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#93c5fd">●</span> MCAR</div> <span id="val-mcar" style="width: 50px; text-align: right;">0 M</span></div>
-                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#9ca3af">●</span> Lainnya</div> <span id="val-lainnya" style="width: 50px; text-align: right;">0 M</span></div>
+                    <div style="width: 58%; padding-left: 6px; font-size: 9px; font-weight: bold;">
+                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#16a34a">●</span> CCAR</div> <span id="val-ccar" style="width: 50px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#3b82f6">●</span> NCAR</div> <span id="val-ncar" style="width: 50px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#f97316">●</span> CBSICAR</div> <span id="val-cbsicar" style="width: 50px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#a855f7">●</span> NMCY</div> <span id="val-nmcy" style="width: 50px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#93c5fd">●</span> MCAR</div> <span id="val-mcar" style="width: 50px; text-align: right;">0,000 M</span></div>
+                        <div class="flex justify-between mb-0.5"><div class="flex items-center gap-1"><span style="color:#9ca3af">●</span> Lainnya</div> <span id="val-lainnya" style="width: 50px; text-align: right;">0,000 M</span></div>
                     </div>
                 </div>
-                <div class="text-center font-bold" style="background-color: #fef3c7; border: 1px solid #fde68a; margin: 0 6px 6px 6px; padding: 3px; font-size: 8px; border-radius: 4px;">
+                <div class="text-center font-bold" style="background-color: #fef3c7; border: 1px solid #fde68a; margin: 0 5px 5px 5px; padding: 2px; font-size: 7.5px; border-radius: 3px;">
                     3 portofolio utama berkontribusi dari total booking.
                 </div>
             </div>
 
             <div class="border-navy rounded flex-col">
-                <div class="bg-navy text-center font-bold text-xs p-1 flex justify-center items-center gap-1"><i class="fas fa-trophy c-gold"></i> TOP 5 SALES - ACHIEVEMENT</div>
-                <div class="p-2 text-xs font-bold" style="display: flex; flex-direction: column; justify-content: space-around; height: 100%;">
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-1">1</span> SALES A</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 65.84%;"></div></div>65,84%</div></div>
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-2">2</span> SALES B</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 57.28%;"></div></div>57,28%</div></div>
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-3">3</span> SALES C</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 55.22%;"></div></div>55,22%</div></div>
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-4">4</span> SALES D</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 55.08%;"></div></div>55,08%</div></div>
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-5">5</span> SALES E</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 50.60%;"></div></div>50,60%</div></div>
+                <div class="bg-navy text-center font-bold text-xxs p-1 flex justify-center items-center gap-1"><i class="fas fa-trophy c-gold"></i> TOP 5 SALES - ACHIEVEMENT</div>
+                <div class="p-1.5 text-xxs font-bold" style="display: flex; flex-direction: column; justify-content: space-around; height: 100%;">
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-1">1</span> SALES A</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-2">2</span> SALES B</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-3">3</span> SALES C</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-4">4</span> SALES D</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-5">5</span> SALES E</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
                 </div>
             </div>
 
             <div class="border-navy rounded flex-col">
-                <div class="bg-navy text-center font-bold text-xs p-1 flex justify-center items-center gap-1"><i class="fas fa-star c-gold"></i> TOP 5 DEALER - ACHIEVEMENT</div>
-                <div class="p-2 text-xs font-bold" style="display: flex; flex-direction: column; justify-content: space-around; height: 100%;">
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-1">1</span> DEALER 1</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 86.58%;"></div></div>86,58%</div></div>
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-2">2</span> DEALER 2</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 60.33%;"></div></div>60,33%</div></div>
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-3">3</span> DEALER 3</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 58.62%;"></div></div>58,62%</div></div>
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-4">4</span> DEALER 4</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 57.28%;"></div></div>57,28%</div></div>
-                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-5">5</span> DEALER 5</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 56.41%;"></div></div>56,41%</div></div>
+                <div class="bg-navy text-center font-bold text-xxs p-1 flex justify-center items-center gap-1"><i class="fas fa-star c-gold"></i> TOP 5 DEALER - ACHIEVEMENT</div>
+                <div class="p-1.5 text-xxs font-bold" style="display: flex; flex-direction: column; justify-content: space-around; height: 100%;">
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-1">1</span> DEALER 1</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-2">2</span> DEALER 2</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-3">3</span> DEALER 3</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-4">4</span> DEALER 4</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
+                    <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-5">5</span> DEALER 5</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 0%;"></div></div>0,00%</div></div>
                 </div>
             </div>
         </div>
@@ -198,103 +214,103 @@
         <div class="grid-4 mb-2">
             <div class="border-navy rounded">
                 <div class="bg-navy text-center font-bold text-xxs p-1"><i class="fas fa-chart-pie"></i> TOP 5 PORTOFOLIO</div>
-                <div class="p-1.5 text-xxs font-bold" style="display: flex; flex-direction: column; gap: 3px;">
-                    <div class="flex justify-between items-center"><span>1. CCAR</span> <span id="val-top-porto-1" class="c-navy">0 M</span></div>
-                    <div class="flex justify-between items-center"><span>2. NCAR</span> <span id="val-top-porto-2" class="c-navy">0 M</span></div>
-                    <div class="flex justify-between items-center"><span>3. CBSICAR</span> <span id="val-top-porto-3" class="c-navy">0 M</span></div>
-                    <div class="flex justify-between items-center"><span>4. NMCY</span> <span id="val-top-porto-4" class="c-navy">0 M</span></div>
-                    <div class="flex justify-between items-center"><span>5. MCAR</span> <span id="val-top-porto-5" class="c-navy">0 M</span></div>
+                <div class="p-1 text-xxs font-bold" style="display: flex; flex-direction: column; gap: 2.5px;">
+                    <div class="flex justify-between items-center"><span>1. CCAR</span> <span id="val-top-porto-1" class="c-navy">0,000 M</span></div>
+                    <div class="flex justify-between items-center"><span>2. NCAR</span> <span id="val-top-porto-2" class="c-navy">0,000 M</span></div>
+                    <div class="flex justify-between items-center"><span>3. CBSICAR</span> <span id="val-top-porto-3" class="c-navy">0,000 M</span></div>
+                    <div class="flex justify-between items-center"><span>4. NMCY</span> <span id="val-top-porto-4" class="c-navy">0,000 M</span></div>
+                    <div class="flex justify-between items-center"><span>5. MCAR</span> <span id="val-top-porto-5" class="c-navy">0,000 M</span></div>
                 </div>
             </div>
             
             <div class="border-red rounded" style="background-color: #fef2f2;">
                 <div class="bg-red text-center font-bold text-xxs p-1"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> PORTOFOLIO PERHATIAN</div>
-                <div class="p-1.5 text-xxs font-bold c-red" style="display: flex; flex-direction: column; gap: 5px; margin-top: 3px;">
-                    <div class="flex justify-between"><span>1. MCAR (Kontribusi Rendah)</span></div>
-                    <div class="flex justify-between"><span>2. NMCY (Perlu Dorongan)</span></div>
-                    <div class="flex justify-between"><span>3. Lainnya (Potensi Hilang)</span></div>
+                <div class="p-1 text-xxs font-bold c-red" style="display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">
+                    <div class="flex justify-between"><span>1. MCAR (0,000 M)</span></div>
+                    <div class="flex justify-between"><span>2. NMCY (0,000 M)</span></div>
+                    <div class="flex justify-between"><span>3. Lainnya (0,000 M)</span></div>
                 </div>
             </div>
 
             <div class="border-red rounded" style="background-color: #fef2f2;">
                 <div class="bg-red text-center font-bold text-xxs p-1"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> SALES - PERHATIAN</div>
-                <div class="p-1.5 text-xxs font-bold c-red" style="display: flex; flex-direction: column; gap: 5px; margin-top: 3px;">
-                    <div class="flex justify-between"><span>1. SALES K.</span> <span>32,41%</span></div>
-                    <div class="flex justify-between"><span>2. SALES L.</span> <span>40,77%</span></div>
-                    <div class="flex justify-between"><span>3. SALES M.</span> <span>43,76%</span></div>
+                <div class="p-1 text-xxs font-bold c-red" style="display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">
+                    <div class="flex justify-between"><span>1. SALES K.</span> <span>0,00%</span></div>
+                    <div class="flex justify-between"><span>2. SALES L.</span> <span>0,00%</span></div>
+                    <div class="flex justify-between"><span>3. SALES M.</span> <span>0,00%</span></div>
                 </div>
             </div>
 
             <div class="border-orange rounded" style="background-color: #fff7ed;">
                 <div class="bg-orange text-center font-bold text-xxs p-1"><i class="fas fa-bullseye"></i> CAPTIVE RATE RENDAH</div>
-                <div class="p-1.5 text-xxs font-bold c-orange" style="display: flex; flex-direction: column; gap: 5px; margin-top: 3px;">
-                    <div class="flex justify-between"><span>1. SHOWROOM A</span> <span>34,07%</span></div>
-                    <div class="flex justify-between"><span>2. SHOWROOM B</span> <span>36,02%</span></div>
-                    <div class="flex justify-between"><span>3. SHOWROOM C</span> <span>36,34%</span></div>
+                <div class="p-1 text-xxs font-bold c-orange" style="display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">
+                    <div class="flex justify-between"><span>1. SHOWROOM A</span> <span>0,00%</span></div>
+                    <div class="flex justify-between"><span>2. SHOWROOM B</span> <span>0,00%</span></div>
+                    <div class="flex justify-between"><span>3. SHOWROOM C</span> <span>0,00%</span></div>
                 </div>
             </div>
         </div>
 
         <!-- 4. TREND SUMMARY -->
-        <div style="border: 2px solid #e5e7eb; border-radius: 6px; padding: 8px; margin-bottom: 4px;">
+        <div style="border: 2px solid #e5e7eb; border-radius: 4px; padding: 6px; margin-bottom: 4px;">
             <div class="flex items-center gap-2 mb-1">
-                <div class="bg-navy rounded-full flex items-center justify-center font-extrabold text-md" style="width: 26px; height: 26px;">1</div>
+                <div class="bg-navy rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 22px; height: 22px;">1</div>
                 <div>
-                    <h2 class="font-extrabold c-navy text-sm" style="line-height: 1;">EXSUM SUMMARY BY TREND</h2>
+                    <h2 class="font-extrabold c-navy text-xs" style="line-height: 1;">EXSUM SUMMARY BY TREND</h2>
                     <p class="font-bold text-xxs" style="color: #555; margin-top: 1px;">APAKAH TARGET BISA TERCAPAI?</p>
                 </div>
             </div>
             
             <div class="flex justify-between gap-2">
-                <div style="width: 25%; display: flex; flex-direction: column; gap: 5px;">
+                <div style="width: 25%; display: flex; flex-direction: column; gap: 4px;">
                     <div class="border-navy rounded">
                         <div class="bg-navy text-center font-bold text-xxs p-1">POSISI SAAT INI</div>
-                        <div class="p-1 text-xxs font-bold" style="display: flex; flex-direction: column; gap: 3px;">
+                        <div class="p-1 text-xxs font-bold" style="display: flex; flex-direction: column; gap: 2.5px;">
                             <div class="flex justify-between" style="color: #666;"><span id="val-target-bulan" style="font-weight: normal;">Target Bulan</span><span id="val-target-kiri">25,889 M</span></div>
-                            <div class="flex justify-between c-navy"><span id="val-trend-realisasi-tgl" style="font-weight: normal;">Realisasi</span><span id="val-trend-realisasi">0 M</span></div>
-                            <div class="flex justify-between c-green"><span style="font-weight: normal;">Achievement</span><span id="val-trend-achiev">0%</span></div>
-                            <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Target</span><span id="val-trend-sisa">0 M</span></div>
+                            <div class="flex justify-between c-navy"><span id="val-trend-realisasi-tgl" style="font-weight: normal;">Realisasi</span><span id="val-trend-realisasi">0,000 M</span></div>
+                            <div class="flex justify-between c-green"><span style="font-weight: normal;">Achievement</span><span id="val-trend-achiev">0,00%</span></div>
+                            <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Target</span><span id="val-trend-sisa">25,889 M</span></div>
                             <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Hari Berjalan</span><span id="val-hari-berjalan">0 Hari</span></div>
                             <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
                         </div>
                     </div>
                     <div id="box-kesimpulan" class="border-red flex items-center justify-center gap-2 rounded p-1" style="background-color: #fef2f2;">
-                        <i class="fas fa-exclamation-triangle c-red text-md"></i>
+                        <i class="fas fa-exclamation-triangle c-red text-sm"></i>
                         <div class="font-extrabold c-red text-xxs" style="line-height: 1.1;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>
                     </div>
                 </div>
 
                 <div style="width: 20%;">
-                    <div style="border: 2px solid #15803d; border-radius: 6px; background-color: #f0fdf4; height: 100%; display: flex; flex-direction: column;">
-                        <div style="background-color: #15803d; color: white; text-align: center; font-weight: bold; font-size: 9px; padding: 3px;">TREND HARIAN SAAT INI</div>
+                    <div style="border: 2px solid #15803d; border-radius: 4px; background-color: #f0fdf4; height: 100%; display: flex; flex-direction: column;">
+                        <div style="background-color: #15803d; color: white; text-align: center; font-weight: bold; font-size: 8.5px; padding: 2px;">TREND HARIAN SAAT INI</div>
                         <div class="text-center p-1" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
                             <div class="font-bold text-xxs" style="color: #555;">Rata-rata booking per hari:</div>
-                            <div id="val-rata-harian" class="font-extrabold text-sm" style="color: #15803d; margin: 2px 0;">0 M / hari</div>
-                            <hr style="border-color: #86efac; margin: 4px 0;">
+                            <div id="val-rata-harian" class="font-extrabold text-xs" style="color: #15803d; margin: 2px 0;">0,000 M / hari</div>
+                            <hr style="border-color: #86efac; margin: 3px 0;">
                             <div class="font-bold text-xxs" style="color: #555;">Proyeksi dipertahankan:</div>
-                            <div id="val-proyeksi" class="font-extrabold text-xxs" style="color: #15803d; margin: 2px 0;">0 M (0%)</div>
+                            <div id="val-proyeksi" class="font-extrabold text-xxs" style="color: #15803d; margin: 2px 0;">0,000 M (0,0%)</div>
                         </div>
                     </div>
                 </div>
 
                 <div style="width: 40%; position: relative;">
                     <div class="font-bold text-xxs text-center" style="color: #555; position: absolute; width: 100%; top: 0;">TREND BOOKING HARIAN (AKUMULATIF)</div>
-                    <canvas id="trendChart" style="margin-top: 10px;" height="100"></canvas>
+                    <canvas id="trendChart" style="margin-top: 10px;" height="90"></canvas>
                 </div>
 
-                <div style="width: 15%; display: flex; flex-direction: column; gap: 5px;">
+                <div style="width: 15%; display: flex; flex-direction: column; gap: 4px;">
                     <div class="font-bold text-center text-xxs c-navy rounded" style="background-color: #f3f4f6; border: 1px solid #d1d5db; padding: 3px;">BERAPA YANG HARUS DICAPAI?</div>
-                    <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 5px;">
+                    <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 4px;">
                         <div class="flex items-center gap-1 c-navy"><i class="fas fa-chart-pie text-xxs"></i> Sisa Target</div>
-                        <div id="val-kanan-sisa">0 M</div>
+                        <div id="val-kanan-sisa">25,889 M</div>
                     </div>
-                    <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 5px;">
+                    <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 4px;">
                         <div class="flex items-center gap-1 c-navy"><i class="far fa-calendar-alt text-xxs"></i> Sisa Hari</div>
                         <div id="val-sisa-hari-kanan">0 Hari</div>
                     </div>
-                    <div class="text-center rounded" style="border: 1px solid #d1d5db; padding: 6px; margin-top: auto;">
+                    <div class="text-center rounded" style="border: 1px solid #d1d5db; padding: 4px; margin-top: auto;">
                         <div class="font-bold text-xxs" style="color: #555;">Kebutuhan rata-rata / hari:</div>
-                        <div id="val-keb-harian" class="font-extrabold text-sm" style="color: #15803d; margin: 2px 0;">0 M</div>
+                        <div id="val-keb-harian" class="font-extrabold text-xs" style="color: #15803d; margin: 2px 0;">0,000 M</div>
                     </div>
                 </div>
             </div>
@@ -302,7 +318,7 @@
     </div>
 
     <!-- 5. FOOTER & COPYRIGHT -->
-    <div class="bg-navy flex justify-between font-bold" style="padding: 6px 12px; font-size: 10px; border-radius: 4px;">
+    <div class="bg-navy flex justify-between font-bold" style="padding: 5px 10px; font-size: 9.5px; border-radius: 3px;">
         <span style="font-style: italic;">#MUF Wujudkan semua mimpi</span>
         <span>Versi 1.0 | Copyright © SRISP x DMJ 2026</span>
     </div>
@@ -366,9 +382,15 @@
     function toM(val) { return (val / 1000).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M'; }
 
     onSnapshot(doc(db, "regional_data", "sumbagut"), (docSnap) => {
+        // Hilangkan splash screen setelah data berhasil di-load
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.remove(), 500);
+        }
+
         if (docSnap.exists()) {
             const rawData = docSnap.data();
-            // Jika data tidak ada di inputan, otomatis dianggap 0
             const data = {
                 ccar: Number(rawData.ccar) || 0,
                 ncar: Number(rawData.ncar) || 0,
@@ -384,7 +406,7 @@
             };
 
             const totalBooking = data.ccar + data.ncar + data.cbsicar + data.nmcy + data.mcar + data.lainnya;
-            const achiev = targetAmountCalc => ((totalBooking / targetAmountCalc) * 100).toFixed(2);
+            const achiev = targetAmountCalc => TARGET_AMOUNT > 0 ? ((totalBooking / targetAmountCalc) * 100).toFixed(2) : "0,00";
             
             let dateObj = new Date();
             if (data.tanggal) { dateObj = new Date(data.tanggal); } 
@@ -424,7 +446,6 @@
             document.getElementById('val-mcar').innerText = toM(data.mcar);
             document.getElementById('val-lainnya').innerText = toM(data.lainnya);
 
-            // Urutkan Portofolio untuk Top 5 Portofolio
             const portoList = [
                 { name: 'CCAR', val: data.ccar },
                 { name: 'NCAR', val: data.ncar },
