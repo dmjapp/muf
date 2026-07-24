@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=1.0">
+    <title>Executive Summary Performance Booking</title>
+    <!-- Chart.js dan FontAwesome tetap pakai CDN karena mutlak butuh library untuk grafik dan ikon -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS MURNI - TIDAK BERGANTUNG PADA TAILWIND ATAU FRAMEWORK LAIN */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, Helvetica, sans-serif; background-color: #f3f4f6; padding: 20px; color: #333; }
+        
+        /* CONTAINER UTAMA (Dikunci kaku 1200px agar jadi poster) */
+        .poster { width: 1200px; background-color: #ffffff; margin: 0 auto; border: 4px solid #0a1d56; padding: 15px; }
+        
+        /* WARNA STANDAR */
+        .c-navy { color: #0a1d56; } .bg-navy { background-color: #0a1d56; color: #fff; }
+        .c-gold { color: #f59e0b; } .bg-gold { background-color: #f59e0b; color: #0a1d56; }
+        .c-green { color: #16a34a; } .bg-green { background-color: #16a34a; color: #fff; }
+        .c-red { color: #dc2626; } .bg-red { background-color: #dc2626; color: #fff; }
+        .c-orange { color: #f97316; } .bg-orange { background-color: #f97316; color: #fff; }
+        
+        /* SISTEM LAYOUT (FLEX) */
+        .flex { display: flex; }
+        .flex-col { display: flex; flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .gap-3 { gap: 15px; }
+        
+        /* TEKS */
+        .text-center { text-align: center; }
+        .font-bold { font-weight: bold; }
+        .font-extrabold { font-weight: 800; }
+        .text-xxs { font-size: 10px; } .text-xs { font-size: 12px; } .text-sm { font-size: 14px; }
+        .text-md { font-size: 16px; } .text-lg { font-size: 18px; } .text-xl { font-size: 24px; }
+        
+        /* KOTAK & BORDER */
+        .border-navy { border: 2px solid #0a1d56; }
+        .border-red { border: 2px solid #dc2626; }
+        .border-orange { border: 2px solid #f97316; }
+        .rounded { border-radius: 6px; }
+        .rounded-full { border-radius: 50%; }
+        .p-1 { padding: 5px; } .p-2 { padding: 10px; } .p-3 { padding: 15px; }
+        .mb-2 { margin-bottom: 10px; } .mb-3 { margin-bottom: 15px; }
+        
+        /* HEADER */
+        .header-border { border-bottom: 3px solid #0a1d56; padding-bottom: 10px; margin-bottom: 15px; }
+        
+        /* GRID CUSTOM */
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 2px solid #0a1d56; border-bottom: 1px solid #ccc; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        
+        /* PROGRESS BAR */
+        .prog-bg { background-color: #e5e7eb; width: 100%; height: 8px; border-radius: 4px; overflow: hidden; }
+        .prog-fill { background-color: #16a34a; height: 100%; }
+        
+        /* TABEL LIST */
+        .list-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 18px; height: 18px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; margin-right: 5px; }
+        .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-4, .b-5 { background-color: #2563eb; }
+    </style>
+</head>
+<body>
+
+<div class="poster">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center header-border">
+        <div style="width: 25%;">
+            <h1 class="font-extrabold c-navy" style="font-size: 32px; line-height: 1;">mandiri<br><span class="c-gold" style="font-size: 22px;">utama finance</span></h1>
+            <div style="font-size: 10px; color: #555; font-weight: bold; margin-top: 5px;">Member of Bank Mandiri</div>
+        </div>
+        <div style="width: 50%;" class="text-center">
+            <h2 class="text-lg font-bold c-navy">EXECUTIVE SUMMARY</h2>
+            <h1 class="font-extrabold c-navy" style="font-size: 36px; line-height: 1.1; letter-spacing: 1px;">PERFORMANCE BOOKING</h1>
+            <h3 class="text-md font-bold c-navy" style="margin-bottom: 5px;">BRANCH & MUFNET REGIONAL SUMBAGUT</h3>
+            <div class="bg-gold font-extrabold" style="display: inline-block; padding: 4px 20px; border-radius: 4px; font-size: 14px;">
+                <i class="far fa-calendar-alt"></i> PERIODE : 23 JULI 2026
+            </div>
+        </div>
+        <div style="width: 25%; display: flex; justify-content: flex-end;">
+            <div class="bg-navy flex items-center gap-2 rounded p-2">
+                <i class="fas fa-bullseye" style="font-size: 32px;"></i>
+                <div style="line-height: 1.2;">
+                    <div class="font-bold text-sm">TARGET BERSAMA</div>
+                    <div style="font-size: 10px; font-weight: normal;">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. OVERVIEW REGIONAL -->
+    <div class="mb-3">
+        <div class="bg-navy font-bold text-xs text-center" style="display: inline-block; padding: 4px 15px; border-radius: 4px 4px 0 0;">OVERVIEW REGIONAL</div>
+        <div class="grid-7">
+            <!-- Col 1 -->
+            <div class="text-center p-2" style="border-right: 1px solid #ccc;">
+                <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> BOOKING AMOUNT</div>
+                <h3 class="text-xl font-extrabold c-navy" style="margin: 5px 0;">128,601 M</h3>
+                <div class="text-xxs font-bold c-green">▲ +9,874 M<br><span style="font-size:9px; color:#888; font-weight:normal;">vs update sebelumnya</span></div>
+            </div>
+            <!-- Col 2 -->
+            <div class="text-center p-2" style="border-right: 1px solid #ccc;">
+                <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET AMOUNT</div>
+                <h3 class="text-xl font-extrabold c-navy" style="margin: 5px 0;">253,889 M</h3>
+            </div>
+            <!-- Col 3 -->
+            <div class="text-center p-2" style="border-right: 1px solid #ccc;">
+                <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-chart-line" style="color:#16a34a;"></i> ACHIEVEMENT</div>
+                <h3 class="text-xl font-extrabold c-navy" style="margin: 5px 0;">50,65%</h3>
+                <div class="text-xxs font-bold c-green">▲ +3,89%</div>
+            </div>
+            <!-- Col 4 -->
+            <div class="text-center p-2" style="border-right: 1px solid #ccc;">
+                <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-users" style="color:#a855f7;"></i> CAPTIVE RATE</div>
+                <h3 class="text-xl font-extrabold c-navy" style="margin: 5px 0;">54,30%</h3>
+                <div class="text-xxs font-bold" style="color: #888;">— Stabil</div>
+            </div>
+            <!-- Col 5 -->
+            <div class="text-center p-2" style="border-right: 1px solid #ccc;">
+                <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-handshake" style="color:#60a5fa;"></i> PO + FDE</div>
+                <h3 class="text-xl font-extrabold c-navy" style="margin: 5px 0;">77,620 M</h3>
+                <div class="text-xxs font-bold c-green">▲ +4,090 M</div>
+            </div>
+            <!-- Col 6 -->
+            <div class="text-center p-2" style="border-right: 1px solid #ccc;">
+                <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-file-invoice" style="color:#fb923c;"></i> IA</div>
+                <h3 class="text-xl font-extrabold c-navy" style="margin: 5px 0;">206,221 M</h3>
+                <div class="text-xxs font-bold c-green">▲ +13,964 M</div>
+            </div>
+            <!-- Col 7 -->
+            <div class="text-center p-2">
+                <div class="text-xxs font-bold" style="color: #666;"><i class="fas fa-percent" style="color:#2563eb;"></i> WALR</div>
+                <h3 class="text-xl font-extrabold c-navy" style="margin: 5px 0;">15,89%</h3>
+                <div class="text-xxs font-bold c-green">▲ +0,01%</div>
+            </div>
+        </div>
+        <div class="font-bold text-center text-sm c-navy p-2 mt-2" style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 4px;">
+            <i class="fas fa-star" style="color: #3b82f6;"></i> Achievement regional telah mencapai 50,65%. Terus akselerasi untuk capai target 253,889 M di closing Juli 2026!
+        </div>
+    </div>
+
+    <!-- 2. PORTOFOLIO & TOP 5 -->
+    <div class="grid-3 mb-3">
+        <!-- Portofolio -->
+        <div class="border-navy rounded flex-col">
+            <div class="bg-navy text-center font-bold text-xs p-1">BOOKING BY PORTOFOLIO</div>
+            <div class="flex items-center p-2">
+                <div style="width: 45%; position: relative;">
+                    <canvas id="portoChart" height="130"></canvas>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <span style="font-size: 8px; font-weight: bold; color: #555;">TOTAL BOOKING</span>
+                        <span class="font-extrabold c-navy text-sm">128,601 M</span>
+                    </div>
+                </div>
+                <div style="width: 55%; padding-left: 10px; font-size: 11px; font-weight: bold;">
+                    <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#16a34a">●</span> CCAR</div> <span style="width: 60px; text-align: right;">37,249 M</span> <span style="color: #666; width: 45px; text-align: right;">28,97%</span></div>
+                    <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#3b82f6">●</span> NCAR</div> <span style="width: 60px; text-align: right;">31,610 M</span> <span style="color: #666; width: 45px; text-align: right;">24,56%</span></div>
+                    <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#f97316">●</span> CBSICAR</div> <span style="width: 60px; text-align: right;">30,422 M</span> <span style="color: #666; width: 45px; text-align: right;">23,65%</span></div>
+                    <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#a855f7">●</span> NMCY</div> <span style="width: 60px; text-align: right;">12,811 M</span> <span style="color: #666; width: 45px; text-align: right;">9,96%</span></div>
+                    <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#93c5fd">●</span> MCAR</div> <span style="width: 60px; text-align: right;">10,829 M</span> <span style="color: #666; width: 45px; text-align: right;">8,43%</span></div>
+                    <div class="flex justify-between mb-1"><div class="flex items-center gap-1"><span style="color:#9ca3af">●</span> Lainnya</div> <span style="width: 60px; text-align: right;">1,680 M</span> <span style="color: #666; width: 45px; text-align: right;">1,43%</span></div>
+                </div>
+            </div>
+            <div class="text-center font-bold" style="background-color: #fef3c7; border: 1px solid #fde68a; margin: 0 10px 10px 10px; padding: 5px; font-size: 10px; border-radius: 4px;">
+                3 portofolio utama (CCAR, NCAR, CBSICAR)<br>berkontribusi 77,18% dari total booking regional
+            </div>
+        </div>
+
+        <!-- Top 5 Branch -->
+        <div class="border-navy rounded flex-col">
+            <div class="bg-navy text-center font-bold text-xs p-1 flex justify-center items-center gap-1"><i class="fas fa-trophy c-gold"></i> TOP 5 BRANCH - ACHIEVEMENT</div>
+            <div class="p-3 text-xs font-bold" style="display: flex; flex-direction: column; justify-content: space-around; height: 100%;">
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-1">1</span> MEDAN</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 65.84%;"></div></div>65,84%</div></div>
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-2">2</span> MEULABOH</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 57.28%;"></div></div>57,28%</div></div>
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-3">3</span> BANDA ACEH</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 55.22%;"></div></div>55,22%</div></div>
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-4">4</span> PEMATANG SIANTAR</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 55.08%;"></div></div>55,08%</div></div>
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-5">5</span> PEKANBARU</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 50.60%;"></div></div>50,60%</div></div>
+            </div>
+        </div>
+
+        <!-- Top 5 Mufnet -->
+        <div class="border-navy rounded flex-col">
+            <div class="bg-navy text-center font-bold text-xs p-1 flex justify-center items-center gap-1"><i class="fas fa-star c-gold"></i> TOP 5 MUFNET - ACHIEVEMENT</div>
+            <div class="p-3 text-xs font-bold" style="display: flex; flex-direction: column; justify-content: space-around; height: 100%;">
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-1">1</span> LUBUK PAKAM</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 86.58%;"></div></div>86,58%</div></div>
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-2">2</span> MEDAN</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 60.33%;"></div></div>60,33%</div></div>
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-3">3</span> PEMATANG SIANTAR</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 58.62%;"></div></div>58,62%</div></div>
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-4">4</span> MEULABOH</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 57.28%;"></div></div>57,28%</div></div>
+                <div class="list-item"><div class="flex items-center" style="width: 50%;"><span class="badge-num b-5">5</span> UJUNG BATU</div><div class="flex items-center gap-1 c-green" style="width: 50%;"><div class="prog-bg"><div class="prog-fill" style="width: 56.41%;"></div></div>56,41%</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PERINGATAN MERAH KUNING (4 Kolom) -->
+    <div class="grid-4 mb-3">
+        <div class="border-navy rounded">
+            <div class="bg-navy text-center font-bold text-xxs p-1"><i class="fas fa-chart-bar"></i> TOP 5 BRANCH - WALR TERTINGGI</div>
+            <div class="p-2 text-xs font-bold" style="display: flex; flex-direction: column; gap: 4px;">
+                <div class="flex justify-between items-center"><span>1. BANDA ACEH</span> <span class="bg-navy text-center rounded p-1" style="width: 55px;">18,28%</span></div>
+                <div class="flex justify-between items-center"><span>2. DUMAI</span> <span style="background-color: #1e3a8a; color: white; width: 55px; text-align: center; border-radius: 4px; padding: 4px;">17,57%</span></div>
+                <div class="flex justify-between items-center"><span>3. PEKANBARU</span> <span style="background-color: #1e3a8a; color: white; width: 55px; text-align: center; border-radius: 4px; padding: 4px;">17,53%</span></div>
+                <div class="flex justify-between items-center"><span>4. LHOKSEUMAWE</span> <span style="background-color: #1d4ed8; color: white; width: 55px; text-align: center; border-radius: 4px; padding: 4px;">17,13%</span></div>
+                <div class="flex justify-between items-center"><span>5. PEKANBARU 2</span> <span style="background-color: #1d4ed8; color: white; width: 55px; text-align: center; border-radius: 4px; padding: 4px;">16,70%</span></div>
+            </div>
+        </div>
+        <div class="border-red rounded" style="background-color: #fef2f2;">
+            <div class="bg-red text-center font-bold text-xxs p-1"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> BRANCH - PERLU PERHATIAN<br><span style="font-size: 8px; font-weight: normal;">(ACHIEVEMENT)</span></div>
+            <div class="p-2 text-xs font-bold c-red" style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                <div class="flex justify-between"><span>1. LHOKSEUMAWE</span> <span>32,41%</span></div>
+                <div class="flex justify-between"><span>2. LABUHAN BATU - RP</span> <span>40,77%</span></div>
+                <div class="flex justify-between"><span>3. DUMAI</span> <span>43,76%</span></div>
+            </div>
+        </div>
+        <div class="border-red rounded" style="background-color: #fef2f2;">
+            <div class="bg-red text-center font-bold text-xxs p-1"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> MUFNET - PERLU PERHATIAN<br><span style="font-size: 8px; font-weight: normal;">(ACHIEVEMENT)</span></div>
+            <div class="p-2 text-xs font-bold c-red" style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                <div class="flex justify-between"><span>1. KOTA LANGSA</span> <span>25,07%</span></div>
+                <div class="flex justify-between"><span>2. BAGAN BATU (ROKAN HILIR)</span> <span>39,73%</span></div>
+                <div class="flex justify-between"><span>3. LABUHAN BATU - RP</span> <span>40,77%</span></div>
+            </div>
+        </div>
+        <div class="border-orange rounded" style="background-color: #fff7ed;">
+            <div class="bg-orange text-center font-bold text-xxs p-1"><i class="fas fa-bullseye"></i> CAPTIVE RATE RENDAH<br><span style="font-size: 8px; font-weight: normal;">PERLU DITINGKATKAN</span></div>
+            <div class="p-2 text-xs font-bold c-orange" style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                <div class="flex justify-between"><span>1. BANDA ACEH</span> <span>34,07%</span></div>
+                <div class="flex justify-between"><span>2. PEKANBARU</span> <span>36,02%</span></div>
+                <div class="flex justify-between"><span>3. DUMAI</span> <span>36,34%</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. TREND SUMMARY -->
+    <div style="border: 2px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 15px;">
+        <div class="flex items-center gap-2 mb-2">
+            <div class="bg-navy rounded-full flex items-center justify-center font-extrabold text-xl" style="width: 35px; height: 35px;">1</div>
+            <div>
+                <h2 class="font-extrabold c-navy text-lg" style="line-height: 1;">EXSUM SUMMARY BY TREND</h2>
+                <p class="font-bold text-xs" style="color: #555; margin-top: 2px;">APAKAH TARGET 253,889 M BISA TERCAPAI?</p>
+            </div>
+        </div>
+        
+        <div class="flex justify-between gap-2">
+            <!-- Papan Kiri -->
+            <div style="width: 25%; display: flex; flex-direction: column; gap: 8px;">
+                <div class="border-navy rounded">
+                    <div class="bg-navy text-center font-bold text-xxs p-1">POSISI SAAT INI</div>
+                    <div class="p-2 text-xxs font-bold" style="display: flex; flex-direction: column; gap: 5px;">
+                        <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Target Juli 2026</span><span>253,889 M</span></div>
+                        <div class="flex justify-between c-navy"><span style="font-weight: normal;">Realisasi 23 Juli 2026</span><span>128,601 M</span></div>
+                        <div class="flex justify-between c-green"><span style="font-weight: normal;">Achievement</span><span>50,65%</span></div>
+                        <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Target</span><span>125,288 M</span></div>
+                        <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Hari Berjalan</span><span>23 Hari</span></div>
+                        <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Hari Closing</span><span>8 Hari</span></div>
+                    </div>
+                </div>
+                <div class="border-red flex items-center justify-center gap-2 rounded p-2" style="background-color: #fef2f2;">
+                    <i class="fas fa-exclamation-triangle c-red text-xl"></i>
+                    <div class="font-extrabold c-red text-xxs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">target 253,889 M TIDAK AKAN TERCAPAI.</span></div>
+                </div>
+            </div>
+
+            <!-- Papan Tengah Kiri (Trend Harian) -->
+            <div style="width: 20%;">
+                <div style="border: 2px solid #15803d; border-radius: 6px; background-color: #f0fdf4; height: 100%; display: flex; flex-direction: column;">
+                    <div style="background-color: #15803d; color: white; text-align: center; font-weight: bold; font-size: 10px; padding: 5px;">TREND HARIAN SAAT INI</div>
+                    <div class="text-center p-2" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                        <div class="font-bold text-xxs" style="color: #555;">Rata-rata booking per hari:</div>
+                        <div class="font-extrabold text-lg" style="color: #15803d; margin: 4px 0;">5,59 M / hari</div>
+                        <hr style="border-color: #86efac; margin: 8px 0;">
+                        <div class="font-bold text-xxs" style="color: #555;">Proyeksi jika tren ini dipertahankan:</div>
+                        <div class="font-extrabold text-md" style="color: #15803d; margin: 4px 0;">173,3 M (68,3%)</div>
+                        <div class="font-bold" style="font-size: 9px; color: #555;">Target tidak akan tercapai</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Besar -->
+            <div style="width: 40%; position: relative;">
+                <div class="font-bold text-xs text-center" style="color: #555; position: absolute; width: 100%; top: 0;">TREND BOOKING HARIAN (AKUMULATIF)</div>
+                <div class="font-bold text-xxs text-center" style="color: #888; position: absolute; width: 100%; top: 15px;">TARGET 253,889 M</div>
+                <canvas id="trendChart" style="margin-top: 25px;" height="135"></canvas>
+                <div style="position: absolute; bottom: 25px; right: 10px; background-color: #fef3c7; border: 1px solid #f59e0b; padding: 5px; text-align: center; border-radius: 4px; font-size: 9px; font-weight: bold; color: #555; line-height: 1.2;">
+                    GAP<br>jika tren saat ini<br>dipertahankan:<br><span class="c-red text-xs">±80,6 M</span>
+                </div>
+            </div>
+
+            <!-- Papan Kanan (Target) -->
+            <div style="width: 15%; display: flex; flex-direction: column; gap: 8px;">
+                <div class="font-bold text-center text-xs c-navy rounded" style="background-color: #f3f4f6; border: 1px solid #d1d5db; padding: 5px;">BERAPA YANG HARUS DICAPAI?</div>
+                <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 8px;">
+                    <div class="flex items-center gap-1 c-navy"><i class="fas fa-chart-pie text-sm"></i> Sisa Target</div>
+                    <div>125,288 M</div>
+                </div>
+                <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 8px;">
+                    <div class="flex items-center gap-1 c-navy"><i class="far fa-calendar-alt text-sm"></i> Sisa Hari</div>
+                    <div>8 Hari</div>
+                </div>
+                <div class="text-center rounded" style="border: 1px solid #d1d5db; padding: 10px; margin-top: auto;">
+                    <div class="font-bold text-xxs" style="color: #555;">Kebutuhan rata-rata per hari:</div>
+                    <div class="font-extrabold text-lg" style="color: #15803d; margin: 4px 0;">15,66 M / hari</div>
+                    <div class="font-bold" style="font-size: 9px; color: #555;">(2,8x lebih tinggi dari tren saat ini)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. FOKUS UTAMA & ACTION PLAN -->
+    <div class="bg-navy flex items-center mb-3 rounded" style="border: 1px solid #0a1d56; overflow: hidden;">
+        <div class="bg-navy flex items-center justify-center p-3" style="border-right: 1px solid #555; width: 60px;"><i class="fas fa-bullseye" style="font-size: 28px;"></i></div>
+        <div class="font-bold text-sm" style="padding: 0 15px; width: 140px; border-right: 1px solid #555; line-height: 1.1;">
+            <span class="c-gold text-lg">FOKUS</span><br>UTAMA
+        </div>
+        <div class="font-bold text-xs" style="padding: 0 15px; width: 300px; border-right: 1px solid #555; line-height: 1.2;">
+            MENINGKATKAN CAPTIVE RATE MELALUI RELATIONSHIP DENGAN SUMBER ORDER
+        </div>
+        <div class="flex items-center gap-2 bg-white" style="padding: 10px 15px; border-right: 1px solid #555; height: 100%;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/1200px-Bank_Mandiri_logo_2016.svg.png" alt="Mandiri" style="height: 25px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Bank_Syariah_Indonesia_logo.svg/1200px-Bank_Syariah_Indonesia_logo.svg.png" alt="BSI" style="height: 25px;">
+        </div>
+        <div class="font-bold text-xxs" style="padding: 10px 15px; display: flex; flex-direction: column; justify-content: center; gap: 4px;">
+            <div class="flex items-center gap-1"><i class="fas fa-check-circle c-green"></i> Joint Visit & Relationship Officer</div>
+            <div class="flex items-center gap-1"><i class="fas fa-check-circle c-green"></i> Daily Follow Up Pipeline</div>
+            <div class="flex items-center gap-1"><i class="fas fa-check-circle c-green"></i> Percepatan Approval & SLA</div>
+            <div class="flex items-center gap-1"><i class="fas fa-check-circle c-green"></i> Meningkatkan Referral Berkualitas</div>
+        </div>
+    </div>
+
+    <!-- Grid Bawah (3 Panel) -->
+    <div class="flex gap-2 mb-2">
+        
+        <!-- Panel 2 -->
+        <div class="rounded" style="width: 32%; border: 1px solid #0a1d56; background-color: #fff;">
+            <div class="flex items-center gap-1 p-2" style="border-bottom: 1px solid #0a1d56;">
+                <div class="bg-navy rounded-full flex items-center justify-center font-bold text-xs" style="width: 22px; height: 22px;">2</div>
+                <div class="font-bold c-navy" style="font-size: 11px; line-height: 1.1;">THE BEST SALES BY PORTOFOLIO<br><span style="font-size: 9px; font-weight: normal;">(BOOKING AMOUNT)</span></div>
+            </div>
+            <div class="flex text-center font-bold p-2" style="font-size: 10px;">
+                <div style="width: 25%;">
+                    <div style="color: #f97316; margin-bottom: 5px;"><i class="fas fa-trophy c-gold"></i> CBSICAR</div>
+                    <div style="color: #555;">MEULABOH</div>
+                    <div class="c-navy font-extrabold text-sm">6.407 M</div>
+                </div>
+                <div style="width: 25%;">
+                    <div class="c-green" style="margin-bottom: 5px;"><i class="fas fa-car-side"></i> CCAR</div>
+                    <div style="color: #555;">MEDAN</div>
+                    <div class="c-navy font-extrabold text-sm">11.998 M</div>
+                </div>
+                <div style="width: 25%;">
+                    <div style="color: #a855f7; margin-bottom: 5px;"><i class="fas fa-motorcycle"></i> MCAR</div>
+                    <div style="color: #555;">K. PEKANBARU 2</div>
+                    <div class="c-navy font-extrabold text-sm">1.843 M</div>
+                </div>
+                <div style="width: 25%;">
+                    <div style="color: #f97316; margin-bottom: 5px;"><i class="fas fa-car"></i> NCAR</div>
+                    <div style="color: #555;">PEKANBARU</div>
+                    <div class="c-navy font-extrabold text-sm">7.416 M</div>
+                </div>
+            </div>
+            <div class="flex text-center font-bold p-2" style="font-size: 9px; border-top: 1px solid #eee;">
+                <div style="width: 20%;"><div class="c-gold mb-2"><i class="fas fa-trophy"></i><br>CBSIMCY</div><div style="color: #555;">MEDAN</div><div class="c-navy text-xs font-extrabold">215 M</div></div>
+                <div style="width: 20%;"><div class="c-green mb-2"><i class="fas fa-trophy"></i><br>CMCY</div><div style="color: #555;">MEDAN</div><div class="c-navy text-xs font-extrabold">620 M</div></div>
+                <div style="width: 20%;"><div style="color:#3b82f6" class="mb-2"><i class="fas fa-user-tie"></i><br>MMCY</div><div style="color: #555;">BATAM</div><div class="c-navy text-xs font-extrabold">301 M</div></div>
+                <div style="width: 20%;"><div class="c-red mb-2"><i class="fas fa-user-tie"></i><br>UCAR</div><div style="color: #555;">BANDA ACEH</div><div class="c-navy text-xs font-extrabold">2.367 M</div></div>
+                <div style="width: 20%;"><div style="color:#a855f7" class="mb-2"><i class="fas fa-user-tie"></i><br>UMCY</div><div style="color: #555;">BATAM</div><div class="c-navy text-xs font-extrabold">103 M</div></div>
+            </div>
+        </div>
+
+        <!-- Panel 3 -->
+        <div class="rounded flex-col" style="width: 34%; border: 1px solid #0a1d56; background-color: #fff; overflow: hidden;">
+            <div class="bg-navy flex items-center gap-2 p-2">
+                <div class="bg-white c-navy rounded-full flex items-center justify-center font-bold text-xs" style="width: 22px; height: 22px; margin-left: 5px;">3</div>
+                <div class="font-bold" style="font-size: 11px; line-height: 1.1;">CABANG PRIORITAS PENYUMBANG CLOSING<br><span style="font-size: 9px; font-weight: normal;">(POTENSI KONTRIBUSI TERTINGGI)</span></div>
+            </div>
+            <div class="p-3 font-bold c-navy" style="display: flex; flex-direction: column; gap: 8px; flex-grow: 1; font-size: 10px;">
+                <div class="flex gap-2 items-start"><span class="bg-navy rounded-full flex items-center justify-center" style="width: 16px; height: 16px; color: white;">1</span> <div><span>PEKANBARU</span><br><span style="color: #555; font-weight: normal;">IA terbesar (40.602 M) dan volume booking terbesar.</span></div></div>
+                <div class="flex gap-2 items-start"><span class="bg-navy rounded-full flex items-center justify-center" style="width: 16px; height: 16px; color: white;">2</span> <div><span>MEDAN</span><br><span style="color: #555; font-weight: normal;">Captain performer dengan captive rate tinggi.</span></div></div>
+                <div class="flex gap-2 items-start"><span class="bg-navy rounded-full flex items-center justify-center" style="width: 16px; height: 16px; color: white;">3</span> <div><span>KOTA PEKANBARU 2</span><br><span style="color: #555; font-weight: normal;">Pipeline besar, peluang closing tinggi.</span></div></div>
+                <div class="flex gap-2 items-start"><span class="bg-navy rounded-full flex items-center justify-center" style="width: 16px; height: 16px; color: white;">4</span> <div><span>MEULABOH</span><br><span style="color: #555; font-weight: normal;">Achievement stabil & konsisten.</span></div></div>
+                <div class="flex gap-2 items-start"><span class="bg-navy rounded-full flex items-center justify-center" style="width: 16px; height: 16px; color: white;">5</span> <div><span>BATAM</span><br><span style="color: #555; font-weight: normal;">Momentum booking terus meningkat.</span></div></div>
+            </div>
+        </div>
+
+        <!-- Panel 4 -->
+        <div class="rounded flex-col" style="width: 34%; border: 1px solid #0a1d56; background-color: #fff; overflow: hidden;">
+            <div class="bg-navy flex items-center gap-2 p-2">
+                <div class="bg-white c-navy rounded-full flex items-center justify-center font-bold text-xs" style="width: 22px; height: 22px; margin-left: 5px;">4</div>
+                <div class="font-bold" style="font-size: 11px;">ACTION PLAN 8 HARI TERAKHIR</div>
+            </div>
+            <div class="p-3 c-navy" style="display: flex; flex-direction: column; gap: 8px; font-size: 10px;">
+                <div class="flex gap-2 items-start">
+                    <i class="fas fa-university" style="font-size: 16px; width: 20px; margin-top: 2px;"></i>
+                    <div><span class="font-bold" style="font-size: 11px;">KONVERSI IA ➔ BOOKING</span><br><span style="color: #555;">• Review seluruh IA harian & prioritaskan aplikasi siap booking.<br>• Monitoring status approval & SLA.</span></div>
+                </div>
+                <div class="flex gap-2 items-start">
+                    <i class="fas fa-handshake c-green" style="font-size: 16px; width: 20px; margin-top: 2px;"></i>
+                    <div><span class="font-bold c-green" style="font-size: 11px;">PERKUAT RELATIONSHIP SUMBER ORDER</span><br><span style="color: #555;">• Fokus Bank Mandiri (BMRI) & Bank BSI.<br>&nbsp;&nbsp;Joint visit, daily follow-up pipeline.<br>• Tingkatkan referral berkualitas.</span></div>
+                </div>
+                <div class="flex gap-2 items-start">
+                    <i class="far fa-calendar-check c-orange" style="font-size: 16px; width: 20px; margin-top: 2px;"></i>
+                    <div><span class="font-bold c-orange" style="font-size: 11px;">DAILY WAR ROOM</span><br><span style="color: #555;">• Review target per cabang setiap pagi.<br>• Evaluasi realisasi setiap sore.<br>• Identifikasi hambatan & eskalasi hari yang sama.</span></div>
+                </div>
+                <div class="flex gap-2 items-start">
+                    <i class="fas fa-desktop" style="color:#a855f7; font-size: 16px; width: 20px; margin-top: 2px;"></i>
+                    <div><span class="font-bold" style="color:#a855f7; font-size: 11px;">DEALER & AGEN PRIORITAS</span><br><span style="color: #555;">• Aktivasi dealer/agen potensial.<br>• Pastikan tidak ada aplikasi tertunda.<br>• Fokus dealer dengan histori volume tinggi.</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="bg-navy flex justify-between font-bold" style="padding: 10px 20px; font-size: 12px; border-radius: 4px; margin-top: 15px;">
+        <span style="font-style: italic;">#MUF Wujudkan semua mimpi</span>
+        <span style="font-weight: normal; color: #ccc;">Member of <b style="color: white;">Bank Mandiri</b></span>
+    </div>
+
+</div>
+
+<!-- SCRIPT CHARTS TETAP MENGGUNAKAN CHART.JS -->
+<script>
+    // 1. Chart Donut Portofolio
+    const ctxPorto = document.getElementById('portoChart').getContext('2d');
+    new Chart(ctxPorto, {
+        type: 'doughnut',
+        data: {
+            labels: ['CCAR', 'NCAR', 'CBSICAR', 'NMCY', 'MCAR', 'Lainnya'],
+            datasets: [{
+                data: [37249, 31610, 30422, 12811, 10829, 1680],
+                backgroundColor: ['#16a34a', '#3b82f6', '#f97316', '#a855f7', '#93c5fd', '#9ca3af'],
+                borderWidth: 0, cutout: '75%'
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+
+    // 2. Chart Garis Trend 
+    const ctxTrend = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctxTrend, {
+        type: 'line',
+        data: {
+            labels: ['1-Jul', '7-Jul', '13-Jul', '19-Jul', '23-Jul'],
+            datasets: [
+                {
+                    label: 'Realisasi Aktual',
+                    data: [0, 20000, 50000, 90000, 128601],
+                    borderColor: '#16a34a', backgroundColor: '#16a34a', borderWidth: 2, tension: 0.1, pointRadius: 3
+                },
+                {
+                    label: 'Trend Saat Ini',
+                    data: [0, 20000, 50000, 90000, 128601], 
+                    borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            layout: { padding: { right: 20, top: 10 } },
+            scales: {
+                y: { beginAtZero: true, max: 300000, ticks: { callback: function(val) { return (val/1000) + ' M'; }, font: { size: 9 } } },
+                x: { ticks: { font: { size: 9 } } }
+            },
+            plugins: { legend: { display: false } } 
+        },
+        plugins: [{ 
+            id: 'customLine',
+            beforeDraw: chart => {
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+                // Merah (Kebutuhan Trend / Target)
+                ctx.save(); ctx.beginPath();
+                ctx.moveTo(xAxis.getPixelForValue(0), yAxis.getPixelForValue(0));
+                ctx.lineTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(253889));
+                ctx.lineWidth = 1.5; ctx.strokeStyle = '#dc2626'; ctx.setLineDash([4, 4]); ctx.stroke();
+                // Titik Target Merah
+                ctx.beginPath();
+                ctx.arc(xAxis.getPixelForValue(4), yAxis.getPixelForValue(253889), 4, 0, 2 * Math.PI);
+                ctx.fillStyle = '#dc2626'; ctx.fill();
+                // Biru (Trend Saat ini) lanjutan
+                ctx.beginPath();
+                ctx.moveTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(128601));
+                ctx.lineTo(xAxis.getPixelForValue(4.5), yAxis.getPixelForValue(173300));
+                ctx.lineWidth = 1.5; ctx.strokeStyle = '#3b82f6'; ctx.setLineDash([4, 4]); ctx.stroke();
+                // Titik Proyeksi Biru
+                ctx.beginPath();
+                ctx.arc(xAxis.getPixelForValue(4.5), yAxis.getPixelForValue(173300), 3, 0, 2 * Math.PI);
+                ctx.fillStyle = '#3b82f6'; ctx.fill();
+                ctx.restore();
+            }
+        }]
+    });
+</script>
+</body>
+</html>
