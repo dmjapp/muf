@@ -348,6 +348,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Safety fallback timer untuk menghilangkan splash screen jika firebase lambat (maksimal 2 detik)
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.remove(), 500);
+        }
+    }, 2000);
+
     const ctxPorto = document.getElementById('portoChart').getContext('2d');
     const portoChart = new Chart(ctxPorto, {
         type: 'doughnut',
@@ -452,7 +461,6 @@
             document.getElementById('val-mcar').innerText = toM(data.mcar);
             document.getElementById('val-lainnya').innerText = toM(data.lainnya);
 
-            // Sorting Top 5 Portofolio (Hanya portofolio yang > 0 yang masuk perhitungan, atau diurutkan dengan benar)
             const portoList = [
                 { name: 'CCAR', val: data.ccar },
                 { name: 'NCAR', val: data.ncar },
@@ -469,13 +477,11 @@
                 }
             }
 
-            // Portofolio Perhatian (Diurutkan dari nilai terkecil)
             const portoAsc = [...portoList].sort((a, b) => a.val - b.val);
             document.getElementById('val-warn-porto-1').innerText = `1. ${portoAsc[0].name} (${toM(portoAsc[0].val)})`;
             document.getElementById('val-warn-porto-2').innerText = `2. ${portoAsc[1].name} (${toM(portoAsc[1].val)})`;
             document.getElementById('val-warn-porto-3').innerText = `3. ${portoAsc[2].name} (${toM(portoAsc[2].val)})`;
 
-            // Hitung hanya portofolio yang > 0 untuk tulisan "X portofolio utama berkontribusi"
             const activeCount = portoList.filter(p => p.val > 0).length;
             document.getElementById('val-active-porto-count').innerText = activeCount;
 
