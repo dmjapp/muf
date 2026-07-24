@@ -40,7 +40,7 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* POSTER UTAMA */
+        /* POSTER UTAMA (FULL 1 HALAMAN, KOP & PANEL DITAIKKAN KE ATAS) */
         .poster { 
             width: 100vw; 
             height: 100vh; 
@@ -108,7 +108,7 @@
     <img src="logo.png" class="watermark" alt="Watermark">
 
     <div>
-        <!-- HEADER -->
+        <!-- HEADER (DITAIKKAN KE ATAS) -->
         <div class="flex justify-between items-center header-border">
             <div style="width: 25%;">
                 <img src="logo.png" alt="Mandiri Utama Finance" style="max-height: 44px; width: auto;">
@@ -139,7 +139,7 @@
                 </div>
                 <div class="text-center" style="padding: 0.5vh 0.2vw; border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666; font-size: 0.6rem;"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET AMOUNT</div>
-                    <h3 id="val-target-atas" class="text-md font-extrabold c-navy" style="margin: 0.2vh 0;">0,000 M</h3>
+                    <h3 id="val-target-atas" class="text-md font-extrabold c-navy" style="margin: 0.2vh 0;">25,889 M</h3>
                 </div>
                 <div class="text-center" style="padding: 0.5vh 0.2vw; border-right: 1px solid #ccc;">
                     <div class="text-xxs font-bold" style="color: #666; font-size: 0.6rem;"><i class="fas fa-chart-line" style="color:#16a34a;"></i> ACHIEVEMENT</div>
@@ -232,7 +232,7 @@
             
             <div class="border-red rounded" style="background-color: #fef2f2;">
                 <div class="bg-red text-center font-bold text-xxs" style="padding: 0.4vh;"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> PORTOFOLIO PERHATIAN</div>
-                <div style="padding: 0.8vh 0.6vw; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.4vh; color: #dc2626;">
+                <div style="padding: 0.8vh 0.6vw; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.6vh; color: #dc2626;">
                     <div class="flex justify-between"><span id="val-warn-porto-1">1. MCAR (0,000 M)</span></div>
                     <div class="flex justify-between"><span id="val-warn-porto-2">2. NMCY (0,000 M)</span></div>
                     <div class="flex justify-between"><span id="val-warn-porto-3">3. Lainnya (0,000 M)</span></div>
@@ -241,7 +241,7 @@
 
             <div class="border-red rounded" style="background-color: #fef2f2;">
                 <div class="bg-red text-center font-bold text-xxs" style="padding: 0.4vh;"><i class="fas fa-exclamation-triangle" style="color: #fde047;"></i> SALES - PERHATIAN</div>
-                <div style="padding: 0.8vh 0.6vw; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.4vh; color: #dc2626;">
+                <div style="padding: 0.8vh 0.6vw; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.6vh; color: #dc2626;">
                     <div class="flex justify-between"><span>1. SALES K.</span> <span>0,00%</span></div>
                     <div class="flex justify-between"><span>2. SALES L.</span> <span>0,00%</span></div>
                     <div class="flex justify-between"><span>3. SALES M.</span> <span>0,00%</span></div>
@@ -250,7 +250,7 @@
 
             <div class="border-orange rounded" style="background-color: #fff7ed;">
                 <div class="bg-orange text-center font-bold text-xxs" style="padding: 0.4vh;"><i class="fas fa-bullseye"></i> CAPTIVE RATE RENDAH</div>
-                <div style="padding: 0.8vh 0.6vw; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.4vh; color: #f97316;">
+                <div style="padding: 0.8vh 0.6vw; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.6vh; color: #f97316;">
                     <div class="flex justify-between"><span>1. SHOWROOM A</span> <span>0,00%</span></div>
                     <div class="flex justify-between"><span>2. SHOWROOM B</span> <span>0,00%</span></div>
                     <div class="flex justify-between"><span>3. SHOWROOM C</span> <span>0,00%</span></div>
@@ -273,10 +273,10 @@
                     <div class="border-navy rounded">
                         <div class="bg-navy text-center font-bold text-xxs" style="padding: 0.3vh;">POSISI SAAT INI</div>
                         <div style="padding: 0.6vh 0.8vw; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; gap: 0.4vh;">
-                            <div class="flex justify-between" style="color: #666;"><span id="val-target-bulan" style="font-weight: normal;">Target Bulan</span><span id="val-target-kiri">0,000 M</span></div>
+                            <div class="flex justify-between" style="color: #666;"><span id="val-target-bulan" style="font-weight: normal;">Target Bulan</span><span id="val-target-kiri">25,889 M</span></div>
                             <div class="flex justify-between c-navy"><span id="val-trend-realisasi-tgl" style="font-weight: normal;">Realisasi</span><span id="val-trend-realisasi">0,000 M</span></div>
                             <div class="flex justify-between c-green"><span style="font-weight: normal;">Achievement</span><span id="val-trend-achiev">0,00%</span></div>
-                            <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Target</span><span id="val-trend-sisa">0,000 M</span></div>
+                            <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Target</span><span id="val-trend-sisa">25,889 M</span></div>
                             <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Hari Berjalan</span><span id="val-hari-berjalan">0 Hari</span></div>
                             <div class="flex justify-between" style="color: #666;"><span style="font-weight: normal;">Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
                         </div>
@@ -309,7 +309,7 @@
                     <div class="font-bold text-center text-xxs c-navy rounded" style="background-color: #f3f4f6; border: 1px solid #d1d5db; padding: 0.3vh;">BERAPA YANG HARUS DICAPAI?</div>
                     <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 0.6vh 0.8vw;">
                         <div class="flex items-center gap-1 c-navy"><i class="fas fa-chart-pie text-xxs"></i> Sisa Target</div>
-                        <div id="val-kanan-sisa">0,000 M</div>
+                        <div id="val-kanan-sisa">25,889 M</div>
                     </div>
                     <div class="flex justify-between items-center font-bold text-xxs rounded" style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 0.6vh 0.8vw;">
                         <div class="flex items-center gap-1 c-navy"><i class="far fa-calendar-alt text-xxs"></i> Sisa Hari</div>
@@ -348,14 +348,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Safety fallback timer untuk menghilangkan splash screen jika firebase lambat (maksimal 2 detik)
-    setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        if (splash) {
-            splash.style.opacity = '0';
-            setTimeout(() => splash.remove(), 500);
-        }
-    }, 2000);
+    const TARGET_AMOUNT = 25889; 
+    document.getElementById('val-target-atas').innerText = toM(TARGET_AMOUNT);
+    document.getElementById('val-target-kiri').innerText = toM(TARGET_AMOUNT);
 
     const ctxPorto = document.getElementById('portoChart').getContext('2d');
     const portoChart = new Chart(ctxPorto, {
@@ -380,11 +375,10 @@
             beforeDraw: chart => {
                 const ctx = chart.ctx; const xAxis = chart.scales.x; const yAxis = chart.scales.y;
                 const latestVal = chart.data.datasets[0].data[4];
-                const targetVal = chart.options.plugins.customLine.targetVal || 25889;
                 
-                ctx.save(); ctx.beginPath(); ctx.moveTo(xAxis.getPixelForValue(0), yAxis.getPixelForValue(0)); ctx.lineTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(targetVal));
+                ctx.save(); ctx.beginPath(); ctx.moveTo(xAxis.getPixelForValue(0), yAxis.getPixelForValue(0)); ctx.lineTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(TARGET_AMOUNT));
                 ctx.lineWidth = 1.5; ctx.strokeStyle = '#dc2626'; ctx.setLineDash([4, 4]); ctx.stroke();
-                ctx.beginPath(); ctx.arc(xAxis.getPixelForValue(4), yAxis.getPixelForValue(targetVal), 4, 0, 2 * Math.PI); ctx.fillStyle = '#dc2626'; ctx.fill();
+                ctx.beginPath(); ctx.arc(xAxis.getPixelForValue(4), yAxis.getPixelForValue(TARGET_AMOUNT), 4, 0, 2 * Math.PI); ctx.fillStyle = '#dc2626'; ctx.fill();
                 
                 ctx.beginPath(); ctx.moveTo(xAxis.getPixelForValue(4), yAxis.getPixelForValue(latestVal)); ctx.lineTo(xAxis.getPixelForValue(4.5), yAxis.getPixelForValue(latestVal));
                 ctx.lineWidth = 1.5; ctx.strokeStyle = '#3b82f6'; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.restore();
@@ -404,7 +398,6 @@
         if (docSnap.exists()) {
             const rawData = docSnap.data();
             const data = {
-                target_amount: Number(rawData.target_amount) || 25889,
                 ccar: Number(rawData.ccar) || 0,
                 ncar: Number(rawData.ncar) || 0,
                 cbsicar: Number(rawData.cbsicar) || 0,
@@ -418,12 +411,8 @@
                 tanggal: rawData.tanggal || null
             };
 
-            const TARGET_AMOUNT = data.target_amount;
-            document.getElementById('val-target-atas').innerText = toM(TARGET_AMOUNT);
-            document.getElementById('val-target-kiri').innerText = toM(TARGET_AMOUNT);
-
             const totalBooking = data.ccar + data.ncar + data.cbsicar + data.nmcy + data.mcar + data.lainnya;
-            const achiev = targetAmountCalc => targetAmountCalc > 0 ? ((totalBooking / targetAmountCalc) * 100).toFixed(2) : "0,00";
+            const achiev = targetAmountCalc => TARGET_AMOUNT > 0 ? ((totalBooking / targetAmountCalc) * 100).toFixed(2) : "0,00";
             
             let dateObj = new Date();
             if (data.tanggal) { dateObj = new Date(data.tanggal); } 
@@ -435,10 +424,12 @@
             
             const hariBerjalan = tgl;
             const lastDay = new Date(thn, dateObj.getMonth() + 1, 0).getDate();
-            const sisaHari = Math.max(0, lastDay - hariBerjalan);
+            const sisaHari = lastDay - hariBerjalan;
 
             document.getElementById('val-periode').innerText = `${tgl} ${bln} ${thn}`;
             document.getElementById('val-target-bulan').innerText = `Target ${bln} ${thn}`;
+            document.getElementById('val-target-kiri').innerText = toM(TARGET_AMOUNT);
+            document.getElementById('val-target-atas').innerText = toM(TARGET_AMOUNT);
             document.getElementById('val-trend-realisasi-tgl').innerText = `Realisasi ${tgl} ${bln} ${thn}`;
             document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
             document.getElementById('val-sisa-hari').innerText = `${sisaHari} Hari`;
@@ -461,6 +452,7 @@
             document.getElementById('val-mcar').innerText = toM(data.mcar);
             document.getElementById('val-lainnya').innerText = toM(data.lainnya);
 
+            // Sorting Top 5 Portofolio
             const portoList = [
                 { name: 'CCAR', val: data.ccar },
                 { name: 'NCAR', val: data.ncar },
@@ -477,18 +469,20 @@
                 }
             }
 
+            // Portofolio Perhatian (diurutkan dari yang terkecil/0)
             const portoAsc = [...portoList].sort((a, b) => a.val - b.val);
             document.getElementById('val-warn-porto-1').innerText = `1. ${portoAsc[0].name} (${toM(portoAsc[0].val)})`;
             document.getElementById('val-warn-porto-2').innerText = `2. ${portoAsc[1].name} (${toM(portoAsc[1].val)})`;
             document.getElementById('val-warn-porto-3').innerText = `3. ${portoAsc[2].name} (${toM(portoAsc[2].val)})`;
 
+            // Dynamic Active Portfolio Count
             const activeCount = portoList.filter(p => p.val > 0).length;
             document.getElementById('val-active-porto-count').innerText = activeCount;
 
             portoChart.data.datasets[0].data = [data.ccar, data.ncar, data.cbsicar, data.nmcy, data.mcar, data.lainnya];
             portoChart.update();
 
-            const sisaTarget = Math.max(0, TARGET_AMOUNT - totalBooking);
+            const sisaTarget = TARGET_AMOUNT - totalBooking;
             const rataHarian = hariBerjalan > 0 ? (totalBooking / hariBerjalan) : 0; 
             const proyeksi = rataHarian * lastDay;
             const persentaseProyeksi = TARGET_AMOUNT > 0 ? ((proyeksi / TARGET_AMOUNT) * 100).toFixed(1) : 0;
@@ -513,8 +507,6 @@
                 boxKesimpulan.innerHTML = '<i class="fas fa-exclamation-triangle c-red text-lg"></i><div class="font-extrabold c-red text-xxs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>';
             }
 
-            trendChart.options.plugins.customLine.targetVal = TARGET_AMOUNT;
-            trendChart.options.scales.y.max = Math.max(TARGET_AMOUNT, totalBooking) * 1.2;
             trendChart.data.datasets[0].data = [0, 0, 0, 0, totalBooking];
             trendChart.data.datasets[1].data = [0, 0, 0, 0, totalBooking];
             trendChart.update();
