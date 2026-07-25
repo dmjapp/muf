@@ -22,25 +22,31 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* PERBAIKAN PADDING BAWAH AGAR KONTEN TIDAK TERTUTUP FOOTER */
-        .poster { width: 100%; min-height: 100vh; background-color: #ffffff; padding: 10px 15px 50px 15px; position: relative; display: flex; flex-direction: column; gap: 10px; }
+        .poster { width: 100%; min-height: 100vh; background-color: #ffffff; padding: 10px 15px 60px 15px; position: relative; display: flex; flex-direction: column; gap: 10px; }
         
-        /* PERBAIKAN WATERMARK (DIPAKSA FIXED DI TENGAH) */
-        .watermark { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 45vw; min-width: 300px; opacity: 0.04; pointer-events: none; z-index: 0; }
-        .poster > div { position: relative; z-index: 1; } /* Diubah agar tidak menargetkan img watermark */
+        /* WATERMARK OVERLAY TEPAT DI TENGAH DENGAN Z-INDEX TINGGI TAPI TEMBUS PANDANG */
+        .watermark { 
+            position: fixed !important; 
+            top: 50% !important; 
+            left: 50% !important; 
+            transform: translate(-50%, -50%) !important; 
+            width: 45vw; 
+            min-width: 350px; 
+            opacity: 0.03 !important; 
+            pointer-events: none !important; 
+            z-index: 40 !important; 
+        }
 
-        /* HEADER MENEMPEL (STICKY) */
         .sticky-header {
             position: sticky;
             top: 0;
             background-color: #ffffff;
             z-index: 50;
-            margin: -10px -15px 10px -15px; /* Mengimbangi padding .poster */
+            margin: -10px -15px 10px -15px; 
             padding: 10px 15px 0 15px;
-            box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); /* Efek bayangan halus saat di-scroll */
+            box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
         }
 
-        /* FOOTER MENEMPEL (FIXED) */
         .sticky-footer {
             position: fixed;
             bottom: 0;
@@ -88,6 +94,12 @@
         
         .porto-legend { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
         .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+
+        /* PANEL SMART INSIGHTS */
+        .insight-panel { background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-top: 5px; position: relative; z-index: 10; }
+        .insight-title { font-weight: 800; color: #0a1d56; font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+        .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: #334155; }
+        .insight-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -99,13 +111,11 @@
 
     <!-- WADAH HEADER STICKY -->
     <div class="sticky-header">
-        <!-- TOP BAR REALTIME -->
         <div class="flex justify-between items-center top-bar">
             <div class="flex items-center gap-2 c-navy font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
             <div class="font-bold text-xs c-navy"><i class="fas fa-satellite-dish" style="color: #16a34a;"></i> LIVE SYSTEM</div>
         </div>
 
-        <!-- KOP / HEADER -->
         <div class="flex justify-between items-center header-border">
             <div style="width: 25%;"><img src="logo.png" alt="Logo" style="max-height: 60px; width: auto;"></div>
             <div style="width: 50%;" class="text-center">
@@ -124,7 +134,6 @@
             </div>
         </div>
     </div>
-    <!-- AKHIR WADAH HEADER STICKY -->
 
     <!-- 1. OVERVIEW -->
     <div>
@@ -158,8 +167,8 @@
         </div>
     </div>
 
-    <!-- 3. TREND SUMMARY (LOGIKA YTD) -->
-    <div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 10px; background-color: #ffffff;">
+    <!-- 3. TREND SUMMARY -->
+    <div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 15px; background-color: #ffffff;">
         <div class="flex items-center gap-2" style="margin-bottom: 15px;">
             <div class="bg-navy rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 35px; height: 35px;">1</div>
             <div>
@@ -221,6 +230,15 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- 4. SMART INSIGHTS (KESIMPULAN EKSEKUTIF OTOMATIS) -->
+    <div class="insight-panel">
+        <div class="insight-title"><i class="fas fa-lightbulb" style="color: #f59e0b;"></i> SMART INSIGHTS CABANG</div>
+        <ul id="smart-insights-list" class="insight-list">
+            <!-- Isi insight digenerate oleh Javascript -->
+            <li>Sedang memuat kesimpulan data...</li>
+        </ul>
     </div>
 </div>
 
@@ -401,7 +419,7 @@
             document.getElementById('val-keb-harian').innerText = toM(kebutuhanHarian) + " / hari";
 
             const boxKesimpulan = document.getElementById('box-kesimpulan');
-            if(proyeksiAkhirTahun >= TARGET) {
+            if(proyeksiAkhirTahun >= TARGET && TARGET > 0) {
                 boxKesimpulan.className = "border-green flex items-center justify-center gap-2 rounded bg-green";
                 boxKesimpulan.style.backgroundColor = "#f0fdf4"; boxKesimpulan.style.borderColor = "#15803d";
                 boxKesimpulan.innerHTML = '<i class="fas fa-check-circle c-green text-xl"></i><div class="font-extrabold c-green text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TAHUNAN AKAN TERCAPAI.</span></div>';
@@ -411,6 +429,31 @@
                 boxKesimpulan.innerHTML = '<i class="fas fa-exclamation-triangle c-red text-xl"></i><div class="font-extrabold c-red text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>';
             }
 
+            // SMART INSIGHTS LOGIC
+            let insights = [];
+            
+            // Insight 1: Top Portofolio
+            if (portoData.length > 0 && totalBooking > 0) {
+                let topPorto = portoData[0];
+                let porsi = ((topPorto.val / totalBooking) * 100).toFixed(1);
+                insights.push(`<li><span>✅</span> <div>Portofolio <strong class="c-navy">${topPorto.name}</strong> mendominasi pencapaian dengan kontribusi <strong class="c-navy">${toM(topPorto.val)}</strong> (${porsi}% dari total booking cabang).</div></li>`);
+            }
+
+            // Insight 2: Trend Target
+            if (proyeksiAkhirTahun >= TARGET && TARGET > 0) {
+                insights.push(`<li><span>🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata booking harian agar target tahunan aman tercapai.</div></li>`);
+            } else if (TARGET > 0) {
+                insights.push(`<li><span>⚠️</span> <div>Akselerasi masih sangat dibutuhkan. Tingkatkan rata-rata booking menjadi <strong class="c-red">${toM(kebutuhanHarian)} / hari</strong> untuk mengejar target tahunan.</div></li>`);
+            } else {
+                insights.push(`<li><span>ℹ️</span> <div>Target tahunan belum diatur. Silakan perbarui target di panel input untuk melihat proyeksi pencapaian.</div></li>`);
+            }
+
+            // Insight 3: Kualitas
+            insights.push(`<li><span>📊</span> <div>Kualitas portofolio tercatat di angka <strong>Captive Rate ${(umum.captive || 0).toFixed(2)}%</strong> dan profitabilitas <strong>WALR ${(umum.walr || 0).toFixed(2)}%</strong>.</div></li>`);
+
+            document.getElementById('smart-insights-list').innerHTML = insights.join('');
+
+            // Chart Update
             let trendLabels = ['Jan', 'Mar', 'Mei', 'Jul', 'Sep', 'Nov', 'Des']; 
             let xLabels = [];
             let realisasiData = [];
