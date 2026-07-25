@@ -65,7 +65,8 @@
         .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: #334155; }
         .insight-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; font-weight: bold; }
         
-        .theme-select { padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 0.8rem; background-color: #f8fafc; color: #0a1d56; cursor: pointer; outline: none;}
+        .theme-select { padding: 6px 12px; border-radius: 6px; border: 2px solid #0a1d56; font-weight: 800; font-size: 0.8rem; background-color: #f8fafc; color: #0a1d56; cursor: pointer; outline: none; transition: all 0.3s;}
+        .theme-select:hover { background-color: #0a1d56; color: white; }
     </style>
 </head>
 <body>
@@ -79,14 +80,13 @@
     <div class="sticky-header">
         <div class="flex justify-between items-center top-bar">
             <div class="flex items-center gap-2 c-navy font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
-            <div class="flex items-center gap-2">
-                <!-- SAKLAR TEMA -->
+            <div>
+                <!-- SAKLAR TEMA MENGGANTIKAN LIVE SYSTEM -->
                 <select id="theme-selector" class="theme-select">
                     <option value="klasik">🎨 TEMA: KLASIK</option>
-                    <option value="akselerasi">⚡ TEMA: AKSELERASI</option>
+                    <option value="akselerasi">⚡ TEMA: SPEEDOMETER</option>
                     <option value="gamifikasi">🚀 TEMA: ROKET</option>
                 </select>
-                <div class="font-bold text-xs c-navy"><i class="fas fa-satellite-dish" style="color: #16a34a;"></i> LIVE SYSTEM</div>
             </div>
         </div>
 
@@ -193,10 +193,14 @@
                 <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
                     <div style="position: relative; width: 100%; height: 40px; background: #e5e7eb; border-radius: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
                         <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b, #ef4444); border-radius: 20px; transition: width 1.5s ease;"></div>
-                        <div id="rocket-icon" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; transition: left 1.5s ease; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); z-index: 10;">🚀</div>
+                        <!-- Ikon Roket dengan Label Nominal Kargo -->
+                        <div id="rocket-icon" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; transition: left 1.5s ease; z-index: 10;">
+                            <div style="font-size: 2.8rem; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));">🚀</div>
+                            <div id="rocket-val-badge" class="font-bold bg-navy text-white rounded" style="padding: 2px 8px; margin-top: -5px; font-size: 0.75rem; white-space: nowrap; border: 1px solid #f59e0b;">0,000 M</div>
+                        </div>
                         <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.5;">🏁</div>
                     </div>
-                    <div class="flex justify-between font-bold text-xs" style="margin-top: 15px; color: #555;">
+                    <div class="flex justify-between font-bold text-xs" style="margin-top: 25px; color: #555;">
                         <span>START (0)</span>
                         <span id="rocket-target-text" style="color: #16a34a;">FINISH</span>
                     </div>
@@ -252,7 +256,8 @@
     const db = getFirestore(app);
     const docRef = doc(db, "regional_data", "sumbagut_v2");
 
-    function toM(val) { return (val / 1000).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M'; }
+    // Fungsi Global
+    window.toM = function(val) { return (val / 1000).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M'; }
     const colorPalette = ['#16a34a', '#3b82f6', '#f97316', '#a855f7', '#93c5fd', '#ef4444', '#14b8a6', '#f59e0b', '#ec4899', '#9ca3af'];
     
     setInterval(() => {
@@ -260,12 +265,63 @@
         document.getElementById('realtime-clock').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
     }, 1000);
 
-    // Global variables to store chart instances and data
+    // Global Variables
     let portoChartObj = null;
     let trendChartObj = null;
-    let globalDataSnapshot = null; // Menyimpan data terbaru dari database
+    let globalDataSnapshot = null;
 
-    // Saklar Tema Listener
+    // PLUGIN CUSTOM CHART.JS UNTUK MENGGAMBAR JARUM SPEEDOMETER
+    const speedometerNeedle = {
+        id: 'speedometerNeedle',
+        afterDraw(chart) {
+            const { ctx } = chart;
+            const dataTotal = chart.config.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const currentValue = chart.config.data.datasets[0].data[0];
+            
+            // Logika putaran jarum (Batas kiri = 0, Batas kanan = Max Target)
+            let angle = Math.PI + (Math.PI * (currentValue / (dataTotal || 1)));
+            if (currentValue >= dataTotal && dataTotal > 0) angle = Math.PI * 2; 
+
+            const meta = chart.getDatasetMeta(0);
+            if(!meta.data.length) return;
+            const cx = meta.data[0].x;
+            const cy = meta.data[0].y;
+            const outerRadius = meta.data[0].outerRadius;
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(angle);
+            
+            // Gambar Jarum
+            ctx.beginPath();
+            ctx.moveTo(0, -6);
+            ctx.lineTo(outerRadius - 15, 0); // Panjang jarum
+            ctx.lineTo(0, 6);
+            ctx.fillStyle = '#0a1d56'; // Warna Navy
+            ctx.fill();
+            
+            // Gambar Lingkaran di pangkal jarum
+            ctx.beginPath();
+            ctx.arc(0, 0, 12, 0, Math.PI * 2);
+            ctx.fillStyle = '#0a1d56';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(0, 0, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#f59e0b'; // Emas
+            ctx.fill();
+            ctx.restore();
+
+            // Teks Angka Nominal Raksasa di bawah poros jarum
+            ctx.font = '900 1.5rem Arial';
+            ctx.fillStyle = '#0a1d56';
+            ctx.textAlign = 'center';
+            ctx.fillText(window.toM(currentValue), cx, cy + 30);
+            ctx.font = 'bold 0.8rem Arial';
+            ctx.fillStyle = '#666';
+            ctx.fillText('PENCAPAIAN YTD', cx, cy + 48);
+        }
+    };
+
     document.getElementById('theme-selector').addEventListener('change', () => {
         if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
     });
@@ -273,10 +329,9 @@
     onSnapshot(docRef, (docSnap) => {
         const splash = document.getElementById('splash-screen');
         if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
-
         if (docSnap.exists()) {
             globalDataSnapshot = docSnap.data();
-            renderDashboard(globalDataSnapshot); // Panggil fungsi utama untuk render
+            renderDashboard(globalDataSnapshot);
         }
     });
 
@@ -300,17 +355,15 @@
         const TARGET = umum.target_amount || 0;
         const ACHIEV = TARGET > 0 ? ((totalBooking / TARGET) * 100).toFixed(2) : "0.00";
         
-        // Update Teks Dasar (Sama untuk semua tema)
-        document.getElementById('val-booking-amount').innerText = toM(totalBooking);
-        document.getElementById('val-target-atas').innerText = toM(TARGET);
+        document.getElementById('val-booking-amount').innerText = window.toM(totalBooking);
+        document.getElementById('val-target-atas').innerText = window.toM(TARGET);
         document.getElementById('val-achievement').innerText = ACHIEV + "%";
         document.getElementById('val-captive').innerText = (umum.captive || 0).toFixed(2) + "%";
         document.getElementById('val-walr').innerText = (umum.walr || 0).toFixed(2) + "%";
-        document.getElementById('val-pofde').innerText = toM(umum.pofde || 0);
-        document.getElementById('val-ia').innerText = toM(umum.ia || 0);
-        document.getElementById('val-booking-donut').innerText = toM(totalBooking);
+        document.getElementById('val-pofde').innerText = window.toM(umum.pofde || 0);
+        document.getElementById('val-ia').innerText = window.toM(umum.ia || 0);
+        document.getElementById('val-booking-donut').innerText = window.toM(totalBooking);
 
-        // Siapkan Data Portofolio
         let legendHTML = '';
         let chartLabels = [];
         let chartValues = [];
@@ -321,19 +374,15 @@
             chartLabels.push(item.name);
             chartValues.push(item.val);
             chartColors.push(color);
-            if (index < 8) legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${toM(item.val)}</span></div>`;
+            if (index < 8) legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${window.toM(item.val)}</span></div>`;
         });
         if (portoData.length > 8) {
             let sisaVal = portoData.slice(8).reduce((sum, curr) => sum + curr.val, 0);
-            legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${toM(sisaVal)}</span></div>`;
+            legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${window.toM(sisaVal)}</span></div>`;
         }
         document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:#888;">Belum ada data.</div>';
 
-        // ----------------------------------------------------
-        // LOGIKA PEMILIHAN TEMA UNTUK CHART PORTOFOLIO
-        // ----------------------------------------------------
-        if(portoChartObj) portoChartObj.destroy(); // Hapus chart lama agar tidak bertumpuk
-        
+        if(portoChartObj) portoChartObj.destroy();
         const ctxPorto = document.getElementById('portoChart').getContext('2d');
         const centerText = document.getElementById('porto-center-text');
         
@@ -341,14 +390,13 @@
             centerText.style.display = 'flex';
             portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         } else if (theme === 'akselerasi') {
-            centerText.style.display = 'none'; // Sembunyikan teks tengah di bar chart
+            centerText.style.display = 'none';
             portoChartObj = new Chart(ctxPorto, { type: 'bar', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: {size: 9, weight: 'bold'} } } }, plugins: { legend: { display: false } } } });
         } else if (theme === 'gamifikasi') {
             centerText.style.display = 'none';
             portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + '80'), borderColor: chartColors }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { ticks: { display: false } } }, plugins: { legend: { display: false } } } });
         }
 
-        // Render Dinamis Kotak Bawah (Marketing & Dealer - Tetap Bar Hijau)
         const dynamicContainer = document.getElementById('dynamic-leaderboards');
         while (dynamicContainer.children.length > 1) { dynamicContainer.removeChild(dynamicContainer.lastChild); }
         kategoriList.forEach(cat => {
@@ -365,7 +413,7 @@
                         <div class="flex items-center" style="width: 35%; font-size: 0.8rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"><span class="badge-num ${badgeClass}">${index+1}</span> ${item.name}</div>
                         <div class="flex items-center" style="width: 65%; justify-content: flex-end;">
                             <div style="width: 50%; margin-right: 10px; background-color: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;"><div style="width: ${barWidth}%; background-color: #16a34a; height: 100%;"></div></div>
-                            <div class="c-navy font-bold" style="width: 45%; text-align: right; font-size: 0.85rem;">${toM(item.val)}</div></div></div>`;
+                            <div class="c-navy font-bold" style="width: 45%; text-align: right; font-size: 0.85rem;">${window.toM(item.val)}</div></div></div>`;
                 });
                 if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:#888; text-align:center;">Belum ada data</div>';
                 const box = document.createElement('div');
@@ -375,7 +423,6 @@
             }
         });
 
-        // Kalkulasi Tanggal & Hari
         let dateObj = new Date(umum.tanggal || new Date());
         const thn = dateObj.getFullYear();
         const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
@@ -385,7 +432,6 @@
         const totalDaysInYear = Math.ceil(Math.abs(endOfYear - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
         const sisaHari = Math.max(0, totalDaysInYear - hariBerjalan);
 
-        // Update Kotak Ringkasan Tengah
         document.getElementById('val-periode').innerText = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
         document.getElementById('val-target-tahun').innerText = `Target Tahun ${thn}`;
         document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
@@ -398,14 +444,14 @@
         const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
         const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
 
-        document.getElementById('val-target-kiri').innerText = toM(TARGET);
-        document.getElementById('val-trend-realisasi').innerText = toM(totalBooking);
+        document.getElementById('val-target-kiri').innerText = window.toM(TARGET);
+        document.getElementById('val-trend-realisasi').innerText = window.toM(totalBooking);
         document.getElementById('val-trend-achiev').innerText = ACHIEV + "%";
-        document.getElementById('val-trend-sisa').innerText = toM(sisaTarget);
-        document.getElementById('val-kanan-sisa').innerText = toM(sisaTarget);
-        document.getElementById('val-rata-harian').innerText = toM(rataHarian) + " / hari";
-        document.getElementById('val-proyeksi').innerText = toM(proyeksiAkhirTahun) + " (" + persentaseProyeksi + "%)";
-        document.getElementById('val-keb-harian').innerText = toM(kebutuhanHarian) + " / hari";
+        document.getElementById('val-trend-sisa').innerText = window.toM(sisaTarget);
+        document.getElementById('val-kanan-sisa').innerText = window.toM(sisaTarget);
+        document.getElementById('val-rata-harian').innerText = window.toM(rataHarian) + " / hari";
+        document.getElementById('val-proyeksi').innerText = window.toM(proyeksiAkhirTahun) + " (" + persentaseProyeksi + "%)";
+        document.getElementById('val-keb-harian').innerText = window.toM(kebutuhanHarian) + " / hari";
 
         const boxKesimpulan = document.getElementById('box-kesimpulan');
         if(proyeksiAkhirTahun >= TARGET && TARGET > 0) {
@@ -416,11 +462,10 @@
             boxKesimpulan.innerHTML = '<i class="fas fa-exclamation-triangle c-red text-xl"></i><div class="font-extrabold c-red text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>';
         }
 
-        // Smart Insights
         let insights = [];
-        if (portoData.length > 0 && totalBooking > 0) { let topP = portoData[0]; insights.push(`<li><span>✅</span> <div>Portofolio <strong class="c-navy">${topP.name}</strong> mendominasi pencapaian dengan kontribusi <strong class="c-navy">${toM(topP.val)}</strong> (${((topP.val / totalBooking) * 100).toFixed(1)}%).</div></li>`); }
+        if (portoData.length > 0 && totalBooking > 0) { let topP = portoData[0]; insights.push(`<li><span>✅</span> <div>Portofolio <strong class="c-navy">${topP.name}</strong> mendominasi pencapaian dengan kontribusi <strong class="c-navy">${window.toM(topP.val)}</strong> (${((topP.val / totalBooking) * 100).toFixed(1)}%).</div></li>`); }
         if (proyeksiAkhirTahun >= TARGET && TARGET > 0) insights.push(`<li><span>🌟</span> <div>Tren <strong>sangat baik</strong>. Pertahankan ritme booking harian.</div></li>`);
-        else if (TARGET > 0) insights.push(`<li><span>⚠️</span> <div>Akselerasi dibutuhkan. Tingkatkan rata-rata booking jadi <strong class="c-red">${toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
+        else if (TARGET > 0) insights.push(`<li><span>⚠️</span> <div>Akselerasi dibutuhkan. Tingkatkan rata-rata booking jadi <strong class="c-red">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
         document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
         // ----------------------------------------------------
@@ -443,7 +488,11 @@
                 if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
                 else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
             }
-            trendChartObj = new Chart(ctxTrend, { type: 'line', data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#16a34a', backgroundColor: '#16a34a', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } });
+            trendChartObj = new Chart(ctxTrend, { 
+                type: 'line', 
+                data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#16a34a', backgroundColor: '#16a34a', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, 
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } 
+            });
         } 
         else if (theme === 'akselerasi') {
             trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none';
@@ -452,16 +501,32 @@
             let sisaB = Math.max(0, TARGET - totalBooking);
             let warnaSpeed = ACHIEV >= 100 ? '#16a34a' : ACHIEV >= 50 ? '#f59e0b' : '#ef4444';
             
-            trendChartObj = new Chart(ctxTrend, { type: 'doughnut', data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, '#e5e7eb'], borderWidth: 0 }] }, options: { rotation: 270, circumference: 180, cutout: '80%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            trendChartObj = new Chart(ctxTrend, { 
+                type: 'doughnut', 
+                data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, '#e5e7eb'], borderWidth: 0 }] }, 
+                options: { 
+                    rotation: 270, 
+                    circumference: 180, 
+                    cutout: '75%', 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    layout: { padding: { bottom: 50 } }, // Memberi ruang di bawah untuk jarum dan teks
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } } 
+                },
+                plugins: [speedometerNeedle] // Mengaktifkan plugin jarum khusus untuk tema ini
+            });
         } 
         else if (theme === 'gamifikasi') {
             trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'flex';
             trendLabel.innerText = "AKSELERASI ROKET PENCAPAIAN TAHUNAN";
             
-            let pct = parseFloat(ACHIEV);
-            if(pct > 100) pct = 100;
-            document.getElementById('rocket-target-text').innerText = `FINISH (${toM(TARGET)})`;
-            // Animasi jalannya roket via style
+            let pct = TARGET > 0 ? (totalBooking / TARGET) * 100 : 0;
+            if(pct > 100) pct = 100; // Mencegah roket terbang tembus layar
+            
+            document.getElementById('rocket-target-text').innerText = `FINISH (${window.toM(TARGET)})`;
+            document.getElementById('rocket-val-badge').innerText = window.toM(totalBooking); // Menuliskan pencapaian di kargo roket
+            
+            // Animasi jalannya roket
             setTimeout(() => {
                 document.getElementById('rocket-track').style.width = pct + '%';
                 document.getElementById('rocket-icon').style.left = pct + '%';
