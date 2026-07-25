@@ -86,9 +86,7 @@
         .stat-box { padding: 10px; border-right: 1px solid #ccc; } .stat-box:last-child { border-right: none; }
         .top-bar { background-color: #e5e7eb; padding: 8px 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #d1d5db; }
         
-        .list-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.85rem; font-weight: bold; border-bottom: 1px dashed #e5e7eb; padding-bottom: 5px;}
-        .list-item:last-child { border-bottom: none; }
-        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; }
+        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
         
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
         
@@ -232,17 +230,16 @@
         </div>
     </div>
 
-    <!-- 4. SMART INSIGHTS (KESIMPULAN EKSEKUTIF OTOMATIS) -->
+    <!-- 4. SMART INSIGHTS -->
     <div class="insight-panel">
         <div class="insight-title"><i class="fas fa-lightbulb" style="color: #f59e0b;"></i> SMART INSIGHTS CABANG</div>
         <ul id="smart-insights-list" class="insight-list">
-            <!-- Isi insight digenerate oleh Javascript -->
             <li>Sedang memuat kesimpulan data...</li>
         </ul>
     </div>
 </div>
 
-<!-- FOOTER STICKY (DI LUAR POSTER) -->
+<!-- FOOTER STICKY -->
 <div class="sticky-footer bg-navy flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart" style="color: #f59e0b;"></i> #MUF Wujudkan semua mimpi</span>
     <span>Versi 2.0 Dinamis | Copyright &copy; SRISP x DMJ 2026</span>
@@ -348,6 +345,7 @@
             portoChart.data.datasets[0].backgroundColor = chartColors;
             portoChart.update();
 
+            // RENDER LEADERBOARD DINAMIS DENGAN PROGRESS BAR
             const dynamicContainer = document.getElementById('dynamic-leaderboards');
             while (dynamicContainer.children.length > 1) { dynamicContainer.removeChild(dynamicContainer.lastChild); }
 
@@ -359,13 +357,28 @@
                     }
                     catItems.sort((a,b) => b.val - a.val);
 
+                    // Cari nilai tertinggi di kategori ini untuk jadi patokan 100% panjang garis
+                    let maxVal = catItems.length > 0 ? catItems[0].val : 1; 
+                    if(maxVal === 0) maxVal = 1; // Mencegah error pembagian nol
+
                     let listHTML = '';
                     catItems.slice(0, 5).forEach((item, index) => {
                         let badgeClass = index === 0 ? 'b-1' : index === 1 ? 'b-2' : index === 2 ? 'b-3' : 'b-other';
+                        let barWidth = (item.val / maxVal) * 100;
+                        
+                        // Layout Bar Baru
                         listHTML += `
-                        <div class="list-item">
-                            <div class="flex items-center"><span class="badge-num ${badgeClass}">${index+1}</span> ${item.name}</div>
-                            <div class="c-navy">${toM(item.val)}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 8px;">
+                            <div class="flex items-center" style="width: 35%; font-size: 0.8rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                <span class="badge-num ${badgeClass}">${index+1}</span> 
+                                ${item.name}
+                            </div>
+                            <div class="flex items-center" style="width: 65%; justify-content: flex-end;">
+                                <div style="width: 50%; margin-right: 10px; background-color: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;">
+                                    <div style="width: ${barWidth}%; background-color: #16a34a; height: 100%; transition: width 0.5s ease;"></div>
+                                </div>
+                                <div class="c-navy font-bold" style="width: 45%; text-align: right; font-size: 0.85rem;">${toM(item.val)}</div>
+                            </div>
                         </div>`;
                     });
 
@@ -429,17 +442,13 @@
                 boxKesimpulan.innerHTML = '<i class="fas fa-exclamation-triangle c-red text-xl"></i><div class="font-extrabold c-red text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>';
             }
 
-            // SMART INSIGHTS LOGIC
             let insights = [];
-            
-            // Insight 1: Top Portofolio
             if (portoData.length > 0 && totalBooking > 0) {
                 let topPorto = portoData[0];
                 let porsi = ((topPorto.val / totalBooking) * 100).toFixed(1);
                 insights.push(`<li><span>✅</span> <div>Portofolio <strong class="c-navy">${topPorto.name}</strong> mendominasi pencapaian dengan kontribusi <strong class="c-navy">${toM(topPorto.val)}</strong> (${porsi}% dari total booking cabang).</div></li>`);
             }
 
-            // Insight 2: Trend Target
             if (proyeksiAkhirTahun >= TARGET && TARGET > 0) {
                 insights.push(`<li><span>🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata booking harian agar target tahunan aman tercapai.</div></li>`);
             } else if (TARGET > 0) {
@@ -447,13 +456,9 @@
             } else {
                 insights.push(`<li><span>ℹ️</span> <div>Target tahunan belum diatur. Silakan perbarui target di panel input untuk melihat proyeksi pencapaian.</div></li>`);
             }
-
-            // Insight 3: Kualitas
             insights.push(`<li><span>📊</span> <div>Kualitas portofolio tercatat di angka <strong>Captive Rate ${(umum.captive || 0).toFixed(2)}%</strong> dan profitabilitas <strong>WALR ${(umum.walr || 0).toFixed(2)}%</strong>.</div></li>`);
-
             document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
-            // Chart Update
             let trendLabels = ['Jan', 'Mar', 'Mei', 'Jul', 'Sep', 'Nov', 'Des']; 
             let xLabels = [];
             let realisasiData = [];
