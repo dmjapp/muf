@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* CSS VARIABEL TEMA DINAMIS (WARNA RAMAH MATA / EYE-CARE) */
+        /* CSS VARIABEL TEMA DINAMIS */
         :root {
             --bg-body: #f3f4f6;
             --bg-panel: #ffffff;
@@ -20,34 +20,40 @@
             --text-on-accent: #0a1d56;
             --radius: 8px;
             --border-color: #cbd5e1;
+            --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1);
         }
 
-        /* TEMA AKSELERASI (MATERIAL DARK - RAMAH MATA) */
+        /* TEMA AKSELERASI (SILVERSTONE - PREMIUM SPORTY) */
         body[data-theme="akselerasi"] {
-            --bg-body: #121212; /* Abu-abu sangat gelap, bukan hitam murni */
-            --bg-panel: #1e1e1e; /* Card sedikit lebih terang */
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --c-primary: #f87171; /* Merah Pastel / Soft Coral (Tidak menyilaukan) */
+            --bg-body: #e5e7eb; /* Silver Lembut */
+            --bg-panel: #f8fafc; /* Putih keabu-abuan (Matte Light) */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --c-primary: #dc2626; /* Merah Balap */
             --text-on-primary: #ffffff;
-            --c-accent: #fbbf24; /* Kuning Amber Lembut */
-            --text-on-accent: #121212;
-            --radius: 4px; /* Sudut tegas tapi tidak terlalu tajam */
-            --border-color: #334155;
+            --c-accent: #111827; /* Hitam Carbon */
+            --text-on-accent: #ffffff;
+            --radius: 4px; /* Sudut sedikit tegas */
+            --border-color: #cbd5e1;
+            --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); /* Efek Neumorphism tipis */
+            --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05);
         }
 
-        /* TEMA ROKET (SLATE NIGHT - ELEGAN) */
+        /* TEMA ROKET (GLASSMORPHISM / TRANSPARAN MATTE) */
         body[data-theme="gamifikasi"] {
-            --bg-body: #0f172a; /* Biru malam (Slate) */
-            --bg-panel: #1e293b; /* Biru malam sedikit terang */
+            --bg-body: #0f172a; /* Biru Malam / Deep Space */
+            --bg-panel: rgba(30, 41, 59, 0.6); /* Kaca Buram Gelap (Transparan) */
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
             --c-primary: #818cf8; /* Soft Indigo */
             --text-on-primary: #ffffff;
             --c-accent: #38bdf8; /* Soft Sky Blue */
             --text-on-accent: #0f172a;
-            --radius: 20px; /* Sangat membulat / futuristik */
-            --border-color: #334155;
+            --radius: 20px; /* Futuristik membulat */
+            --border-color: rgba(255, 255, 255, 0.1); /* Border kaca transparan */
+            --panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); /* Bayangan dalam */
+            --header-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -63,17 +69,34 @@
         .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; position: relative; display: flex; flex-direction: column; gap: 10px; }
         .watermark { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 45vw; min-width: 350px; opacity: 0.03 !important; pointer-events: none !important; z-index: 40 !important; }
 
-        .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: 0 4px 6px -4px rgba(0,0,0,0.3); transition: background-color 0.4s ease; border-bottom: 1px solid var(--border-color);}
-        .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; }
+        /* Khusus Header di Tema Roket menggunakan efek Kaca */
+        body[data-theme="gamifikasi"] .sticky-header {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
 
-        /* Kelas Dinamis mengikuti Variabel CSS */
-        .c-primary { color: var(--c-primary); } 
-        .bg-primary { background-color: var(--c-primary); color: var(--text-on-primary); }
-        .c-accent { color: var(--c-accent); } 
-        .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); }
-        .bg-panel { background-color: var(--bg-panel); }
-        .border-primary { border: 2px solid var(--c-primary); } 
-        .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; }
+        .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: var(--header-shadow); transition: background-color 0.4s ease; border-bottom: 1px solid var(--border-color);}
+        .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; backdrop-filter: blur(5px); }
+
+        .c-primary { color: var(--c-primary); transition: color 0.4s ease;} 
+        .bg-primary { background-color: var(--c-primary); color: var(--text-on-primary); transition: background-color 0.4s ease;}
+        .c-accent { color: var(--c-accent); transition: color 0.4s ease;} 
+        .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); transition: background-color 0.4s ease;}
+        
+        /* Tambahan efek Kaca/Matte untuk panel */
+        .bg-panel { 
+            background-color: var(--bg-panel); 
+            box-shadow: var(--panel-shadow);
+            transition: all 0.4s ease;
+        }
+        
+        body[data-theme="gamifikasi"] .bg-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .border-primary { border: 2px solid var(--c-primary); transition: border-color 0.4s ease;} 
+        .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; transition: border-color 0.4s ease;}
         
         .rounded { border-radius: var(--radius); transition: border-radius 0.4s ease; } 
         .rounded-full { border-radius: 50%; }
@@ -93,8 +116,11 @@
         @media (max-width: 768px) { .grid-trend { grid-template-columns: 1fr; } .border-bottom-primary { flex-direction: column; gap: 15px; text-align: center; } .border-bottom-primary > div { width: 100% !important; justify-content: center !important; } }
 
         .stat-box { padding: 10px; border-right: 1px solid var(--border-color); } .stat-box:last-child { border-right: none; }
-        .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); transition: background-color 0.4s ease;}
         
+        /* Tema roket merubah Top Bar jadi transparan */
+        .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); transition: background-color 0.4s ease;}
+        body[data-theme="gamifikasi"] .top-bar { background-color: rgba(0,0,0,0.2); }
+
         .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
         
@@ -109,11 +135,9 @@
         .theme-select { padding: 6px 12px; border-radius: 6px; border: 2px solid var(--c-primary); font-weight: 800; font-size: 0.8rem; background-color: var(--bg-panel); color: var(--c-primary); cursor: pointer; outline: none; transition: all 0.3s;}
         .theme-select:hover { background-color: var(--c-primary); color: var(--text-on-primary); }
 
-        /* Estetika Box Logo Khusus */
-        .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
+        .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; transition: all 0.4s ease;}
     </style>
 </head>
-<!-- Default body theme, will be overridden by JS instantly if saved -->
 <body data-theme="klasik">
 
     <div id="splash-screen"><img src="logo.png" alt="Logo"><div class="spinner"></div><h2>DMJ EXECUTIVE SUMMARY</h2></div>
@@ -128,15 +152,14 @@
             <div>
                 <select id="theme-selector" class="theme-select">
                     <option value="klasik">🎨 TEMA: KLASIK (CORPORATE)</option>
-                    <option value="akselerasi">⚡ TEMA: AKSELERASI (RACING)</option>
-                    <option value="gamifikasi">🚀 TEMA: ROKET (FUTURISTIC)</option>
+                    <option value="akselerasi">🏎️ TEMA: SILVERSTONE (RACING)</option>
+                    <option value="gamifikasi">🚀 TEMA: MATTE SPACE (ROKET)</option>
                 </select>
             </div>
         </div>
 
         <div class="flex justify-between items-center border-bottom-primary">
             <div style="width: 25%;">
-                <!-- KOTAK LOGO DIPERBAIKI ESTETIKANYA -->
                 <div class="logo-box">
                     <img src="logo.png" alt="Logo" style="max-height: 55px; width: auto; display: block;">
                 </div>
@@ -150,7 +173,7 @@
                 </div>
             </div>
             <div style="width: 25%; display: flex; justify-content: flex-end;">
-                <div class="bg-primary flex items-center gap-2 rounded" style="padding: 10px 15px;">
+                <div class="bg-primary flex items-center gap-2 rounded" style="padding: 10px 15px; box-shadow: var(--panel-shadow);">
                     <i class="fas fa-bullseye text-xl"></i>
                     <div style="line-height: 1.2;"><div class="font-bold text-xs">TARGET BERSAMA</div><div style="font-size: 0.75rem; font-weight: normal; color: var(--text-on-primary);">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
                 </div>
@@ -161,10 +184,10 @@
     <!-- OVERVIEW -->
     <div>
         <div class="bg-primary font-bold text-xs text-center rounded" style="display: inline-block; padding: 4px 15px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">OVERVIEW CABANG</div>
-        <div class="grid-7 bg-panel rounded" style="border-top-left-radius: 0;">
+        <div class="grid-7 bg-panel rounded" style="border-top-left-radius: 0; border: 1px solid var(--border-color);">
             <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> BOOKING YTD</div><h3 id="val-booking-amount" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
             <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET YTD</div><h3 id="val-target-atas" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-line" style="color:#16a34a;"></i> ACHIEV YTD</div><h3 id="val-achievement" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-line" style="color:#10b981;"></i> ACHIEV YTD</div><h3 id="val-achievement" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
             <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-users" style="color:#a855f7;"></i> CAPTIVE RATE</div><h3 id="val-captive" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
             <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-handshake" style="color:#60a5fa;"></i> PO + FDE</div><h3 id="val-pofde" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
             <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-file-invoice" style="color:#fb923c;"></i> IA</div><h3 id="val-ia" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
@@ -201,7 +224,7 @@
         
         <div class="grid-trend">
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div class="border-primary rounded">
+                <div class="border-primary rounded" style="background-color: var(--bg-body);">
                     <div class="bg-primary text-center font-bold text-xs rounded" style="padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">POSISI SAAT INI</div>
                     <div style="padding: 10px; font-size: 0.9rem; font-weight: bold; display: flex; flex-direction: column; gap: 6px;">
                         <div class="flex justify-between" style="color: var(--text-muted);"><span id="val-target-tahun" style="font-weight: normal;">Target Tahun</span><span id="val-target-kiri">0,000 M</span></div>
@@ -212,19 +235,19 @@
                         <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
                     </div>
                 </div>
-                <div id="box-kesimpulan" class="flex items-center justify-center gap-2 rounded" style="padding: 10px;">
+                <div id="box-kesimpulan" class="flex items-center justify-center gap-2 rounded" style="padding: 10px; box-shadow: var(--panel-shadow);">
                     <i id="icon-kesimpulan" class="fas fa-exclamation-triangle text-xl"></i>
                     <div id="text-kesimpulan" class="font-extrabold text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>
                 </div>
             </div>
 
             <div>
-                <div class="rounded" style="border: 2px solid #10b981; background-color: rgba(16, 185, 129, 0.1); height: 100%; display: flex; flex-direction: column;">
+                <div class="rounded" style="border: 2px solid #10b981; background-color: rgba(16, 185, 129, 0.05); height: 100%; display: flex; flex-direction: column;">
                     <div class="rounded" style="background-color: #10b981; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">TREND HARIAN SAAT INI</div>
                     <div class="text-center" style="padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
                         <div class="font-bold text-xs" style="color: var(--text-muted);">Rata-rata booking per hari:</div>
                         <div id="val-rata-harian" class="font-extrabold text-md" style="color: #10b981; margin: 8px 0;">0,000 M / hari</div>
-                        <hr style="border-color: rgba(16,185,129,0.3); margin: 10px 0;">
+                        <hr style="border-color: rgba(16,185,129,0.2); margin: 10px 0;">
                         <div class="font-bold text-xs" style="color: var(--text-muted);">Proyeksi Akhir Tahun:</div>
                         <div id="val-proyeksi" class="font-extrabold text-sm" style="color: #10b981; margin: 8px 0;">0,000 M (0,0%)</div>
                     </div>
@@ -236,11 +259,11 @@
                 <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
                 
                 <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
-                    <div style="position: relative; width: 100%; height: 40px; background: rgba(100,116,139,0.2); border-radius: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
-                        <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, var(--c-primary), var(--c-accent)); border-radius: 20px; transition: width 1.5s ease;"></div>
+                    <div style="position: relative; width: 100%; height: 40px; background: rgba(0,0,0,0.3); border-radius: 20px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);">
+                        <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, var(--c-primary), var(--c-accent)); border-radius: 20px; transition: width 1.5s ease; box-shadow: 0 0 10px var(--c-accent);"></div>
                         <div id="rocket-icon" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; transition: left 1.5s ease; z-index: 10;">
                             <div style="font-size: 2.8rem; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));">🚀</div>
-                            <div id="rocket-val-badge" class="font-bold rounded" style="background-color: var(--c-accent); color: var(--text-on-accent); padding: 2px 8px; margin-top: -5px; font-size: 0.75rem; white-space: nowrap;">0,000 M</div>
+                            <div id="rocket-val-badge" class="font-bold rounded" style="background-color: var(--c-accent); color: var(--text-on-accent); padding: 2px 8px; margin-top: -5px; font-size: 0.75rem; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0,000 M</div>
                         </div>
                         <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.5;">🏁</div>
                     </div>
@@ -261,7 +284,7 @@
                     <div class="flex items-center gap-1 c-primary"><i class="far fa-calendar-alt"></i> Sisa Hari</div>
                     <div id="val-sisa-hari-kanan">0 Hari</div>
                 </div>
-                <div class="text-center rounded bg-body" style="border: 1px solid var(--border-color); padding: 15px 10px; margin-top: auto;">
+                <div class="text-center rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 15px 10px; margin-top: auto;">
                     <div class="font-bold text-xs" style="color: var(--text-muted);">Kebutuhan rata-rata / hari:</div>
                     <div id="val-keb-harian" class="font-extrabold text-md" style="color: #10b981; margin-top: 5px;">0,000 M</div>
                 </div>
@@ -280,7 +303,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.0 (Eye-Care & Auto-Save) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.5 (Silverstone & Matte Glass) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -302,17 +325,15 @@
 
     let portoChartObj = null; let trendChartObj = null; let globalDataSnapshot = null;
 
-    // --- FITUR SIMPAN TEMA PERMANEN (LOCAL STORAGE) ---
-    // Membaca memori saat web pertama kali dibuka
+    // --- MEMORI TEMA ---
     const savedTheme = localStorage.getItem('dmj_dashboard_theme') || 'klasik';
     document.getElementById('theme-selector').value = savedTheme;
     document.body.setAttribute('data-theme', savedTheme);
     Chart.defaults.color = savedTheme === 'klasik' ? '#64748b' : '#94a3b8';
 
-    // Menyimpan memori saat saklar tema diubah
     document.getElementById('theme-selector').addEventListener('change', (e) => {
         const selectedTheme = e.target.value;
-        localStorage.setItem('dmj_dashboard_theme', selectedTheme); // Simpan ke browser
+        localStorage.setItem('dmj_dashboard_theme', selectedTheme);
         document.body.setAttribute('data-theme', selectedTheme);
         Chart.defaults.color = selectedTheme === 'klasik' ? '#64748b' : '#94a3b8';
         if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
@@ -403,7 +424,7 @@
             portoChartObj = new Chart(ctxPorto, { type: 'bar', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: 2 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: {size: 9, weight: 'bold'} } } }, plugins: { legend: { display: false } } } });
         } else if (theme === 'gamifikasi') {
             centerText.style.display = 'none';
-            portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + '80'), borderColor: chartColors }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { grid: {color: 'rgba(150,150,150,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } });
+            portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + '80'), borderColor: chartColors }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { grid: {color: 'rgba(200,200,200,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } });
         }
 
         const dynamicContainer = document.getElementById('dynamic-leaderboards');
@@ -473,10 +494,10 @@
             textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TAHUNAN AKAN TERCAPAI.</span>';
             textKesimpulan.style.color = "#10b981";
         } else {
-            boxKesimpulan.style.backgroundColor = "rgba(239, 68, 68, 0.1)"; boxKesimpulan.style.border = "2px solid #ef4444";
-            iconKesimpulan.className = "fas fa-exclamation-triangle text-xl"; iconKesimpulan.style.color = "#ef4444";
+            boxKesimpulan.style.backgroundColor = "rgba(220, 38, 38, 0.1)"; boxKesimpulan.style.border = "2px solid #dc2626";
+            iconKesimpulan.className = "fas fa-exclamation-triangle text-xl"; iconKesimpulan.style.color = "#dc2626";
             textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span>';
-            textKesimpulan.style.color = "#ef4444";
+            textKesimpulan.style.color = "#dc2626";
         }
 
         let insights = [];
@@ -490,7 +511,7 @@
         }
 
         if (proyeksiAkhirTahun >= TARGET && TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata harian cabang.</div></li>`);
-        else if (TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">⚠️</span> <div>Butuh akselerasi! Kejar rata-rata harian cabang menjadi <strong style="color:#ef4444">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
+        else if (TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">⚠️</span> <div>Butuh akselerasi! Kejar rata-rata harian cabang menjadi <strong style="color:#dc2626">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
         
         if((umum.pofde || 0) > 0) {
             insights.push(`<li><span style="font-size:1.2rem;">💰</span> <div>Terdapat potensi sebesar <strong class="c-accent">${window.toM(umum.pofde)}</strong> (PO+FDE) yang siap dikawal menjadi realisasi bulan ini.</div></li>`);
@@ -525,7 +546,7 @@
             trendLabel.innerText = "SPEEDOMETER PENCAPAIAN TARGET";
             
             let sisaB = Math.max(0, TARGET - totalBooking);
-            let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#fbbf24' : '#f87171'; // Hijau, Amber, Merah Lembut
+            let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#f59e0b' : '#dc2626'; // Hijau, Kuning, Merah Racing
             const bgColorTrack = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
 
             trendChartObj = new Chart(ctxTrend, { 
