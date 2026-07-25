@@ -24,36 +24,10 @@
 
         .poster { width: 100%; min-height: 100vh; background-color: #ffffff; padding: 10px 15px 60px 15px; position: relative; display: flex; flex-direction: column; gap: 10px; }
         
-        /* WATERMARK OVERLAY TEPAT DI TENGAH DENGAN Z-INDEX TINGGI TAPI TEMBUS PANDANG */
-        .watermark { 
-            position: fixed !important; 
-            top: 50% !important; 
-            left: 50% !important; 
-            transform: translate(-50%, -50%) !important; 
-            width: 45vw; 
-            min-width: 350px; 
-            opacity: 0.03 !important; 
-            pointer-events: none !important; 
-            z-index: 40 !important; 
-        }
+        .watermark { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 45vw; min-width: 350px; opacity: 0.03 !important; pointer-events: none !important; z-index: 40 !important; }
 
-        .sticky-header {
-            position: sticky;
-            top: 0;
-            background-color: #ffffff;
-            z-index: 50;
-            margin: -10px -15px 10px -15px; 
-            padding: 10px 15px 0 15px;
-            box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
-        }
-
-        .sticky-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 100;
-        }
+        .sticky-header { position: sticky; top: 0; background-color: #ffffff; z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); }
+        .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; }
 
         .c-navy { color: #0a1d56; } .bg-navy { background-color: #0a1d56; color: #fff; }
         .c-gold { color: #f59e0b; } .bg-gold { background-color: #f59e0b; color: #0a1d56; }
@@ -72,32 +46,26 @@
         
         .header-border { border-bottom: 3px solid #0a1d56; padding-bottom: 10px; margin-bottom: 5px; }
         .grid-7 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 2px solid #0a1d56; border-bottom: 1px solid #ccc; gap: 5px; padding: 10px 0;}
-        
         .grid-dynamic { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 15px;} 
-        
         .grid-trend { display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: 15px; }
         @media (max-width: 1024px) { .grid-trend { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 768px) { 
-            .grid-trend { grid-template-columns: 1fr; } 
-            .header-border { flex-direction: column; gap: 15px; text-align: center; } 
-            .header-border > div { width: 100% !important; justify-content: center !important; } 
-        }
+        @media (max-width: 768px) { .grid-trend { grid-template-columns: 1fr; } .header-border { flex-direction: column; gap: 15px; text-align: center; } .header-border > div { width: 100% !important; justify-content: center !important; } }
 
         .stat-box { padding: 10px; border-right: 1px solid #ccc; } .stat-box:last-child { border-right: none; }
         .top-bar { background-color: #e5e7eb; padding: 8px 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #d1d5db; }
         
         .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
-        
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
         
         .porto-legend { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
         .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
 
-        /* PANEL SMART INSIGHTS */
         .insight-panel { background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-top: 5px; position: relative; z-index: 10; }
         .insight-title { font-weight: 800; color: #0a1d56; font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
         .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: #334155; }
         .insight-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; font-weight: bold; }
+        
+        .theme-select { padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 0.8rem; background-color: #f8fafc; color: #0a1d56; cursor: pointer; outline: none;}
     </style>
 </head>
 <body>
@@ -107,11 +75,19 @@
 <div class="poster">
     <img src="logo.png" class="watermark" alt="Watermark">
 
-    <!-- WADAH HEADER STICKY -->
+    <!-- HEADER -->
     <div class="sticky-header">
         <div class="flex justify-between items-center top-bar">
             <div class="flex items-center gap-2 c-navy font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
-            <div class="font-bold text-xs c-navy"><i class="fas fa-satellite-dish" style="color: #16a34a;"></i> LIVE SYSTEM</div>
+            <div class="flex items-center gap-2">
+                <!-- SAKLAR TEMA -->
+                <select id="theme-selector" class="theme-select">
+                    <option value="klasik">🎨 TEMA: KLASIK</option>
+                    <option value="akselerasi">⚡ TEMA: AKSELERASI</option>
+                    <option value="gamifikasi">🚀 TEMA: ROKET</option>
+                </select>
+                <div class="font-bold text-xs c-navy"><i class="fas fa-satellite-dish" style="color: #16a34a;"></i> LIVE SYSTEM</div>
+            </div>
         </div>
 
         <div class="flex justify-between items-center header-border">
@@ -133,7 +109,7 @@
         </div>
     </div>
 
-    <!-- 1. OVERVIEW -->
+    <!-- OVERVIEW -->
     <div>
         <div class="bg-navy font-bold text-xs text-center" style="display: inline-block; padding: 4px 15px; border-radius: 5px 5px 0 0;">OVERVIEW CABANG</div>
         <div class="grid-7 bg-white rounded" style="border-radius: 0 5px 5px 5px;">
@@ -147,15 +123,15 @@
         </div>
     </div>
 
-    <!-- 2. AREA DINAMIS (PORTOFOLIO & LEADERBOARDS) -->
+    <!-- AREA DINAMIS (PORTOFOLIO) -->
     <div id="dynamic-leaderboards" class="grid-dynamic">
         <div class="border-navy rounded flex-col bg-white">
             <div class="bg-navy text-center font-bold text-sm" style="padding: 8px;">BOOKING BY PORTOFOLIO</div>
             <div class="flex items-center" style="padding: 15px; height: 100%;">
-                <div style="width: 45%; position: relative;">
+                <div style="width: 45%; position: relative;" id="porto-canvas-wrapper">
                     <canvas id="portoChart" height="150"></canvas>
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                        <span style="font-size: 0.65rem; font-weight: bold; color: #555;">TOTAL BOOKING</span>
+                    <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
+                        <span style="font-size: 0.65rem; font-weight: bold; color: #555;">TOTAL</span>
                         <span id="val-booking-donut" class="font-extrabold c-navy text-sm">0,000 M</span>
                     </div>
                 </div>
@@ -165,12 +141,12 @@
         </div>
     </div>
 
-    <!-- 3. TREND SUMMARY -->
+    <!-- TREND SUMMARY -->
     <div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 15px; background-color: #ffffff;">
         <div class="flex items-center gap-2" style="margin-bottom: 15px;">
             <div class="bg-navy rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 35px; height: 35px;">1</div>
             <div>
-                <h2 class="font-extrabold c-navy text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND (YEAR-TO-DATE)</h2>
+                <h2 id="trend-title" class="font-extrabold c-navy text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND (YEAR-TO-DATE)</h2>
                 <p class="font-bold text-xs" style="color: #555; margin-top: 3px;">APAKAH TARGET TAHUNAN BISA TERCAPAI?</p>
             </div>
         </div>
@@ -207,9 +183,24 @@
                 </div>
             </div>
 
-            <div style="position: relative; padding: 0 10px;">
-                <div class="font-bold text-xs text-center" style="color: #555; margin-bottom: 10px;">TREND BOOKING YTD (AKUMULATIF)</div>
-                <div style="height: 180px;"><canvas id="trendChart"></canvas></div>
+            <!-- AREA VISUALISASI TREND YANG BERUBAH-UBAH SESUAI TEMA -->
+            <div style="position: relative; padding: 0 10px;" id="trend-visual-container">
+                <div id="trend-label" class="font-bold text-xs text-center" style="color: #555; margin-bottom: 10px;">TREND BOOKING YTD (AKUMULATIF)</div>
+                <!-- Canvas untuk Tema Klasik & Speedometer -->
+                <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
+                
+                <!-- Div untuk Tema Roket (Disembunyikan secara default) -->
+                <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
+                    <div style="position: relative; width: 100%; height: 40px; background: #e5e7eb; border-radius: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+                        <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b, #ef4444); border-radius: 20px; transition: width 1.5s ease;"></div>
+                        <div id="rocket-icon" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; transition: left 1.5s ease; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); z-index: 10;">🚀</div>
+                        <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.5;">🏁</div>
+                    </div>
+                    <div class="flex justify-between font-bold text-xs" style="margin-top: 15px; color: #555;">
+                        <span>START (0)</span>
+                        <span id="rocket-target-text" style="color: #16a34a;">FINISH</span>
+                    </div>
+                </div>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -230,7 +221,7 @@
         </div>
     </div>
 
-    <!-- 4. SMART INSIGHTS -->
+    <!-- SMART INSIGHTS -->
     <div class="insight-panel">
         <div class="insight-title"><i class="fas fa-lightbulb" style="color: #f59e0b;"></i> SMART INSIGHTS CABANG</div>
         <ul id="smart-insights-list" class="insight-list">
@@ -239,10 +230,9 @@
     </div>
 </div>
 
-<!-- FOOTER STICKY -->
 <div class="sticky-footer bg-navy flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart" style="color: #f59e0b;"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 2.0 Dinamis | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 2.1 Tema | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -270,19 +260,14 @@
         document.getElementById('realtime-clock').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
     }, 1000);
 
-    let portoChart = new Chart(document.getElementById('portoChart').getContext('2d'), {
-        type: 'doughnut',
-        data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 0, cutout: '75%' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-    });
+    // Global variables to store chart instances and data
+    let portoChartObj = null;
+    let trendChartObj = null;
+    let globalDataSnapshot = null; // Menyimpan data terbaru dari database
 
-    let trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
-        type: 'line',
-        data: { labels: [], datasets: [
-            { label: 'Realisasi', data: [], borderColor: '#16a34a', backgroundColor: '#16a34a', borderWidth: 2, tension: 0.1, pointRadius: 2 },
-            { label: 'Proyeksi', data: [], borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 }
-        ]},
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { ticks: { font: { size: 10 }, maxTicksLimit: 12 } } }, plugins: { legend: { display: false } } }
+    // Saklar Tema Listener
+    document.getElementById('theme-selector').addEventListener('change', () => {
+        if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
     });
 
     onSnapshot(docRef, (docSnap) => {
@@ -290,202 +275,199 @@
         if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
 
         if (docSnap.exists()) {
-            const data = docSnap.data();
-            const umum = data.umum || {};
-            const kategoriList = data.kategoriList || [];
-            const dataNilai = data.dataNilai || {};
-
-            let totalBooking = 0;
-            let portoData = [];
-            
-            if (dataNilai['PORTOFOLIO']) {
-                for (const [name, val] of Object.entries(dataNilai['PORTOFOLIO'])) {
-                    totalBooking += (val || 0);
-                    portoData.push({ name, val: val || 0 });
-                }
-            }
-            
-            portoData.sort((a,b) => b.val - a.val);
-
-            const TARGET = umum.target_amount || 0;
-            const ACHIEV = TARGET > 0 ? ((totalBooking / TARGET) * 100).toFixed(2) : "0.00";
-            
-            document.getElementById('val-booking-amount').innerText = toM(totalBooking);
-            document.getElementById('val-target-atas').innerText = toM(TARGET);
-            document.getElementById('val-achievement').innerText = ACHIEV + "%";
-            document.getElementById('val-captive').innerText = (umum.captive || 0).toFixed(2) + "%";
-            document.getElementById('val-walr').innerText = (umum.walr || 0).toFixed(2) + "%";
-            document.getElementById('val-pofde').innerText = toM(umum.pofde || 0);
-            document.getElementById('val-ia').innerText = toM(umum.ia || 0);
-
-            document.getElementById('val-booking-donut').innerText = toM(totalBooking);
-            let legendHTML = '';
-            let chartLabels = [];
-            let chartValues = [];
-            let chartColors = [];
-
-            portoData.forEach((item, index) => {
-                const color = colorPalette[index % colorPalette.length];
-                chartLabels.push(item.name);
-                chartValues.push(item.val);
-                chartColors.push(color);
-                
-                if (index < 8) {
-                    legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${toM(item.val)}</span></div>`;
-                }
-            });
-            if (portoData.length > 8) {
-                let sisaVal = portoData.slice(8).reduce((sum, curr) => sum + curr.val, 0);
-                legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${toM(sisaVal)}</span></div>`;
-            }
-
-            document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:#888;">Belum ada portofolio.</div>';
-            portoChart.data.labels = chartLabels;
-            portoChart.data.datasets[0].data = chartValues;
-            portoChart.data.datasets[0].backgroundColor = chartColors;
-            portoChart.update();
-
-            // RENDER LEADERBOARD DINAMIS DENGAN PROGRESS BAR
-            const dynamicContainer = document.getElementById('dynamic-leaderboards');
-            while (dynamicContainer.children.length > 1) { dynamicContainer.removeChild(dynamicContainer.lastChild); }
-
-            kategoriList.forEach(cat => {
-                if(cat !== 'PORTOFOLIO') {
-                    let catItems = [];
-                    if (dataNilai[cat]) {
-                        for (const [name, val] of Object.entries(dataNilai[cat])) { catItems.push({ name, val: val || 0 }); }
-                    }
-                    catItems.sort((a,b) => b.val - a.val);
-
-                    // Cari nilai tertinggi di kategori ini untuk jadi patokan 100% panjang garis
-                    let maxVal = catItems.length > 0 ? catItems[0].val : 1; 
-                    if(maxVal === 0) maxVal = 1; // Mencegah error pembagian nol
-
-                    let listHTML = '';
-                    catItems.slice(0, 5).forEach((item, index) => {
-                        let badgeClass = index === 0 ? 'b-1' : index === 1 ? 'b-2' : index === 2 ? 'b-3' : 'b-other';
-                        let barWidth = (item.val / maxVal) * 100;
-                        
-                        // Layout Bar Baru
-                        listHTML += `
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 8px;">
-                            <div class="flex items-center" style="width: 35%; font-size: 0.8rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                                <span class="badge-num ${badgeClass}">${index+1}</span> 
-                                ${item.name}
-                            </div>
-                            <div class="flex items-center" style="width: 65%; justify-content: flex-end;">
-                                <div style="width: 50%; margin-right: 10px; background-color: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;">
-                                    <div style="width: ${barWidth}%; background-color: #16a34a; height: 100%; transition: width 0.5s ease;"></div>
-                                </div>
-                                <div class="c-navy font-bold" style="width: 45%; text-align: right; font-size: 0.85rem;">${toM(item.val)}</div>
-                            </div>
-                        </div>`;
-                    });
-
-                    if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:#888; text-align:center;">Belum ada data</div>';
-
-                    const box = document.createElement('div');
-                    box.className = 'border-navy rounded flex-col bg-white';
-                    box.innerHTML = `
-                        <div class="bg-navy text-center font-bold text-sm" style="padding: 8px; text-transform: uppercase;"><i class="fas fa-trophy c-gold"></i> TOP 5 ${cat}</div>
-                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                            ${listHTML}
-                        </div>
-                    `;
-                    dynamicContainer.appendChild(box);
-                }
-            });
-
-            let dateObj = new Date(umum.tanggal || new Date());
-            const thn = dateObj.getFullYear();
-            const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
-            
-            const startOfYear = new Date(thn, 0, 1);
-            const endOfYear = new Date(thn, 11, 31);
-            
-            const diffTime = Math.abs(dateObj - startOfYear);
-            const hariBerjalan = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-            
-            const totalDaysInYear = Math.ceil(Math.abs(endOfYear - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
-            const sisaHari = Math.max(0, totalDaysInYear - hariBerjalan);
-
-            document.getElementById('val-periode').innerText = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
-            document.getElementById('val-target-tahun').innerText = `Target Tahun ${thn}`;
-            document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
-            document.getElementById('val-sisa-hari').innerText = `${sisaHari} Hari`;
-            document.getElementById('val-sisa-hari-kanan').innerText = `${sisaHari} Hari`;
-
-            const sisaTarget = Math.max(0, TARGET - totalBooking);
-            const rataHarian = hariBerjalan > 0 ? (totalBooking / hariBerjalan) : 0; 
-            const proyeksiAkhirTahun = rataHarian * totalDaysInYear;
-            const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
-            const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
-
-            document.getElementById('val-target-kiri').innerText = toM(TARGET);
-            document.getElementById('val-trend-realisasi').innerText = toM(totalBooking);
-            document.getElementById('val-trend-achiev').innerText = ACHIEV + "%";
-            document.getElementById('val-trend-sisa').innerText = toM(sisaTarget);
-            document.getElementById('val-kanan-sisa').innerText = toM(sisaTarget);
-            
-            document.getElementById('val-rata-harian').innerText = toM(rataHarian) + " / hari";
-            document.getElementById('val-proyeksi').innerText = toM(proyeksiAkhirTahun) + " (" + persentaseProyeksi + "%)";
-            document.getElementById('val-keb-harian').innerText = toM(kebutuhanHarian) + " / hari";
-
-            const boxKesimpulan = document.getElementById('box-kesimpulan');
-            if(proyeksiAkhirTahun >= TARGET && TARGET > 0) {
-                boxKesimpulan.className = "border-green flex items-center justify-center gap-2 rounded bg-green";
-                boxKesimpulan.style.backgroundColor = "#f0fdf4"; boxKesimpulan.style.borderColor = "#15803d";
-                boxKesimpulan.innerHTML = '<i class="fas fa-check-circle c-green text-xl"></i><div class="font-extrabold c-green text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TAHUNAN AKAN TERCAPAI.</span></div>';
-            } else {
-                boxKesimpulan.className = "border-red flex items-center justify-center gap-2 rounded";
-                boxKesimpulan.style.backgroundColor = "#fef2f2"; boxKesimpulan.style.borderColor = "#dc2626";
-                boxKesimpulan.innerHTML = '<i class="fas fa-exclamation-triangle c-red text-xl"></i><div class="font-extrabold c-red text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>';
-            }
-
-            let insights = [];
-            if (portoData.length > 0 && totalBooking > 0) {
-                let topPorto = portoData[0];
-                let porsi = ((topPorto.val / totalBooking) * 100).toFixed(1);
-                insights.push(`<li><span>✅</span> <div>Portofolio <strong class="c-navy">${topPorto.name}</strong> mendominasi pencapaian dengan kontribusi <strong class="c-navy">${toM(topPorto.val)}</strong> (${porsi}% dari total booking cabang).</div></li>`);
-            }
-
-            if (proyeksiAkhirTahun >= TARGET && TARGET > 0) {
-                insights.push(`<li><span>🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata booking harian agar target tahunan aman tercapai.</div></li>`);
-            } else if (TARGET > 0) {
-                insights.push(`<li><span>⚠️</span> <div>Akselerasi masih sangat dibutuhkan. Tingkatkan rata-rata booking menjadi <strong class="c-red">${toM(kebutuhanHarian)} / hari</strong> untuk mengejar target tahunan.</div></li>`);
-            } else {
-                insights.push(`<li><span>ℹ️</span> <div>Target tahunan belum diatur. Silakan perbarui target di panel input untuk melihat proyeksi pencapaian.</div></li>`);
-            }
-            insights.push(`<li><span>📊</span> <div>Kualitas portofolio tercatat di angka <strong>Captive Rate ${(umum.captive || 0).toFixed(2)}%</strong> dan profitabilitas <strong>WALR ${(umum.walr || 0).toFixed(2)}%</strong>.</div></li>`);
-            document.getElementById('smart-insights-list').innerHTML = insights.join('');
-
-            let trendLabels = ['Jan', 'Mar', 'Mei', 'Jul', 'Sep', 'Nov', 'Des']; 
-            let xLabels = [];
-            let realisasiData = [];
-            let proyeksiData = [];
-            
-            for(let i=1; i<=12; i++) {
-                xLabels.push(blnNames[i-1]);
-                let daysAtEndOfMonth = new Date(thn, i, 0).getDate();
-                let accumulatedDays = new Date(thn, i, 0) - startOfYear;
-                accumulatedDays = Math.ceil(accumulatedDays / (1000*60*60*24));
-
-                if(i <= dateObj.getMonth() + 1) {
-                    realisasiData.push(rataHarian * accumulatedDays);
-                    proyeksiData.push(rataHarian * accumulatedDays);
-                } else {
-                    realisasiData.push(null);
-                    proyeksiData.push(rataHarian * accumulatedDays);
-                }
-            }
-
-            trendChart.options.scales.y.max = Math.max(TARGET, proyeksiAkhirTahun) * 1.1;
-            trendChart.data.labels = xLabels;
-            trendChart.data.datasets[0].data = realisasiData;
-            trendChart.data.datasets[1].data = proyeksiData;
-            trendChart.update();
+            globalDataSnapshot = docSnap.data();
+            renderDashboard(globalDataSnapshot); // Panggil fungsi utama untuk render
         }
     });
+
+    function renderDashboard(data) {
+        const theme = document.getElementById('theme-selector').value;
+        const umum = data.umum || {};
+        const kategoriList = data.kategoriList || [];
+        const dataNilai = data.dataNilai || {};
+
+        let totalBooking = 0;
+        let portoData = [];
+        
+        if (dataNilai['PORTOFOLIO']) {
+            for (const [name, val] of Object.entries(dataNilai['PORTOFOLIO'])) {
+                totalBooking += (val || 0);
+                portoData.push({ name, val: val || 0 });
+            }
+        }
+        portoData.sort((a,b) => b.val - a.val);
+
+        const TARGET = umum.target_amount || 0;
+        const ACHIEV = TARGET > 0 ? ((totalBooking / TARGET) * 100).toFixed(2) : "0.00";
+        
+        // Update Teks Dasar (Sama untuk semua tema)
+        document.getElementById('val-booking-amount').innerText = toM(totalBooking);
+        document.getElementById('val-target-atas').innerText = toM(TARGET);
+        document.getElementById('val-achievement').innerText = ACHIEV + "%";
+        document.getElementById('val-captive').innerText = (umum.captive || 0).toFixed(2) + "%";
+        document.getElementById('val-walr').innerText = (umum.walr || 0).toFixed(2) + "%";
+        document.getElementById('val-pofde').innerText = toM(umum.pofde || 0);
+        document.getElementById('val-ia').innerText = toM(umum.ia || 0);
+        document.getElementById('val-booking-donut').innerText = toM(totalBooking);
+
+        // Siapkan Data Portofolio
+        let legendHTML = '';
+        let chartLabels = [];
+        let chartValues = [];
+        let chartColors = [];
+
+        portoData.forEach((item, index) => {
+            const color = colorPalette[index % colorPalette.length];
+            chartLabels.push(item.name);
+            chartValues.push(item.val);
+            chartColors.push(color);
+            if (index < 8) legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${toM(item.val)}</span></div>`;
+        });
+        if (portoData.length > 8) {
+            let sisaVal = portoData.slice(8).reduce((sum, curr) => sum + curr.val, 0);
+            legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${toM(sisaVal)}</span></div>`;
+        }
+        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:#888;">Belum ada data.</div>';
+
+        // ----------------------------------------------------
+        // LOGIKA PEMILIHAN TEMA UNTUK CHART PORTOFOLIO
+        // ----------------------------------------------------
+        if(portoChartObj) portoChartObj.destroy(); // Hapus chart lama agar tidak bertumpuk
+        
+        const ctxPorto = document.getElementById('portoChart').getContext('2d');
+        const centerText = document.getElementById('porto-center-text');
+        
+        if (theme === 'klasik') {
+            centerText.style.display = 'flex';
+            portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        } else if (theme === 'akselerasi') {
+            centerText.style.display = 'none'; // Sembunyikan teks tengah di bar chart
+            portoChartObj = new Chart(ctxPorto, { type: 'bar', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: {size: 9, weight: 'bold'} } } }, plugins: { legend: { display: false } } } });
+        } else if (theme === 'gamifikasi') {
+            centerText.style.display = 'none';
+            portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + '80'), borderColor: chartColors }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { ticks: { display: false } } }, plugins: { legend: { display: false } } } });
+        }
+
+        // Render Dinamis Kotak Bawah (Marketing & Dealer - Tetap Bar Hijau)
+        const dynamicContainer = document.getElementById('dynamic-leaderboards');
+        while (dynamicContainer.children.length > 1) { dynamicContainer.removeChild(dynamicContainer.lastChild); }
+        kategoriList.forEach(cat => {
+            if(cat !== 'PORTOFOLIO') {
+                let catItems = [];
+                if (dataNilai[cat]) for (const [name, val] of Object.entries(dataNilai[cat])) catItems.push({ name, val: val || 0 });
+                catItems.sort((a,b) => b.val - a.val);
+                let maxVal = catItems.length > 0 ? catItems[0].val : 1; if(maxVal === 0) maxVal = 1;
+                let listHTML = '';
+                catItems.slice(0, 5).forEach((item, index) => {
+                    let badgeClass = index === 0 ? 'b-1' : index === 1 ? 'b-2' : index === 2 ? 'b-3' : 'b-other';
+                    let barWidth = (item.val / maxVal) * 100;
+                    listHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 8px;">
+                        <div class="flex items-center" style="width: 35%; font-size: 0.8rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"><span class="badge-num ${badgeClass}">${index+1}</span> ${item.name}</div>
+                        <div class="flex items-center" style="width: 65%; justify-content: flex-end;">
+                            <div style="width: 50%; margin-right: 10px; background-color: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;"><div style="width: ${barWidth}%; background-color: #16a34a; height: 100%;"></div></div>
+                            <div class="c-navy font-bold" style="width: 45%; text-align: right; font-size: 0.85rem;">${toM(item.val)}</div></div></div>`;
+                });
+                if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:#888; text-align:center;">Belum ada data</div>';
+                const box = document.createElement('div');
+                box.className = 'border-navy rounded flex-col bg-white';
+                box.innerHTML = `<div class="bg-navy text-center font-bold text-sm" style="padding: 8px; text-transform: uppercase;"><i class="fas fa-trophy c-gold"></i> TOP 5 ${cat}</div><div style="padding: 15px; display: flex; flex-direction: column; justify-content: center; height: 100%;">${listHTML}</div>`;
+                dynamicContainer.appendChild(box);
+            }
+        });
+
+        // Kalkulasi Tanggal & Hari
+        let dateObj = new Date(umum.tanggal || new Date());
+        const thn = dateObj.getFullYear();
+        const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+        const startOfYear = new Date(thn, 0, 1); const endOfYear = new Date(thn, 11, 31);
+        const diffTime = Math.abs(dateObj - startOfYear);
+        const hariBerjalan = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const totalDaysInYear = Math.ceil(Math.abs(endOfYear - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
+        const sisaHari = Math.max(0, totalDaysInYear - hariBerjalan);
+
+        // Update Kotak Ringkasan Tengah
+        document.getElementById('val-periode').innerText = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
+        document.getElementById('val-target-tahun').innerText = `Target Tahun ${thn}`;
+        document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
+        document.getElementById('val-sisa-hari').innerText = `${sisaHari} Hari`;
+        document.getElementById('val-sisa-hari-kanan').innerText = `${sisaHari} Hari`;
+
+        const sisaTarget = Math.max(0, TARGET - totalBooking);
+        const rataHarian = hariBerjalan > 0 ? (totalBooking / hariBerjalan) : 0; 
+        const proyeksiAkhirTahun = rataHarian * totalDaysInYear;
+        const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
+        const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
+
+        document.getElementById('val-target-kiri').innerText = toM(TARGET);
+        document.getElementById('val-trend-realisasi').innerText = toM(totalBooking);
+        document.getElementById('val-trend-achiev').innerText = ACHIEV + "%";
+        document.getElementById('val-trend-sisa').innerText = toM(sisaTarget);
+        document.getElementById('val-kanan-sisa').innerText = toM(sisaTarget);
+        document.getElementById('val-rata-harian').innerText = toM(rataHarian) + " / hari";
+        document.getElementById('val-proyeksi').innerText = toM(proyeksiAkhirTahun) + " (" + persentaseProyeksi + "%)";
+        document.getElementById('val-keb-harian').innerText = toM(kebutuhanHarian) + " / hari";
+
+        const boxKesimpulan = document.getElementById('box-kesimpulan');
+        if(proyeksiAkhirTahun >= TARGET && TARGET > 0) {
+            boxKesimpulan.className = "border-green flex items-center justify-center gap-2 rounded bg-green"; boxKesimpulan.style.backgroundColor = "#f0fdf4"; boxKesimpulan.style.borderColor = "#15803d";
+            boxKesimpulan.innerHTML = '<i class="fas fa-check-circle c-green text-xl"></i><div class="font-extrabold c-green text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TAHUNAN AKAN TERCAPAI.</span></div>';
+        } else {
+            boxKesimpulan.className = "border-red flex items-center justify-center gap-2 rounded"; boxKesimpulan.style.backgroundColor = "#fef2f2"; boxKesimpulan.style.borderColor = "#dc2626";
+            boxKesimpulan.innerHTML = '<i class="fas fa-exclamation-triangle c-red text-xl"></i><div class="font-extrabold c-red text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>';
+        }
+
+        // Smart Insights
+        let insights = [];
+        if (portoData.length > 0 && totalBooking > 0) { let topP = portoData[0]; insights.push(`<li><span>✅</span> <div>Portofolio <strong class="c-navy">${topP.name}</strong> mendominasi pencapaian dengan kontribusi <strong class="c-navy">${toM(topP.val)}</strong> (${((topP.val / totalBooking) * 100).toFixed(1)}%).</div></li>`); }
+        if (proyeksiAkhirTahun >= TARGET && TARGET > 0) insights.push(`<li><span>🌟</span> <div>Tren <strong>sangat baik</strong>. Pertahankan ritme booking harian.</div></li>`);
+        else if (TARGET > 0) insights.push(`<li><span>⚠️</span> <div>Akselerasi dibutuhkan. Tingkatkan rata-rata booking jadi <strong class="c-red">${toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
+        document.getElementById('smart-insights-list').innerHTML = insights.join('');
+
+        // ----------------------------------------------------
+        // LOGIKA PEMILIHAN TEMA UNTUK VISUALISASI TREND
+        // ----------------------------------------------------
+        if(trendChartObj) trendChartObj.destroy();
+        const ctxTrend = document.getElementById('trendChart').getContext('2d');
+        const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
+        const rocketContainer = document.getElementById('rocket-container');
+        const trendLabel = document.getElementById('trend-label');
+
+        if (theme === 'klasik') {
+            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none';
+            trendLabel.innerText = "TREND BOOKING YTD (AKUMULATIF)";
+            
+            let xLabels = []; let realisasiData = []; let proyeksiData = [];
+            for(let i=1; i<=12; i++) {
+                xLabels.push(blnNames[i-1]);
+                let accDays = Math.ceil((new Date(thn, i, 0) - startOfYear) / (1000*60*60*24));
+                if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
+                else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
+            }
+            trendChartObj = new Chart(ctxTrend, { type: 'line', data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#16a34a', backgroundColor: '#16a34a', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } });
+        } 
+        else if (theme === 'akselerasi') {
+            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none';
+            trendLabel.innerText = "SPEEDOMETER PENCAPAIAN TARGET";
+            
+            let sisaB = Math.max(0, TARGET - totalBooking);
+            let warnaSpeed = ACHIEV >= 100 ? '#16a34a' : ACHIEV >= 50 ? '#f59e0b' : '#ef4444';
+            
+            trendChartObj = new Chart(ctxTrend, { type: 'doughnut', data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, '#e5e7eb'], borderWidth: 0 }] }, options: { rotation: 270, circumference: 180, cutout: '80%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        } 
+        else if (theme === 'gamifikasi') {
+            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'flex';
+            trendLabel.innerText = "AKSELERASI ROKET PENCAPAIAN TAHUNAN";
+            
+            let pct = parseFloat(ACHIEV);
+            if(pct > 100) pct = 100;
+            document.getElementById('rocket-target-text').innerText = `FINISH (${toM(TARGET)})`;
+            // Animasi jalannya roket via style
+            setTimeout(() => {
+                document.getElementById('rocket-track').style.width = pct + '%';
+                document.getElementById('rocket-icon').style.left = pct + '%';
+            }, 100);
+        }
+    }
 </script>
 </body>
 </html>
