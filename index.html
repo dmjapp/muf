@@ -303,14 +303,14 @@
                 chartValues.push(item.val);
                 chartColors.push(color);
                 
-                // Ambil Top 6 saja untuk legend agar tidak kepanjangan
-                if (index < 6) {
+                // Ambil Top 8 saja untuk legend agar tidak kepanjangan
+                if (index < 8) {
                     legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${toM(item.val)}</span></div>`;
                 }
             });
-            if (portoData.length > 6) {
-                let sisaVal = portoData.slice(6).reduce((sum, curr) => sum + curr.val, 0);
-                legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 6})</div> <span>${toM(sisaVal)}</span></div>`;
+            if (portoData.length > 8) {
+                let sisaVal = portoData.slice(8).reduce((sum, curr) => sum + curr.val, 0);
+                legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${toM(sisaVal)}</span></div>`;
             }
 
             document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:#888;">Belum ada portofolio.</div>';
