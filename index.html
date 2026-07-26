@@ -8,130 +8,78 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* CSS VARIABEL TEMA DINAMIS */
         :root {
-            --bg-body: #f3f4f6;
-            --bg-panel: #ffffff;
-            --text-main: #334155;
-            --text-muted: #64748b;
-            --c-primary: #0a1d56;
-            --text-on-primary: #ffffff;
-            --c-accent: #f59e0b;
-            --text-on-accent: #0a1d56;
-            --radius: 8px;
-            --border-color: #cbd5e1;
+            --bg-body: #f3f4f6; --bg-panel: #ffffff;
+            --text-main: #334155; --text-muted: #64748b;
+            --c-primary: #0a1d56; --text-on-primary: #ffffff;
+            --c-accent: #f59e0b; --text-on-accent: #0a1d56;
+            --radius: 8px; --border-color: #cbd5e1;
             --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1);
             --font-angka: Arial, Helvetica, sans-serif;
         }
 
-        /* TEMA AKSELERASI (SILVERSTONE - PREMIUM SPORTY) */
         body[data-theme="akselerasi"] {
-            --bg-body: #e5e7eb;
-            --bg-panel: #f8fafc;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --c-primary: #dc2626; 
-            --text-on-primary: #ffffff;
-            --c-accent: #111827; 
-            --text-on-accent: #ffffff;
-            --radius: 4px;
-            --border-color: #cbd5e1;
+            --bg-body: #e5e7eb; --bg-panel: #f8fafc;
+            --text-main: #1e293b; --text-muted: #64748b;
+            --c-primary: #dc2626; --text-on-primary: #ffffff;
+            --c-accent: #111827; --text-on-accent: #ffffff;
+            --radius: 4px; --border-color: #cbd5e1;
             --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8);
             --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05);
-            --font-angka: Arial, Helvetica, sans-serif;
         }
 
-        /* TEMA ROKET (MATTE MINT GLASSMORPHISM) */
         body[data-theme="gamifikasi"] {
-            --bg-body: #ccfbf1; 
-            --bg-panel: rgba(255, 255, 255, 0.45); 
-            --text-main: #134e4a; 
-            --text-muted: #0f766e;
-            --c-primary: #047857; 
-            --text-on-primary: #ffffff;
-            --c-accent: #0ea5e9; 
-            --text-on-accent: #ffffff;
-            --radius: 20px;
-            --border-color: rgba(255, 255, 255, 0.6);
+            --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); 
+            --text-main: #134e4a; --text-muted: #0f766e;
+            --c-primary: #047857; --text-on-primary: #ffffff;
+            --c-accent: #0ea5e9; --text-on-accent: #ffffff;
+            --radius: 20px; --border-color: rgba(255, 255, 255, 0.6);
             --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            --header-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-            --font-angka: Arial, Helvetica, sans-serif;
         }
 
-        /* TEMA FORMULA 1 (DIGITAL TELEMETRY) */
         body[data-theme="formula1"] {
-            --bg-body: #0a0a0a; 
-            --bg-panel: #171717; 
-            --text-main: #f8fafc;
-            --text-muted: #a1a1aa;
-            --c-primary: #ef4444; 
-            --text-on-primary: #ffffff;
-            --c-accent: #10b981; 
-            --text-on-accent: #0a0a0a;
-            --radius: 2px; 
-            --border-color: #27272a;
+            --bg-body: #0a0a0a; --bg-panel: #171717; 
+            --text-main: #f8fafc; --text-muted: #a1a1aa;
+            --c-primary: #ef4444; --text-on-primary: #ffffff;
+            --c-accent: #10b981; --text-on-accent: #0a0a0a;
+            --radius: 2px; --border-color: #27272a;
             --panel-shadow: 0 0 10px rgba(0,0,0,0.8);
-            --header-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
             --font-angka: 'Courier New', Courier, monospace; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; }
+        html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; transition: all 0.4s ease; }
         
         #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0a1d56; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; color: white; }
-        #splash-screen img { width: 180px; height: auto; margin-bottom: 20px; animation: pulse 1.5s infinite; }
-        #splash-screen .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #f59e0b; border-radius: 50%; animation: spin 1s linear infinite; margin-top: 15px; }
-        #splash-screen h2 { font-size: 16px; font-weight: bold; margin-top: 10px; color: #f59e0b; }
+        #splash-screen img { width: 180px; margin-bottom: 20px; animation: pulse 1.5s infinite; }
+        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #f59e0b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-top: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; position: relative; display: flex; flex-direction: column; gap: 10px; }
-        .watermark { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 45vw; min-width: 350px; opacity: 0.03 !important; pointer-events: none !important; z-index: 40 !important; }
+        .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; display: flex; flex-direction: column; gap: 10px; }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45vw; min-width: 350px; opacity: 0.03; pointer-events: none; z-index: 40; }
 
-        /* BLUR KACA KHUSUS TEMA MINT */
-        body[data-theme="gamifikasi"] .sticky-header, 
-        body[data-theme="gamifikasi"] .bg-panel, 
-        body[data-theme="gamifikasi"] .insight-panel,
-        body[data-theme="gamifikasi"] .top-bar {
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-
-        .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: var(--header-shadow); transition: background-color 0.4s ease; border-bottom: 1px solid var(--border-color);}
+        body[data-theme="gamifikasi"] .sticky-header, body[data-theme="gamifikasi"] .bg-panel, body[data-theme="gamifikasi"] .insight-panel, body[data-theme="gamifikasi"] .top-bar { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: var(--header-shadow); border-bottom: 1px solid var(--border-color);}
         .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.1); }
 
-        .c-primary { color: var(--c-primary); transition: color 0.4s ease;} 
-        .bg-primary { background-color: var(--c-primary); color: var(--text-on-primary); transition: background-color 0.4s ease;}
-        .c-accent { color: var(--c-accent); transition: color 0.4s ease;} 
-        .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); transition: background-color 0.4s ease;}
+        .c-primary { color: var(--c-primary); } .bg-primary { background-color: var(--c-primary); color: var(--text-on-primary); }
+        .c-accent { color: var(--c-accent); } .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); }
+        .bg-panel { background-color: var(--bg-panel); box-shadow: var(--panel-shadow); }
+        .border-primary { border: 2px solid var(--c-primary); } .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; }
         
-        .bg-panel { background-color: var(--bg-panel); box-shadow: var(--panel-shadow); transition: all 0.4s ease; }
-        .border-primary { border: 2px solid var(--c-primary); transition: border-color 0.4s ease;} 
-        .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; transition: border-color 0.4s ease;}
-        
-        .rounded { border-radius: var(--radius); transition: border-radius 0.4s ease; } 
-        .rounded-full { border-radius: 50%; }
-        
+        .rounded { border-radius: var(--radius); } .rounded-full { border-radius: 50%; }
         .flex { display: flex; } .flex-col { display: flex; flex-direction: column; }
         .items-center { align-items: center; } .justify-between { justify-content: space-between; } 
-        .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } 
-        .text-center { text-align: center; } 
-        .font-bold { font-weight: bold; } 
+        .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .text-center { text-align: center; } .font-bold { font-weight: bold; } 
         
-        /* Font Angka Dinamis */
         .font-extrabold { font-weight: 800; font-family: var(--font-angka); }
         h3[id^="val-"] { font-family: var(--font-angka); }
         
-        /* Styling Khusus Angka F1 */
-        body[data-theme="formula1"] h3[id^="val-"],
-        body[data-theme="formula1"] #val-rata-harian,
-        body[data-theme="formula1"] #f1-val-badge {
-            color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); letter-spacing: -1px;
-        }
+        body[data-theme="formula1"] h3[id^="val-"], body[data-theme="formula1"] #val-rata-harian, body[data-theme="formula1"] #f1-val-badge { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); letter-spacing: -1px; }
 
-        .text-xxs { font-size: 0.75rem; } .text-xs { font-size: 0.9rem; } .text-sm { font-size: 1.1rem; }
-        .text-md { font-size: 1.3rem; } .text-lg { font-size: 1.6rem; } .text-xl { font-size: 2rem; }
+        .text-xxs { font-size: 0.75rem; } .text-xs { font-size: 0.9rem; } .text-sm { font-size: 1.1rem; } .text-md { font-size: 1.3rem; } .text-lg { font-size: 1.6rem; } .text-xl { font-size: 2rem; }
         
         .grid-7 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 2px solid var(--c-primary); border-bottom: 1px solid var(--border-color); gap: 5px; padding: 10px 0;}
         .grid-dynamic { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 15px;} 
@@ -140,8 +88,7 @@
         @media (max-width: 768px) { .grid-trend { grid-template-columns: 1fr; } .border-bottom-primary { flex-direction: column; gap: 15px; text-align: center; } .border-bottom-primary > div { width: 100% !important; justify-content: center !important; } }
 
         .stat-box { padding: 10px; border-right: 1px solid var(--border-color); } .stat-box:last-child { border-right: none; }
-        
-        .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); transition: all 0.4s ease;}
+        .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); }
         body[data-theme="gamifikasi"] .top-bar { background-color: rgba(255,255,255,0.3); }
 
         .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
@@ -151,28 +98,24 @@
         .porto-legend { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
         .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
 
-        .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; position: relative; z-index: 10; transition: all 0.4s ease;}
+        .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; z-index: 10; }
         .insight-title { font-weight: 800; color: var(--c-primary); font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
         .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-main); }
         .insight-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; font-weight: bold; }
         
         .theme-select { padding: 6px 12px; border-radius: 6px; border: 2px solid var(--c-primary); font-weight: 800; font-size: 0.8rem; background-color: var(--bg-panel); color: var(--c-primary); cursor: pointer; outline: none; transition: all 0.3s;}
         .theme-select:hover { background-color: var(--c-primary); color: var(--text-on-primary); }
-
-        .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; transition: all 0.4s ease;}
-        
-        /* F1 LED BAR Styling */
+        .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
         .f1-led { width: 14px; height: 28px; border-radius: 2px; background-color: #333; transition: all 0.5s ease; border: 1px solid #000; }
     </style>
 </head>
 <body data-theme="klasik">
 
-    <div id="splash-screen"><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><div class="spinner"></div><h2>DMJ EXECUTIVE SUMMARY</h2></div>
+    <div id="splash-screen"><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><div class="spinner"></div><h2 style="font-size: 16px; font-weight: bold; margin-top: 10px; color: #f59e0b;">DMJ EXECUTIVE SUMMARY</h2></div>
 
 <div class="poster">
     <img src="logo.png" class="watermark" alt="Watermark" onerror="this.style.display='none'">
 
-    <!-- HEADER -->
     <div class="sticky-header">
         <div class="flex justify-between items-center top-bar">
             <div class="flex items-center gap-2 c-primary font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
@@ -209,7 +152,6 @@
         </div>
     </div>
 
-    <!-- OVERVIEW -->
     <div>
         <div class="bg-primary font-bold text-xs text-center rounded" style="display: inline-block; padding: 4px 15px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">OVERVIEW CABANG</div>
         <div class="grid-7 bg-panel rounded" style="border-top-left-radius: 0; border: 1px solid var(--border-color);">
@@ -223,7 +165,6 @@
         </div>
     </div>
 
-    <!-- AREA DINAMIS -->
     <div id="dynamic-leaderboards" class="grid-dynamic">
         <div class="border-primary rounded flex-col bg-panel">
             <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">BOOKING BY PORTOFOLIO</div>
@@ -240,7 +181,6 @@
         </div>
     </div>
 
-    <!-- TREND SUMMARY -->
     <div class="bg-panel rounded" style="border: 2px solid var(--border-color); padding: 15px;">
         <div class="flex items-center gap-2" style="margin-bottom: 15px;">
             <div class="bg-primary rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 35px; height: 35px;">1</div>
@@ -282,14 +222,11 @@
                 </div>
             </div>
 
-            <!-- VISUALISASI TREND (4 TEMA) -->
             <div style="position: relative; padding: 0 10px;" id="trend-visual-container">
                 <div id="trend-label" class="font-bold text-xs text-center" style="color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">TREND BOOKING YTD</div>
                 
-                <!-- Canvas Klasik & Speedometer -->
                 <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
                 
-                <!-- Kapsul Roket -->
                 <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
                     <div style="position: relative; width: 100%; height: 40px; background: rgba(255,255,255,0.3); border-radius: 20px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5);">
                         <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #0ea5e9); border-radius: 20px; transition: width 1.5s ease; box-shadow: 0 0 10px rgba(14,165,233,0.5);"></div>
@@ -305,12 +242,9 @@
                     </div>
                 </div>
 
-                <!-- Digital Telemetry (F1) -->
                 <div id="f1-container" style="display: none; height: 180px; flex-direction: column; justify-content: center; align-items: center; background: #111; border-radius: 8px; border: 2px solid #3f3f46; box-shadow: inset 0 0 20px rgba(0,0,0,0.9);">
                     <div class="font-bold text-xs" style="color: #52525b; margin-bottom: 15px; letter-spacing: 1px;">RPM TELEMETRY (ACHIEVEMENT)</div>
-                    <div id="f1-led-bar" style="display: flex; gap: 4px; padding: 5px; background: #000; border-radius: 4px; border: 1px solid #27272a;">
-                        <!-- LED injected by JS -->
-                    </div>
+                    <div id="f1-led-bar" style="display: flex; gap: 4px; padding: 5px; background: #000; border-radius: 4px; border: 1px solid #27272a;"></div>
                     <div id="f1-val-badge" class="font-extrabold" style="margin-top: 15px; font-size: 1.6rem; color: #10b981; text-shadow: 0 0 10px rgba(16,185,129,0.5);">0,000 M</div>
                     <div class="font-bold" style="font-size: 0.65rem; color: #a1a1aa; margin-top: 5px;" id="f1-target-text">TARGET: 0,000 M</div>
                 </div>
@@ -334,18 +268,15 @@
         </div>
     </div>
 
-    <!-- SMART INSIGHTS -->
     <div class="insight-panel">
         <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
-        <ul id="smart-insights-list" class="insight-list">
-            <li>Sedang memuat kesimpulan data...</li>
-        </ul>
+        <ul id="smart-insights-list" class="insight-list"><li>Sedang memuat kesimpulan data...</li></ul>
     </div>
 </div>
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 2.0 (Dual Radar Admin) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 2.1 (Full Dinamis TV) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -356,18 +287,11 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    // === SETUP RADAR GANDA (DUAL LISTENER) ===
-    const docRef = doc(db, "regional_data", "sumbagut_v2"); // Radar 1: Leaderboard
+    const docRef = doc(db, "regional_data", "sumbagut_v2"); 
     
-    // Konfigurasi Harian untuk Radar 2
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    let mm = today.getMonth() + 1;
-    let dd = today.getDate();
-    if (dd < 10) dd = '0' + dd;
-    if (mm < 10) mm = '0' + mm;
-    const documentIdHarian = `${yyyy}-${mm}-${dd}`;
-    const harianRef = doc(db, "laporan_harian", documentIdHarian); // Radar 2: Admin Panel
+    const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
+    if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; const documentIdHarian = `${yyyy}-${mm}-${dd}`;
+    const harianRef = doc(db, "laporan_harian", documentIdHarian); 
 
     let regionalData = {};
     let harianData = {};
@@ -383,7 +307,6 @@
 
     let portoChartObj = null; let trendChartObj = null; 
 
-    // --- MEMORI TEMA ---
     const savedTheme = localStorage.getItem('dmj_dashboard_theme') || 'klasik';
     document.getElementById('theme-selector').value = savedTheme;
     document.body.setAttribute('data-theme', savedTheme);
@@ -428,39 +351,35 @@
         }
     };
 
-    // FUNGSI PENGGABUNGAN DATA (RADAR 1 + RADAR 2)
     function mergeAndRender() {
-        // Copy seluruh data regional sebagai basis
         let mergedData = JSON.parse(JSON.stringify(regionalData));
-        
         if(!mergedData.umum) mergedData.umum = {};
         if(!mergedData.dataNilai) mergedData.dataNilai = {};
-        if(!mergedData.dataNilai['PORTOFOLIO']) mergedData.dataNilai['PORTOFOLIO'] = {};
+        
+        // HAPUS KUNCI PORTOFOLIO LAMA DARI MEMORI BAWAAN
+        mergedData.dataNilai['PORTOFOLIO'] = {};
 
-        // Menimpa nilai dengan inputan dari Admin Panel jika data harian tersedia
         if(harianData.target !== undefined) mergedData.umum.target_amount = harianData.target;
         if(harianData.captive !== undefined) mergedData.umum.captive = harianData.captive;
-        
-        // --- TANGKAP INPUTAN BARU (POFDE, IA, WALR) ---
         if(harianData.pofde !== undefined) mergedData.umum.pofde = harianData.pofde;
         if(harianData.ia !== undefined) mergedData.umum.ia = harianData.ia;
         if(harianData.walr !== undefined) mergedData.umum.walr = harianData.walr;
         
-        // Cek jika ada inputan portofolio di admin panel
-        if(harianData.NCAR !== undefined || harianData.CCAR !== undefined || harianData.NMCY !== undefined || harianData.USECAR !== undefined) {
-            mergedData.dataNilai['PORTOFOLIO'] = {
-                'NCAR': harianData.NCAR || 0,
-                'CCAR': harianData.CCAR || 0,
-                'NMCY': harianData.NMCY || 0,
-                'USECAR': harianData.USECAR || 0
-            };
+        // TANGKAP PORTOFOLIO DINAMIS SAJA (MENGABAIKAN FIELD TOP LEVEL LAMA)
+        if(harianData.portofolio_dinamis && Object.keys(harianData.portofolio_dinamis).length > 0) {
+            mergedData.dataNilai['PORTOFOLIO'] = harianData.portofolio_dinamis;
+        } else if (harianData.NCAR !== undefined || harianData.USECAR !== undefined) {
+            // Fallback untuk menjaga layar tetap nyala jika admin belum disave
+            if(harianData.NCAR) mergedData.dataNilai['PORTOFOLIO']['NCAR'] = harianData.NCAR;
+            if(harianData.CCAR) mergedData.dataNilai['PORTOFOLIO']['CCAR'] = harianData.CCAR;
+            if(harianData.NMCY) mergedData.dataNilai['PORTOFOLIO']['NMCY'] = harianData.NMCY;
+            if(harianData.USECAR) mergedData.dataNilai['PORTOFOLIO']['USECAR'] = harianData.USECAR;
         }
 
         globalDataSnapshot = mergedData;
         renderDashboard(globalDataSnapshot);
     }
 
-    // --- RADAR 1: LISTEN KE DATA REGIONAL (LEADERBOARDS) ---
     onSnapshot(docRef, (docSnap) => {
         const splash = document.getElementById('splash-screen');
         if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
@@ -470,7 +389,6 @@
         }
     });
 
-    // --- RADAR 2: LISTEN KE DATA HARIAN (ADMIN PANEL) ---
     onSnapshot(harianRef, (docSnap) => {
         if (docSnap.exists()) {
             harianData = docSnap.data();
@@ -478,7 +396,6 @@
         }
     });
 
-    // FUNGSI RENDER UTAMA
     function renderDashboard(data) {
         const theme = document.getElementById('theme-selector').value;
         const umum = data.umum || {}; const kategoriList = data.kategoriList || []; const dataNilai = data.dataNilai || {};
@@ -511,7 +428,7 @@
             let sisaVal = portoData.slice(8).reduce((sum, curr) => sum + curr.val, 0);
             legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${window.toM(sisaVal)}</span></div>`;
         }
-        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted);">Belum ada data.</div>';
+        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted);">Belum ada data portofolio.</div>';
 
         if(portoChartObj) portoChartObj.destroy();
         const ctxPorto = document.getElementById('portoChart').getContext('2d');
@@ -620,7 +537,6 @@
         }
         document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
-        // --- MANAJEMEN TAMPILAN VISUALISASI TREND (4 TEMA) ---
         if(trendChartObj) trendChartObj.destroy();
         const ctxTrend = document.getElementById('trendChart').getContext('2d');
         const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
@@ -652,7 +568,7 @@
             trendLabel.innerText = "SPEEDOMETER PENCAPAIAN TARGET";
             
             let sisaB = Math.max(0, TARGET - totalBooking);
-            let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#fbbf24' : '#dc2626'; // Hijau, Kuning, Merah Racing
+            let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#fbbf24' : '#dc2626'; 
             const bgColorTrack = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
 
             trendChartObj = new Chart(ctxTrend, { 
@@ -685,20 +601,19 @@
             document.getElementById('f1-val-badge').innerText = window.toM(totalBooking);
             document.getElementById('f1-target-text').innerText = `TARGET: ${window.toM(TARGET)}`;
 
-            // Logika Lampu LED F1 (15 Lampu)
             let totalLeds = 15;
             let activeLeds = Math.round((pct / 100) * totalLeds);
-            if (pct > 0 && activeLeds === 0) activeLeds = 1; // Minimal nyala 1 jika ada booking
+            if (pct > 0 && activeLeds === 0) activeLeds = 1; 
             if (activeLeds > totalLeds) activeLeds = totalLeds;
 
             let ledHtml = '';
             for(let i=0; i<totalLeds; i++) {
                 let bg = '#333'; let glow = 'none';
                 if(i < activeLeds) {
-                    if(i < 5) { bg = '#10b981'; glow = '0 0 8px #10b981'; } // Hijau
-                    else if(i < 10) { bg = '#eab308'; glow = '0 0 8px #eab308'; } // Kuning
-                    else if(i < 13) { bg = '#ef4444'; glow = '0 0 8px #ef4444'; } // Merah
-                    else { bg = '#3b82f6'; glow = '0 0 10px #3b82f6'; } // Biru (Over-rev/Achieved)
+                    if(i < 5) { bg = '#10b981'; glow = '0 0 8px #10b981'; } 
+                    else if(i < 10) { bg = '#eab308'; glow = '0 0 8px #eab308'; } 
+                    else if(i < 13) { bg = '#ef4444'; glow = '0 0 8px #ef4444'; } 
+                    else { bg = '#3b82f6'; glow = '0 0 10px #3b82f6'; } 
                 }
                 ledHtml += `<div class="f1-led" style="background-color: ${bg}; box-shadow: ${glow};"></div>`;
             }
