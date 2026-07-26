@@ -169,19 +169,22 @@
                 </div>
             </div>
 
-            <!-- CLOSING BULANAN (BARU) -->
+            <!-- CLOSING BULANAN (DENGAN RASIO BULAN BERJALAN / N/12) -->
             <div>
                 <div class="rounded" style="border: 2px solid #3b82f6; background-color: rgba(59, 130, 246, 0.05); height: 100%; display: flex; flex-direction: column;">
-                    <div class="rounded" style="background-color: #3b82f6; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">CLOSING BULAN INI</div>
-                    <div class="text-center" style="padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-                        <div class="font-bold text-xs" style="color: var(--text-muted);">Estimasi Target Bulanan (1/12):</div>
-                        <div id="val-target-bulan" class="font-extrabold text-sm c-primary" style="margin: 5px 0;">0,000 M</div>
-                        <hr style="border-color: rgba(59,130,246,0.2); margin: 8px 0;">
-                        <div class="font-bold text-xs" style="color: var(--text-muted);">Sisa Hari Kerja Bulan Ini:</div>
-                        <div id="val-sisa-hari-bulan" class="font-extrabold text-sm" style="color: #3b82f6; margin: 5px 0;">0 Hari</div>
-                        <hr style="border-color: rgba(59,130,246,0.2); margin: 8px 0;">
-                        <div class="font-bold text-xs" style="color: var(--text-muted);">Kebutuhan Harian Bulan Ini:</div>
-                        <div id="val-keb-harian-bulan" class="font-extrabold text-md" style="color: #10b981; margin-top: 5px;">0,000 M / hari</div>
+                    <div class="rounded" style="background-color: #3b82f6; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">CLOSING BULAN INI (<span id="label-nama-bulan">BULAN</span>)</div>
+                    <div class="text-center" style="padding: 12px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                        <div class="font-bold text-xxs" style="color: var(--text-muted);">Target Bulan Ini (<span id="label-rasio-bulan">N/12</span>):</div>
+                        <div id="val-target-bulan" class="font-extrabold text-sm c-primary" style="margin: 3px 0;">0,000 M</div>
+                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
+                        <div class="font-bold text-xxs" style="color: var(--text-muted);">Target Harian (Ideal Standar):</div>
+                        <div id="val-target-harian-ideal" class="font-extrabold text-sm" style="color: #3b82f6; margin: 3px 0;">0,000 M / hari</div>
+                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
+                        <div class="font-bold text-xxs" style="color: var(--text-muted);">Sisa Hari Kerja Bulan Ini:</div>
+                        <div id="val-sisa-hari-bulan" class="font-extrabold text-xs" style="color: #3b82f6; margin: 3px 0;">0 Hari</div>
+                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
+                        <div class="font-bold text-xxs" style="color: var(--text-muted);">Kebutuhan Harian (Wajib Kejar):</div>
+                        <div id="val-keb-harian-bulan" class="font-extrabold text-md" style="color: #10b981; margin-top: 3px;">0,000 M / hari</div>
                     </div>
                 </div>
             </div>
@@ -189,7 +192,9 @@
             <!-- VISUALISASI TREND -->
             <div style="position: relative; padding: 0 10px;" id="trend-visual-container">
                 <div id="trend-label" class="font-bold text-xs text-center" style="color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">TREND BOOKING YTD</div>
+                
                 <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
+                
                 <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
                     <div style="position: relative; width: 100%; height: 40px; background: rgba(255,255,255,0.3); border-radius: 20px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5);">
                         <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #0ea5e9); border-radius: 20px; transition: width 1.5s ease; box-shadow: 0 0 10px rgba(14,165,233,0.5);"></div>
@@ -201,6 +206,7 @@
                     </div>
                     <div class="flex justify-between font-bold text-xs" style="margin-top: 25px; color: var(--text-main);"><span>START (0)</span><span id="rocket-target-text" style="color: #0ea5e9;">FINISH</span></div>
                 </div>
+                
                 <div id="f1-container" style="display: none; height: 180px; flex-direction: column; justify-content: center; align-items: center; background: #111; border-radius: 8px; border: 2px solid #3f3f46; box-shadow: inset 0 0 20px rgba(0,0,0,0.9);">
                     <div class="font-bold text-xs" style="color: #52525b; margin-bottom: 15px; letter-spacing: 1px;">RPM TELEMETRY (ACHIEVEMENT)</div>
                     <div id="f1-led-bar" style="display: flex; gap: 4px; padding: 5px; background: #000; border-radius: 4px; border: 1px solid #27272a;"></div>
@@ -225,6 +231,7 @@
         </div>
     </div>
 
+    <!-- SMART INSIGHTS -->
     <div class="insight-panel">
         <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
         <ul id="smart-insights-list" class="insight-list"><li>Sedang memuat kesimpulan data...</li></ul>
@@ -233,7 +240,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.3 (Closing Bulanan Added) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.6 (Monthly Ratio Fixed) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -330,9 +337,10 @@
 
         let dateObj = new Date(documentIdHarian); 
         const thn = dateObj.getFullYear();
-        const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+        const bulanIndex = dateObj.getMonth() + 1; // 1 s.d 12
+        const blnNames = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
         
-        let textPeriode = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
+        let textPeriode = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()].slice(0,3)} ${thn}`;
         if(data.periode_custom && data.periode_custom.trim() !== '') {
             textPeriode = data.periode_custom.trim().toUpperCase();
         }
@@ -427,16 +435,20 @@
         const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
         const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
 
-        // --- KALKULASI CLOSING BULANAN ---
+        // KALKULASI TARGET BULANAN BERDASARKAN BULAN BERJALAN (N/12)
         const targetBulanan = TARGET / 12;
         const totalHariBulanIni = new Date(thn, dateObj.getMonth() + 1, 0).getDate();
+        const targetHarianIdeal = targetBulanan / totalHariBulanIni;
         const hariBerjalanBulanIni = dateObj.getDate();
         const sisaHariBulanIni = Math.max(0, totalHariBulanIni - hariBerjalanBulanIni);
-        
-        // Estimasi pencapaian bulan ini (Proporsional sederhana dari target bulanan)
         const kebutuhanHarianBulan = sisaHariBulanIni > 0 ? (targetBulanan / totalHariBulanIni) : 0;
 
+        // Update Label UI Sesuai Bulan Kalender
+        document.getElementById('label-nama-bulan').innerText = blnNames[dateObj.getMonth()];
+        document.getElementById('label-rasio-bulan').innerText = `${bulanIndex}/12`;
+
         document.getElementById('val-target-bulan').innerText = window.toM(targetBulanan);
+        document.getElementById('val-target-harian-ideal').innerText = window.toM(targetHarianIdeal) + " / hari";
         document.getElementById('val-sisa-hari-bulan').innerText = `${sisaHariBulanIni} Hari (dari ${totalHariBulanIni} hari)`;
         document.getElementById('val-keb-harian-bulan').innerText = window.toM(kebutuhanHarianBulan) + " / hari";
 
@@ -465,6 +477,7 @@
             textKesimpulan.style.color = "#dc2626";
         }
 
+        // SMART INSIGHTS
         let insights = [];
         if (portoData.length > 0 && totalBooking > 0) { 
             let topP = portoData[0]; 
@@ -481,6 +494,7 @@
         
         document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
+        // TREND CHART
         if(trendChartObj) trendChartObj.destroy();
         const ctxTrend = document.getElementById('trendChart').getContext('2d');
         const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
@@ -496,7 +510,7 @@
             
             let xLabels = []; let realisasiData = []; let proyeksiData = [];
             for(let i=1; i<=12; i++) {
-                xLabels.push(blnNames[i-1]);
+                xLabels.push(blnNames[i-1].slice(0,3));
                 let accDays = Math.ceil((new Date(thn, i, 0) - startOfYear) / (1000*60*60*24));
                 if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
                 else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
