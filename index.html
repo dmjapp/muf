@@ -240,7 +240,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.9 (Absolute Robust Fix) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 4.1 (Bulletproof Guard) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -395,16 +395,17 @@
         document.getElementById('val-booking-donut').innerText = window.toM(totalBooking);
 
         let legendHTML = ''; let chartLabels = []; let chartValues = []; let chartColors = [];
-        portoData.forEach((item, index) => {
-            const color = colorPalette[index % colorPalette.length];
-            chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
-            if (index < 8) legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${window.toM(item.val)}</span></div>`;
-        });
-        if (portoData.length > 8) {
-            let sisaVal = portoData.slice(8).reduce((sum, curr) => sum + curr.val, 0);
-            legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${window.toM(sisaVal)}</span></div>`;
+        if (portoData.length > 0) {
+            portoData.forEach((item, index) => {
+                const color = colorPalette[index % colorPalette.length];
+                chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
+                if (index < 8) legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${window.toM(item.val)}</span></div>`;
+            });
+        } else {
+            chartLabels = ['Belum Ada Data']; chartValues = [1]; chartColors = ['#cbd5e1'];
+            legendHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Belum ada data portofolio pada tanggal ini.</div>';
         }
-        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted);">Belum ada data portofolio.</div>';
+        document.getElementById('porto-legend-container').innerHTML = legendHTML;
 
         if(portoChartObj) portoChartObj.destroy();
         const ctxPorto = document.getElementById('portoChart').getContext('2d');
@@ -478,7 +479,7 @@
             textKesimpulan.style.color = "#dc2626";
         }
 
-        // SMART INSIGHTS FIX
+        // SMART INSIGHTS SAFETY RENDER
         let insights = [];
         if (portoData.length > 0 && totalBooking > 0) { 
             let topP = portoData[0]; 
@@ -487,7 +488,7 @@
             let botP = portoData[portoData.length - 1]; 
             insights.push(`<li><span style="font-size:1.2rem;">🚨</span> <div>Portofolio Butuh Perhatian: <strong style="color:#dc2626">${botP.name}</strong> dengan pencapaian terendah sebesar <strong style="color:#dc2626">${window.toM(botP.val)}</strong>.</div></li>`); 
         } else {
-            insights.push(`<li><span style="font-size:1.2rem;">ℹ️</span> <div>Belum ada data portofolio pada tanggal ini.</div></li>`);
+            insights.push(`<li><span style="font-size:1.2rem;">ℹ️</span> <div>Belum ada data portofolio pada tanggal ini. Pilih tanggal hari ini (26 Juli 2026) atau update melalui Admin.</div></li>`);
         }
         
         if (proyeksiAkhirTahun >= TARGET && TARGET > 0) {
@@ -502,7 +503,7 @@
         
         document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
-        // TREND CHART FIX
+        // TREND CHART GUARANTEED RENDER
         if(trendChartObj) trendChartObj.destroy();
         const ctxTrend = document.getElementById('trendChart').getContext('2d');
         const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
