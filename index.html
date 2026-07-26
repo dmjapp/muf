@@ -234,13 +234,13 @@
     <!-- SMART INSIGHTS -->
     <div class="insight-panel">
         <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
-        <ul id="smart-insights-list" class="insight-list"><li>Sedang memuat kesimpulan data...</li></ul>
+        <ul id="smart-insights-list" class="insight-list"><li>Memuat data analisis...</li></ul>
     </div>
 </div>
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.8 (Definitive Chart & Insights Fix) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.9 (Absolute Robust Fix) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -322,6 +322,9 @@
             if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
             globalDataSnapshot = docSnap.exists() ? docSnap.data() : {};
             renderDashboard(globalDataSnapshot);
+        }, (error) => {
+            console.error("Error mengambil data TV:", error);
+            if (splash) splash.remove();
         });
     }
 
@@ -435,7 +438,6 @@
         const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
         const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
 
-        // KALKULASI TARGET & KEBUTUHAN HARIAN BULAN INI
         const targetBulanan = TARGET / 12;
         const totalHariBulanIni = new Date(thn, dateObj.getMonth() + 1, 0).getDate();
         const targetHarianIdeal = targetBulanan / totalHariBulanIni;
@@ -476,7 +478,7 @@
             textKesimpulan.style.color = "#dc2626";
         }
 
-        // SMART INSIGHTS LANGSUNG MUNCUL TANPA MACET
+        // SMART INSIGHTS FIX
         let insights = [];
         if (portoData.length > 0 && totalBooking > 0) { 
             let topP = portoData[0]; 
@@ -485,7 +487,7 @@
             let botP = portoData[portoData.length - 1]; 
             insights.push(`<li><span style="font-size:1.2rem;">🚨</span> <div>Portofolio Butuh Perhatian: <strong style="color:#dc2626">${botP.name}</strong> dengan pencapaian terendah sebesar <strong style="color:#dc2626">${window.toM(botP.val)}</strong>.</div></li>`); 
         } else {
-            insights.push(`<li><span style="font-size:1.2rem;">ℹ️</span> <div>Belum ada data portofolio yang dimasukkan pada tanggal ini. Silakan input melalui Panel Admin.</div></li>`);
+            insights.push(`<li><span style="font-size:1.2rem;">ℹ️</span> <div>Belum ada data portofolio pada tanggal ini.</div></li>`);
         }
         
         if (proyeksiAkhirTahun >= TARGET && TARGET > 0) {
@@ -500,7 +502,7 @@
         
         document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
-        // TREND CHART (DIJAMIN MUNCUL NORMAL)
+        // TREND CHART FIX
         if(trendChartObj) trendChartObj.destroy();
         const ctxTrend = document.getElementById('trendChart').getContext('2d');
         const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
