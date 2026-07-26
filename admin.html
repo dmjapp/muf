@@ -247,7 +247,6 @@
     <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        // TAMBAHAN: Import modul autentikasi kredensial (reauthenticate)
         import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, onSnapshot, arrayUnion, query, where, orderBy, limit, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
         
@@ -293,11 +292,9 @@
             btn.disabled = true;
 
             try {
-                // Verifikasi Ulang Password Admin yang sedang Login
                 const credential = EmailAuthProvider.credential(auth.currentUser.email, pw);
                 await reauthenticateWithCredential(auth.currentUser, credential);
                 
-                // Jika Password Benar -> Tutup Modal & Jalankan Update
                 tutupModalBackdate();
                 btn.innerHTML = '<i class="fas fa-unlock-alt"></i> OTORISASI';
                 btn.disabled = false;
@@ -488,26 +485,17 @@
         // --- SISTEM CEGATAN UPDATE (DETEKSI BACKDATE) ---
         document.getElementById('form-harian').addEventListener('submit', (e) => {
             e.preventDefault();
-
-            // Dapatkan Tanggal Hari Ini Sesuai Zona Waktu Lokal
             const t = new Date();
-            const y = t.getFullYear();
-            const m = String(t.getMonth() + 1).padStart(2, '0');
-            const d = String(t.getDate()).padStart(2, '0');
+            const y = t.getFullYear(); const m = String(t.getMonth() + 1).padStart(2, '0'); const d = String(t.getDate()).padStart(2, '0');
             const todayStr = `${y}-${m}-${d}`;
 
-            // Cek apakah Admin sedang mengedit tanggal di masa lalu
             if (documentIdHarian < todayStr) {
-                // Munculkan Modal Proteksi
                 document.getElementById('tgl-backdate-label').innerText = documentIdHarian;
                 document.getElementById('modal-backdate').style.display = 'flex';
-            } else {
-                // Bukan Backdate, eksekusi langsung
-                eksekusiUpdatePortofolio();
-            }
+            } else { eksekusiUpdatePortofolio(); }
         });
 
-        // --- FUNGSI INTI ROBOT GAIB (DIPANGGIL SETELAH OTORISASI / BUKAN BACKDATE) ---
+        // --- FUNGSI INTI ROBOT GAIB (MESIN FOTOKOPI STRUKTUR) ---
         async function eksekusiUpdatePortofolio() {
             document.getElementById('sync-loader').style.display = 'flex';
             try {
@@ -553,19 +541,38 @@
 
                 let aksiLog = "Mengupdate Data Pencapaian MTD";
 
-                if (isAdaSelisih || updateData.target !== undefined) {
+                const t = new Date();
+                const todayStr = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+                const isBackdate = documentIdHarian < todayStr;
+
+                // ROBOT GAIB (Kini memfotokopi struktur meskipun nilainya 0)
+                if (isAdaSelisih || updateData.target !== undefined || isBackdate) {
                     aksiLog = "Revisi Data & Sinkronisasi Berantai (Cascading)";
-                    document.getElementById('sync-text').innerText = "Robot Gaib sedang mensinkronisasi data berantai...";
+                    document.getElementById('sync-text').innerText = "Robot Gaib mensinkronisasi dan memfotokopi struktur...";
 
                     const currentMonthPrefix = documentIdHarian.substring(0, 7); 
                     const qForward = query(collection(db, "laporan_harian"), where("__name__", ">", documentIdHarian), where("__name__", "<=", `${currentMonthPrefix}-31`));
                     
                     const forwardDocs = await getDocs(qForward);
                     forwardDocs.forEach(d => {
-                        const dat = d.data().portofolio_dinamis || {};
-                        const datBaru = {};
-                        for (let k in deltaPorto) { datBaru[k] = (Number(dat[k]) || 0) + deltaPorto[k]; }
-                        let cascadeData = { portofolio_dinamis: datBaru };
+                        const futureDat = d.data().portofolio_dinamis || {};
+                        const cascadePorto = {};
+                        
+                        // 1. Salin seluruh template dari hari 26th ke masa depan
+                        for (let k in portoDinamisBaru) {
+                            const existingVal = Number(futureDat[k]) || 0;
+                            const delta = deltaPorto[k] || 0;
+                            cascadePorto[k] = existingVal + delta;
+                        }
+
+                        // 2. Jika di masa depan ada portofolio lain, jangan dihapus
+                        for (let k in futureDat) {
+                            if (cascadePorto[k] === undefined) {
+                                cascadePorto[k] = futureDat[k];
+                            }
+                        }
+
+                        let cascadeData = { portofolio_dinamis: cascadePorto };
 
                         if (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all') {
                             if(updateData.target !== undefined) cascadeData.target = updateData.target;
