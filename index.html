@@ -81,7 +81,6 @@
         <div class="flex justify-between items-center top-bar">
             <div class="flex items-center gap-2 c-primary font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
             <div>
-                <!-- KALENDER TV DITAMBAHKAN DI SINI -->
                 <input type="date" id="tv-date-picker" class="theme-select" style="margin-right: 10px;" title="Pilih Tanggal Dashboard">
                 <select id="theme-selector" class="theme-select">
                     <option value="klasik">🎨 KLASIK (Corporate)</option>
@@ -127,9 +126,10 @@
     <div id="dynamic-leaderboards" class="grid-dynamic">
         <div class="border-primary rounded flex-col bg-panel">
             <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">BOOKING BY PORTOFOLIO</div>
-            <div class="flex items-center" style="padding: 15px; height: 100%;">
+            <!-- Perbaikan UI: min-height elastis agar label ChartJS selalu sejajar presisi -->
+            <div class="flex items-stretch" style="padding: 15px; height: 100%; min-height: 220px;">
                 <div style="width: 45%; position: relative;" id="porto-canvas-wrapper">
-                    <canvas id="portoChart" height="150"></canvas>
+                    <canvas id="portoChart"></canvas>
                     <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
                         <span style="font-size: 0.65rem; font-weight: bold; color: var(--text-muted);">TOTAL</span>
                         <span id="val-booking-donut" class="font-extrabold c-primary text-sm">0,000 M</span>
@@ -218,7 +218,6 @@
         </div>
     </div>
 
-    <!-- SMART INSIGHTS DENGAN INDIKATOR BARU -->
     <div class="insight-panel">
         <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
         <ul id="smart-insights-list" class="insight-list"><li>Sedang memuat kesimpulan data...</li></ul>
@@ -227,7 +226,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.1 (Full Smart Time-Machine) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.2 (Smart Insight + Alignment Fix) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -238,7 +237,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    // SETUP TV DATE PICKER
     const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
     if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
     let documentIdHarian = `${yyyy}-${mm}-${dd}`;
@@ -301,10 +299,8 @@
         }
     };
 
-    // FUNGSI MEMUAT DATA TV (REAL-TIME BERDASARKAN TANGGAL)
     function muatDataTV() {
-        if(unsubHarian) unsubHarian(); // Stop listen tanggal sebelumnya
-        
+        if(unsubHarian) unsubHarian(); 
         const splash = document.getElementById('splash-screen');
         if (splash) { splash.style.opacity = '1'; }
 
@@ -315,19 +311,16 @@
         });
     }
 
-    // KETIKA TANGGAL TV DIUBAH
     document.getElementById('tv-date-picker').addEventListener('change', (e) => {
         documentIdHarian = e.target.value;
         muatDataTV();
     });
 
-    // PANGGIL PERTAMA KALI
     muatDataTV();
 
     function renderDashboard(data) {
         const theme = document.getElementById('theme-selector').value;
 
-        // --- CUSTOM TEKS PERIODE ---
         let dateObj = new Date(documentIdHarian); 
         const thn = dateObj.getFullYear();
         const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
@@ -338,7 +331,6 @@
         }
         document.getElementById('val-periode').innerText = textPeriode;
 
-        // --- Render Leaderboard Dinamis ---
         const dynamicContainer = document.getElementById('dynamic-leaderboards');
         while (dynamicContainer.children.length > 1) { dynamicContainer.removeChild(dynamicContainer.lastChild); }
 
@@ -366,7 +358,6 @@
             }
         }
 
-        // --- Render Portofolio ---
         let totalBooking = 0; let portoData = [];
         if (data.portofolio_dinamis) {
             for (const [name, val] of Object.entries(data.portofolio_dinamis)) { totalBooking += (val || 0); portoData.push({ name, val: val || 0 }); }
@@ -401,9 +392,27 @@
         const ctxPorto = document.getElementById('portoChart').getContext('2d');
         const centerText = document.getElementById('porto-center-text');
         
-        if (theme === 'klasik') { centerText.style.display = 'flex'; portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); } 
-        else if (theme === 'akselerasi' || theme === 'formula1') { centerText.style.display = 'none'; portoChartObj = new Chart(ctxPorto, { type: 'bar', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: {size: 9, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } }, plugins: { legend: { display: false } } } }); } 
-        else if (theme === 'gamifikasi') { centerText.style.display = 'none'; portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + 'AA'), borderColor: 'rgba(255,255,255,0.5)' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { grid: {color: 'rgba(15,118,110,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } }); }
+        if (theme === 'klasik') { 
+            centerText.style.display = 'flex'; 
+            portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: false } } } }); 
+        } else if (theme === 'akselerasi' || theme === 'formula1') { 
+            centerText.style.display = 'none'; 
+            portoChartObj = new Chart(ctxPorto, { 
+                type: 'bar', 
+                data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, 
+                options: { 
+                    indexAxis: 'y', maintainAspectRatio: false, responsive: true, 
+                    scales: { 
+                        x: { display: false }, 
+                        y: { grid: { display: false }, ticks: { font: {size: 10, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } 
+                    }, 
+                    plugins: { legend: { display: false } } 
+                } 
+            }); 
+        } else if (theme === 'gamifikasi') { 
+            centerText.style.display = 'none'; 
+            portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + 'AA'), borderColor: 'rgba(255,255,255,0.5)' }] }, options: { maintainAspectRatio: false, responsive: true, scales: { r: { grid: {color: 'rgba(15,118,110,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } }); 
+        }
 
         const startOfYear = new Date(thn, 0, 1); const endOfYear = new Date(thn, 11, 31);
         const diffTime = Math.abs(dateObj - startOfYear);
@@ -447,7 +456,6 @@
             textKesimpulan.style.color = "#dc2626";
         }
 
-        // --- SMART INSIGHTS DENGAN INDIKATOR BARU ---
         let insights = [];
         if (portoData.length > 0 && totalBooking > 0) { 
             let topP = portoData[0]; 
@@ -464,7 +472,6 @@
         
         document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
-        // --- VISUAL TREND ---
         if(trendChartObj) trendChartObj.destroy();
         const ctxTrend = document.getElementById('trendChart').getContext('2d');
         const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
