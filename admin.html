@@ -11,26 +11,29 @@
             --bg-body: #f1f5f9; --bg-card: #ffffff; --text-main: #334155; --text-light: #64748b;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Layout Dasar Desktop */
         body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        .sidebar { width: 260px; background-color: var(--primary); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; }
+        .sidebar { width: 280px; background-color: var(--primary); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; flex-shrink: 0;}
         .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header img { width: 120px; margin-bottom: 10px; background: white; padding: 5px; border-radius: 8px;}
         .sidebar-header h3 { font-size: 1.1rem; color: var(--accent); }
 
-        .menu { flex: 1; padding: 20px 0; overflow-y: auto; }
-        .menu-item { padding: 15px 25px; display: flex; align-items: center; gap: 15px; color: #cbd5e1; text-decoration: none; transition: all 0.3s; cursor: pointer; }
+        /* Posisi User Info Dipindah ke Bawah Logo */
+        .user-info { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; text-align: center; }
+        .user-info span { display: block; color: var(--accent); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;}
+        .btn-logout { width: 100%; padding: 8px; margin-top: 10px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .btn-logout:hover { background: #b91c1c; }
+
+        .menu { flex: 1; padding: 10px 0; overflow-y: auto; }
+        .menu-item { padding: 15px 25px; display: flex; align-items: center; gap: 15px; color: #cbd5e1; text-decoration: none; transition: all 0.3s; cursor: pointer; border-left: 4px solid transparent;}
         .menu-item:hover, .menu-item.active { background-color: var(--secondary); color: white; border-left: 4px solid var(--accent); }
         .menu-item i { width: 20px; text-align: center; }
 
-        .user-info { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
-        .user-info span { display: block; color: var(--accent); font-weight: bold; margin-bottom: 10px;}
-        .btn-logout { width: 100%; padding: 10px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.3s; font-weight: bold; }
-        .btn-logout:hover { background: #b91c1c; }
-
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background-color: #f8fafc; }
         .topbar { background: white; padding: 20px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5; }
-        .topbar h2 { color: var(--primary); }
+        .topbar h2 { color: var(--primary); font-size: 1.2rem;}
         .content-area { padding: 30px; }
         
         .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
@@ -41,9 +44,8 @@
         .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-light); font-size: 0.9rem; }
         .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 1rem; }
         .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-        .form-group input:disabled { background-color: #e2e8f0; cursor: not-allowed; color: #94a3b8; }
 
-        .btn-save { background: #10b981; color: white; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-save { background: #10b981; color: white; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%;}
         .btn-save:hover { background: #059669; }
         .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;}
         .btn-primary:hover { background: var(--secondary); }
@@ -55,19 +57,43 @@
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Penyesuaian Responsif untuk Layar HP (Potrait) */
+        @media (max-width: 768px) {
+            body { display: block; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-bottom: 2px solid var(--accent); }
+            .sidebar-header { padding: 15px; }
+            .user-info { border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 10px; margin-top: 10px; }
+            .menu { display: flex; overflow-x: auto; padding: 0; white-space: nowrap; background-color: var(--secondary); }
+            .menu-item { padding: 12px 20px; border-left: none !important; border-bottom: 3px solid transparent; font-size: 0.9rem;}
+            .menu-item:hover, .menu-item.active { background-color: rgba(255,255,255,0.1); border-bottom: 3px solid var(--accent); }
+            .main-content { overflow-y: visible; }
+            .topbar { flex-direction: column; gap: 10px; align-items: flex-start; padding: 15px; }
+            .content-area { padding: 15px; }
+            .card { padding: 15px; }
+        }
     </style>
 </head>
 <body>
-    <div id="loader"><div class="spinner"></div><h3 style="margin-top: 15px; color: #0a1d56;">Memeriksa Kredensial & Akses...</h3></div>
+    <div id="loader"><div class="spinner"></div><h3 style="margin-top: 15px; color: #0a1d56;">Memeriksa Akses...</h3></div>
 
     <div class="sidebar">
-        <div class="sidebar-header"><img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'"><h3>EXECUTIVE PORTAL</h3></div>
+        <div class="sidebar-header">
+            <img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'">
+            <h3>EXECUTIVE PORTAL</h3>
+            <!-- User Info dipindah ke sini (Bawah Logo) -->
+            <div class="user-info">
+                <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 3px;">Login sebagai:</div>
+                <span id="user-display-name">Memuat...</span>
+                <div id="user-role-badge" style="color: #cbd5e1; font-weight: normal; font-size: 0.8rem; margin-bottom: 10px;">Role: -</div>
+                <button class="btn-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+            </div>
+        </div>
         <div class="menu">
             <div class="menu-item active" data-target="panel-input"><i class="fas fa-edit"></i> Input Harian</div>
             <div class="menu-item" id="menu-excel" data-target="panel-excel" style="display:none;"><i class="fas fa-file-excel"></i> Upload Excel</div>
             <div class="menu-item" id="menu-users" data-target="panel-users" style="display:none;"><i class="fas fa-users"></i> Kelola User</div>
         </div>
-        <div class="user-info">Login sebagai:<br><span id="user-display-name">Memuat...</span><span id="user-role-badge" style="color: #cbd5e1; font-weight: normal; font-size: 0.8rem;">Role: -</span><button class="btn-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</button></div>
     </div>
 
     <div class="main-content">
@@ -94,11 +120,12 @@
                             </div>
                         </div>
 
-                        <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM (DINAMIS)</h4>
-                        <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;"></div>
+                        <!-- DINAMIS PORTOFOLIO -->
+                        <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM</h4>
+                        <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px;"></div>
                         <button type="button" id="btn-add-porto" class="btn-primary" style="display: none; font-size: 0.85rem;" onclick="tambahPorto()"><i class="fas fa-plus"></i> Tambah Portofolio</button>
 
-                        <div style="margin-top: 25px; text-align: right; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                        <div style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                             <button type="submit" class="btn-save"><i class="fas fa-satellite-dish"></i> UPDATE TV DASHBOARD</button>
                         </div>
                     </form>
@@ -112,7 +139,7 @@
                 </div>
             </div>
 
-            <!-- PANEL 3: KELOLA USER (DINAMIS DENGAN HAPUS) -->
+            <!-- PANEL 3: KELOLA USER -->
             <div id="panel-users" class="panel">
                 <div class="card">
                     <h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3>
@@ -125,10 +152,7 @@
                             <div class="form-group"><label>Password (Min. 6 Karakter)</label><input type="text" id="pic-pass" placeholder="Contoh: rahasia123"></div>
                             <div class="form-group">
                                 <label>Hak Akses Portofolio</label>
-                                <!-- Pilihan ini akan berubah otomatis sesuai portofolio yang ada -->
-                                <select id="pic-role">
-                                    <option value="all">Super Admin (Akses Penuh)</option>
-                                </select>
+                                <select id="pic-role"><option value="all">Super Admin (Akses Penuh)</option></select>
                             </div>
                             <button class="btn-primary" id="btn-daftar-pic" style="width: 100%;"><i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password</button>
                         </div>
@@ -182,44 +206,23 @@
         let originalPortoKeys = []; 
         let currentPortos = [{name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}];
 
-        // --- SINKRONISASI DROPDOWN KELOLA USER ---
         window.updateRoleDropdown = function() {
             const roleSelect = document.getElementById('pic-role');
             if(!roleSelect) return;
-            
-            // Simpan pilihan sebelumnya agar tidak reset saat mengetik
             const selectedRole = roleSelect.value;
             roleSelect.innerHTML = '';
-            
             currentPortos.forEach(p => {
                 const namaPorto = p.name.trim().toUpperCase();
-                if(namaPorto !== '') {
-                    roleSelect.innerHTML += `<option value="${namaPorto}">PIC ${namaPorto}</option>`;
-                }
+                if(namaPorto !== '') roleSelect.innerHTML += `<option value="${namaPorto}">PIC ${namaPorto}</option>`;
             });
             roleSelect.innerHTML += `<option value="all">Super Admin (Akses Penuh)</option>`;
-            
-            // Kembalikan pilihan jika masih ada di daftar
-            if(Array.from(roleSelect.options).some(opt => opt.value === selectedRole)) {
-                roleSelect.value = selectedRole;
-            }
+            if(Array.from(roleSelect.options).some(opt => opt.value === selectedRole)) roleSelect.value = selectedRole;
         };
 
-        window.tambahPorto = function() { 
-            currentPortos.push({name: '', value: ''}); 
-            renderPortoForm(); 
-        };
-        
-        window.hapusPorto = function(idx) { 
-            currentPortos.splice(idx, 1); 
-            renderPortoForm(); 
-        };
-        
+        window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
+        window.hapusPorto = function(idx) { currentPortos.splice(idx, 1); renderPortoForm(); };
         window.updatePorto = function(idx, field, val) {
-            if(field === 'name') {
-                currentPortos[idx].name = val.toUpperCase();
-                updateRoleDropdown(); // Langsung update dropdown saat mengetik nama portofolio!
-            }
+            if(field === 'name') { currentPortos[idx].name = val.toUpperCase(); updateRoleDropdown(); }
             if(field === 'value') currentPortos[idx].value = val;
         };
 
@@ -232,24 +235,27 @@
 
             currentPortos.forEach((p, idx) => {
                 const isLocked = !isAdmin && currentUserData.portofolio !== p.name;
+                
+                // JIKA TERKUNCI (BUKAN MILIK PIC), SEMBUNYIKAN SEPENUHNYA DARI LAYAR
+                if (isLocked) return; 
+
                 const div = document.createElement('div');
-                div.style.cssText = 'display:flex; gap:15px; align-items:center; background:#f8fafc; padding:12px; border:1px solid #e2e8f0; border-radius:8px;';
+                // Penyesuaian Flexbox agar responsif di HP
+                div.style.cssText = 'display:flex; flex-wrap: wrap; gap:10px; align-items:center; background:#f8fafc; padding:15px; border:1px solid #e2e8f0; border-radius:8px;';
                 
                 div.innerHTML = `
-                    <div style="flex: 1;">
+                    <div style="flex: 1; min-width: 150px;">
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Nama Portofolio</label>
                         <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly style="background:#e2e8f0; color:#94a3b8;"'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold;">
                     </div>
-                    <div style="flex: 1;">
+                    <div style="flex: 1; min-width: 150px;">
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Pencapaian (Miliar)</label>
-                        <input type="number" value="${p.value}" step="any" placeholder="0" ${isLocked ? 'disabled style="background:#e2e8f0; color:#94a3b8;"' : ''} onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
+                        <input type="number" value="${p.value}" step="any" placeholder="0" onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
                     </div>
                     ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;"><i class="fas fa-trash"></i></button></div>` : ''}
                 `;
                 wrapper.appendChild(div);
             });
-            
-            // Pastikan dropdown sinkron saat render ulang
             updateRoleDropdown();
         }
 
@@ -335,16 +341,12 @@
             } catch (error) { console.error("Gagal:", error); alert("Gagal menyimpan."); }
         });
 
-        // --- FUNGSI MENCABUT AKSES TIM (HAPUS) ---
         window.cabutAksesUser = async function(emailPIC) {
             if(confirm(`Tindakan ini akan menolak akses login untuk email ${emailPIC}.\n\nApakah Anda yakin ingin mencabut akses tim ini?`)) {
                 try {
                     await deleteDoc(doc(db, "users", emailPIC));
                     alert("Akses berhasil dicabut!");
-                } catch (error) {
-                    console.error(error);
-                    alert("Terjadi kesalahan saat menghapus akses.");
-                }
+                } catch (error) { console.error(error); alert("Terjadi kesalahan saat menghapus akses."); }
             }
         };
 
@@ -360,11 +362,9 @@
 
             try {
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-                
                 await createUserWithEmailAndPassword(secondaryAuth, email, pass);
                 await setDoc(doc(db, "users", email), { nama: nama, portofolio: role, role: role === 'all' ? 'superadmin' : 'pic' });
                 await secondaryAuth.signOut();
-
                 alert(`Berhasil! Tim ${nama} sekarang bisa login.`);
                 document.getElementById('pic-nama').value = ''; document.getElementById('pic-email').value = ''; document.getElementById('pic-pass').value = '';
                 btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
@@ -377,11 +377,9 @@
             }
         });
 
-        // Listen Daftar User Real-time + TOMBOL HAPUS
         onSnapshot(collection(db, "users"), (snapshot) => {
             const listContainer = document.getElementById('list-tim');
             listContainer.innerHTML = '';
-            
             const emailAktif = auth.currentUser ? auth.currentUser.email : '';
 
             snapshot.forEach((docSnap) => {
@@ -389,24 +387,13 @@
                 const email = docSnap.id;
                 const badgeColor = data.role === 'superadmin' ? 'var(--primary)' : 'var(--accent)';
                 const roleText = data.role === 'superadmin' ? 'Super Admin' : `PIC ${data.portofolio}`;
-
-                let tombolHapus = '';
-                if(email !== emailAktif) {
-                    tombolHapus = `<button onclick="cabutAksesUser('${email}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:12px;" title="Cabut Akses"><i class="fas fa-trash"></i></button>`;
-                }
+                let tombolHapus = email !== emailAktif ? `<button onclick="cabutAksesUser('${email}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:12px;" title="Cabut Akses"><i class="fas fa-trash"></i></button>` : '';
 
                 listContainer.innerHTML += `
                     <li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
-                        <div>
-                            <strong style="display:block; color: var(--text-main);">${data.nama}</strong>
-                            <span style="font-size:0.75rem; color:var(--text-light);">${email}</span>
-                        </div>
-                        <div style="display: flex; align-items: center;">
-                            <span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>
-                            ${tombolHapus}
-                        </div>
-                    </li>
-                `;
+                        <div><strong style="display:block; color: var(--text-main);">${data.nama}</strong><span style="font-size:0.75rem; color:var(--text-light);">${email}</span></div>
+                        <div style="display: flex; align-items: center;"><span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>${tombolHapus}</div>
+                    </li>`;
             });
         });
 
