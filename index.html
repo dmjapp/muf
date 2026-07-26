@@ -11,12 +11,10 @@
         :root { --bg-body: #f3f4f6; --bg-panel: #ffffff; --text-main: #334155; --text-muted: #64748b; --c-primary: #0a1d56; --text-on-primary: #ffffff; --c-accent: #f59e0b; --text-on-accent: #0a1d56; --radius: 8px; --border-color: #cbd5e1; --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); --font-angka: Arial, Helvetica, sans-serif; }
         body[data-theme="akselerasi"] { --bg-body: #e5e7eb; --bg-panel: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --c-primary: #dc2626; --text-on-primary: #ffffff; --c-accent: #111827; --text-on-accent: #ffffff; --radius: 4px; --border-color: #cbd5e1; --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
         body[data-theme="gamifikasi"] { --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); --text-main: #134e4a; --text-muted: #0f766e; --c-primary: #047857; --text-on-primary: #ffffff; --c-accent: #0ea5e9; --text-on-accent: #ffffff; --radius: 20px; --border-color: rgba(255, 255, 255, 0.6); --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
-        
-        /* TEMA FORMULA 1 - Warna Baja Terang */
         body[data-theme="formula1"] { --bg-body: #b0c4de; --bg-panel: #ffffff; --text-main: #171717; --text-muted: #52525b; --c-primary: #ef4444; --text-on-primary: #ffffff; --c-accent: #10b981; --text-on-accent: #0a0a0a; --radius: 2px; --border-color: #94a3b8; --panel-shadow: 0 0 10px rgba(0,0,0,0.15); --font-angka: 'Courier New', Courier, monospace; }
-
-        /* TEMA KAPAL LAUT (NAUTICAL) BARU */
-        body[data-theme="kapal"] { --bg-body: #e0f2fe; --bg-panel: rgba(255, 255, 255, 0.9); --text-main: #0f172a; --text-muted: #0369a1; --c-primary: #0284c7; --text-on-primary: #ffffff; --c-accent: #fbbf24; --text-on-accent: #0f172a; --radius: 12px; --border-color: #7dd3fc; --panel-shadow: 0 10px 25px rgba(2, 132, 199, 0.15); --font-angka: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* TEMA KAPAL LAUT (NAUTICAL) */
+        body[data-theme="kapal"] { --bg-body: #e0f2fe; --bg-panel: rgba(255, 255, 255, 0.95); --text-main: #0f172a; --text-muted: #0369a1; --c-primary: #0284c7; --text-on-primary: #ffffff; --c-accent: #fbbf24; --text-on-accent: #0f172a; --radius: 12px; --border-color: #7dd3fc; --panel-shadow: 0 10px 25px rgba(2, 132, 199, 0.15); --font-angka: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; transition: all 0.4s ease; }
@@ -31,7 +29,6 @@
         .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; display: flex; flex-direction: column; gap: 10px; }
         .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45vw; min-width: 350px; opacity: 0.03; pointer-events: none; z-index: 40; }
 
-        body[data-theme="gamifikasi"] .sticky-header, body[data-theme="gamifikasi"] .bg-panel, body[data-theme="gamifikasi"] .insight-panel, body[data-theme="gamifikasi"] .top-bar { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
         .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: var(--header-shadow); border-bottom: 1px solid var(--border-color);}
         .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.1); }
 
@@ -53,24 +50,21 @@
         
         .stat-box { padding: 10px; border-right: 1px solid var(--border-color); } .stat-box:last-child { border-right: none; }
         .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); }
-        body[data-theme="gamifikasi"] .top-bar { background-color: rgba(255,255,255,0.3); }
 
         .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
         body[data-theme="formula1"] .b-1, body[data-theme="formula1"] .b-2, body[data-theme="formula1"] .b-3, body[data-theme="formula1"] .b-other { border-radius: 2px; }
 
-        /* KELAS CSS EFEK KLIK LEGEND PORTOFOLIO */
         .porto-legend-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; }
         .porto-legend-item:hover { background-color: rgba(100, 116, 139, 0.1); border-color: var(--border-color); transform: translateX(5px); }
         .porto-legend-item.active { background-color: var(--c-primary); color: var(--text-on-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .porto-legend-item.active .color-dot { border: 2px solid white; }
         .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
 
-        /* KELAS BARU UNTUK LAYOUT PORTOFOLIO & LEADERBOARD AGAR RESPONSIF */
         .porto-layout { display: flex; align-items: stretch; padding: 15px; min-height: 250px; }
         .porto-chart-box { width: 35%; position: relative; border-right: 1px dashed var(--border-color); padding-right: 15px; }
         .porto-legend-box { width: 25%; padding: 0 15px; display: flex; flex-direction: column; justify-content: center; border-right: 1px dashed var(--border-color); }
-        .porto-detail-box { width: 40%; padding-left: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; overflow-y: auto; max-height: 250px; }
+        .porto-detail-box { width: 40%; padding-left: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; overflow-y: auto; max-height: 300px; }
 
         .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; z-index: 10; }
         .insight-title { font-weight: 800; color: var(--c-primary); font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
@@ -82,18 +76,13 @@
         .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
         .f1-led { width: 14px; height: 28px; border-radius: 2px; background-color: #333; transition: all 0.5s ease; border: 1px solid #000; }
 
-        /* ALERT CARRY OVER */
         #alert-carryover { display: none; background-color: #fef08a; color: #854d0e; text-align: center; padding: 6px 15px; font-size: 0.85rem; font-weight: bold; width: 100%; border-bottom: 1px solid #fde047;}
 
-        /* MEDIA QUERY UNTUK LAYAR KECIL (MOBILE/POTRAIT) */
-        @media (max-width: 1024px) { 
-            .grid-trend { grid-template-columns: 1fr 1fr; } 
-        }
+        @media (max-width: 1024px) { .grid-trend { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 768px) { 
             .grid-trend { grid-template-columns: 1fr; } 
             .border-bottom-primary { flex-direction: column; gap: 15px; text-align: center; } 
             .border-bottom-primary > div { width: 100% !important; justify-content: center !important; } 
-            
             .porto-layout { flex-direction: column; height: auto; padding: 10px; }
             .porto-chart-box, .porto-legend-box, .porto-detail-box { width: 100%; padding: 10px 0; border-right: none; }
             .porto-chart-box { height: 220px; border-bottom: 1px dashed var(--border-color); }
@@ -106,9 +95,7 @@
 </head>
 <body data-theme="klasik">
 
-    <!-- ALERT JIKA DATA MUNDUR KE KEMARIN -->
     <div id="alert-carryover"></div>
-
     <div id="splash-screen"><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><div class="spinner"></div><h2 style="font-size: 16px; font-weight: bold; margin-top: 10px; color: #f59e0b;">DMJ EXECUTIVE SUMMARY</h2></div>
 
 <div class="poster">
@@ -124,7 +111,6 @@
                     <option value="akselerasi">🏎️ SILVERSTONE (Sporty)</option>
                     <option value="gamifikasi">🚀 MATTE MINT (Glass/Blur)</option>
                     <option value="formula1">🏁 FORMULA 1 (Digital)</option>
-                    <!-- TEMA BARU DITAMBAHKAN DI SINI -->
                     <option value="kapal">⚓ KAPAL (Nautical)</option>
                 </select>
             </div>
@@ -162,13 +148,11 @@
         </div>
     </div>
 
-    <!-- UPDATE LAYOUT HTML -->
+    <!-- AREA PORTOFOLIO & LEADERBOARD LENGKAP -->
     <div class="border-primary rounded flex-col bg-panel" style="margin-bottom: 15px;">
         <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">DATA DISTRIBUSI & RINCIAN PORTOFOLIO (KLIK UNTUK FILTER)</div>
         
-        <!-- Wrapper ini sekarang menggunakan class 'porto-layout' yang merespons layar HP -->
         <div class="porto-layout">
-            
             <div class="porto-chart-box" id="porto-canvas-wrapper">
                 <canvas id="portoChart"></canvas>
                 <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
@@ -183,9 +167,8 @@
             </div>
             
             <div id="dynamic-leaderboards" class="porto-detail-box">
-                <!-- Kotak akan digambar otomatis oleh Javascript -->
+                <!-- Leaderboards Dinamis -->
             </div>
-            
         </div>
     </div>
 
@@ -254,14 +237,11 @@
                     <div class="font-bold" style="font-size: 0.65rem; color: #a1a1aa; margin-top: 5px;" id="f1-target-text">TARGET: 0,000 M</div>
                 </div>
 
-                <!-- TEMA BARU: ANIMASI KAPAL -->
+                <!-- TEMA KAPAL -->
                 <div id="kapal-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
                     <div style="position: relative; width: 100%; height: 60px; background: linear-gradient(to bottom, #7dd3fc, #0284c7); border-radius: 30px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.1); overflow: hidden; border-bottom: 5px solid #0c4a6e;">
-                        <!-- Ombak -->
                         <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.15) 15px, rgba(255,255,255,0.15) 30px); animation: moveWaves 3s linear infinite;"></div>
-                        <!-- Dermaga -->
                         <i class="fas fa-warehouse" style="position: absolute; right: 15px; top: 10px; font-size: 35px; color: #cbd5e1; z-index: 1;"></i>
-                        <!-- Kapal Bergerak -->
                         <div id="kapal-icon" style="position: absolute; top: 8px; left: 0%; transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 2; font-size: 35px; color: #0f172a; filter: drop-shadow(3px 3px 2px rgba(0,0,0,0.4)); display: flex; flex-direction: column; align-items: center;">
                             <i class="fas fa-ship"></i>
                             <div id="kapal-val-badge" style="position: absolute; bottom: -20px; font-size: 0.7rem; background: white; padding: 2px 6px; border-radius: 8px; font-weight: bold; border: 1px solid #0284c7; white-space: nowrap;">0%</div>
@@ -297,11 +277,10 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.4 (Nautical & Smart Fetch) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.6 (Card UI & Reset Edition) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
-    // MENGIMPOR MODUL LENGKAP TERMASUK QUERY UNTUK SMART FETCH
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, onSnapshot, query, where, collection, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -336,7 +315,7 @@
         const selectedTheme = e.target.value;
         localStorage.setItem('dmj_dashboard_theme', selectedTheme);
         document.body.setAttribute('data-theme', selectedTheme);
-        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (selectedTheme === 'klasik' ? '#64748b' : '#94a3b8');
+        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (savedTheme === 'klasik' ? '#64748b' : '#94a3b8');
         if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
     });
 
@@ -371,7 +350,6 @@
         }
     };
 
-    // FUNGSI SMART-FETCH YANG TELAH DI-UPGRADE (CARRY OVER LOGIC)
     async function muatDataTV() {
         if(unsubHarian) unsubHarian(); 
         const splash = document.getElementById('splash-screen');
@@ -384,25 +362,34 @@
             let isCarryOver = false;
             let sourceDate = documentIdHarian;
 
+            let hasValidData = false;
             if (docSnap.exists() && docSnap.data().portofolio_dinamis) {
+                const portoTest = docSnap.data().portofolio_dinamis;
+                let sumTest = Object.values(portoTest).reduce((a, b) => a + Number(b || 0), 0);
+                if (sumTest > 0 || docSnap.data().target > 0) {
+                    hasValidData = true;
+                }
+            }
+
+            if (hasValidData) {
                 finalData = docSnap.data();
             } else {
-                // LOGIKA CERDAS: Lacak mundur jika data hari ini kosong
                 const q = query(collection(db, "laporan_harian"), where("__name__", "<", documentIdHarian), orderBy("__name__", "desc"), limit(1));
                 const prevSnap = await getDocs(q);
                 if (!prevSnap.empty) {
                     finalData = prevSnap.docs[0].data();
                     sourceDate = prevSnap.docs[0].id;
                     isCarryOver = true;
+                } else {
+                    finalData = docSnap.exists() ? docSnap.data() : {};
                 }
             }
 
             globalDataSnapshot = finalData;
 
-            // Tampilkan Notifikasi Jika Carry-Over Aktif
             const alertBox = document.getElementById('alert-carryover');
             if (isCarryOver) {
-                alertBox.innerHTML = `<i class="fas fa-info-circle"></i> Data tanggal yang Anda tuju belum di-update. Menampilkan riwayat terakhir dari tanggal: <strong>${sourceDate}</strong>`;
+                alertBox.innerHTML = `<i class="fas fa-info-circle"></i> Data tanggal ${documentIdHarian} belum di-update. Menampilkan riwayat terakhir dari tanggal: <strong>${sourceDate}</strong>`;
                 alertBox.style.display = 'block';
             } else {
                 if (alertBox) alertBox.style.display = 'none';
@@ -433,23 +420,21 @@
         document.getElementById('val-periode').innerText = textPeriode;
 
         window.dataLeaderboardLengkap = data.leaderboard_dinamis || {};
-        const dynamicContainer = document.getElementById('dynamic-leaderboards');
         
+        // FUNGSI RENDER LEADERBOARD BERDERET KEBAWAH (MENDUKUNG "LIHAT SEMUA RINCIAN")
         window.gambarKotakLeaderboard = function(kategoriFilter) {
+            const dynamicContainer = document.getElementById('dynamic-leaderboards');
             dynamicContainer.innerHTML = ''; 
             let keysToRender = [];
             
             if (kategoriFilter === 'ALL') {
-                keysToRender = Object.keys(window.dataLeaderboardLengkap).filter(k => k.toUpperCase().includes('ALL'));
-                if(keysToRender.length === 0 && Object.keys(window.dataLeaderboardLengkap).length > 0) {
-                    keysToRender = Object.keys(window.dataLeaderboardLengkap); 
-                }
+                keysToRender = Object.keys(window.dataLeaderboardLengkap);
             } else {
                 keysToRender = Object.keys(window.dataLeaderboardLengkap).filter(k => k.toUpperCase().includes(kategoriFilter.toUpperCase()));
             }
 
             if(keysToRender.length === 0) {
-                dynamicContainer.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color: var(--text-muted); font-weight: bold; font-size: 0.9rem; text-align:center;"><i class="fas fa-info-circle" style="margin-right:8px;"></i> Belum ada rincian data / leaderboards yang diinput untuk portofolio ini.</div>`;
+                dynamicContainer.innerHTML = `<div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; color: var(--text-muted); font-weight: bold; font-size: 0.85rem; text-align:center; padding: 20px;"><i class="fas fa-info-circle" style="font-size: 1.5rem; margin-bottom: 8px; color: var(--c-accent);"></i> Belum ada rincian data untuk portofolio ini.</div>`;
                 return;
             }
 
@@ -458,21 +443,39 @@
                 catItems.sort((a,b) => b.val - a.val);
                 let maxVal = catItems.length > 0 ? catItems[0].val : 1; if(maxVal === 0) maxVal = 1;
                 
+                let totalCMO = catItems.reduce((sum, item) => sum + (Number(item.val) || 0), 0);
+                let targetPortoUtama = 0;
+                
+                if(data && data.portofolio_dinamis) {
+                    for(let pName in data.portofolio_dinamis) {
+                        if(kat.toUpperCase().includes(pName.toUpperCase())) {
+                            targetPortoUtama = Number(data.portofolio_dinamis[pName]) || 0;
+                        }
+                    }
+                }
+
+                let selisihAlokasi = targetPortoUtama - totalCMO;
+                selisihAlokasi = Math.round(selisihAlokasi * 1000000) / 1000000;
+
                 let listHTML = '';
                 catItems.slice(0, 5).forEach((item, index) => {
                     let badgeClass = index === 0 ? 'b-1' : index === 1 ? 'b-2' : index === 2 ? 'b-3' : 'b-other';
                     let barWidth = (item.val / maxVal) * 100;
-                    let barColor = theme === 'formula1' ? '#ef4444' : '#10b981'; 
-                    listHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
-                        <div class="flex items-center" style="width: 35%; font-size: 0.8rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"><span class="badge-num ${badgeClass}">${index+1}</span> ${item.name}</div>
+                    let barColor = '#10b981'; 
+                    listHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px;">
+                        <div class="flex items-center" style="width: 35%; font-size: 0.75rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"><span class="badge-num ${badgeClass}">${index+1}</span> ${item.name}</div>
                         <div class="flex items-center" style="width: 65%; justify-content: flex-end;">
-                            <div style="width: 50%; margin-right: 10px; background-color: var(--border-color); height: 6px; border-radius: var(--radius); overflow: hidden;"><div style="width: ${barWidth}%; background-color: ${barColor}; height: 100%;"></div></div>
-                            <div class="c-primary font-bold font-extrabold" style="width: 45%; text-align: right; font-size: 0.85rem;">${window.toM(item.val)}</div></div></div>`;
+                            <div style="width: 50%; margin-right: 8px; background-color: var(--border-color); height: 5px; border-radius: var(--radius); overflow: hidden;"><div style="width: ${barWidth}%; background-color: ${barColor}; height: 100%;"></div></div>
+                            <div class="c-primary font-bold font-extrabold" style="width: 45%; text-align: right; font-size: 0.8rem;">${window.toM(item.val)}</div></div></div>`;
                 });
+
+                let warningHtml = '';
+                if (targetPortoUtama > 0 && selisihAlokasi > 0) {
+                    warningHtml = `<div style="background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; margin-top: 8px; text-align: center;">
+                        <i class="fas fa-exclamation-triangle"></i> Sebesar ${window.toM(selisihAlokasi)} belum dialokasikan ke rincian data.
+                    </div>`;
+                }
                 
-                if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Data kosong</div>';
-                
-                // IKON JANGKAR UNTUK TEMA KAPAL LAUT
                 let iconClass = "fas fa-trophy";
                 if (theme === 'kapal') {
                     iconClass = "fas fa-anchor";
@@ -482,7 +485,15 @@
                 }
 
                 const box = document.createElement('div'); 
-                box.innerHTML = `<div style="font-weight: 800; font-size: 0.85rem; color: var(--c-primary); border-bottom: 2px solid var(--c-primary); margin-bottom: 15px; padding-bottom: 5px;"><i class="${iconClass} c-accent"></i> ${kat}</div><div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">${listHTML}</div>`;
+                box.style.cssText = "background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);";
+                box.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-weight: 800; font-size: 0.8rem; color: var(--c-primary); border-bottom: 2px solid var(--c-primary); margin-bottom: 10px; padding-bottom: 4px;">
+                        <span><i class="${iconClass} c-accent" style="margin-right: 5px;"></i> ${kat}</span>
+                        <span style="font-size: 0.7rem; background: var(--c-primary); color: white; padding: 2px 6px; border-radius: 4px;">Target: ${window.toM(targetPortoUtama)}</span>
+                    </div>
+                    <div>${listHTML || '<div style="font-size:0.75rem; color:var(--text-muted); text-align:center; font-style:italic;">Data kosong</div>'}</div>
+                    ${warningHtml}
+                `;
                 dynamicContainer.appendChild(box);
             });
         };
@@ -515,7 +526,6 @@
             const color = colorPalette[index % colorPalette.length];
             chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
             
-            // IKON KEMUDI KAPAL UNTUK TEMA KAPAL LAUT
             let bulletIcon = `<span class="color-dot" style="background-color:${color}"></span>`;
             if (theme === 'kapal') {
                 bulletIcon = `<i class="fas fa-dharmachakra" style="color:${color}; margin-right:8px;"></i>`;
@@ -686,7 +696,6 @@
             document.getElementById('kapal-target-text').innerText = `DERMAGA (${window.toM(TARGET)})`;
             document.getElementById('kapal-val-badge').innerText = `${pct.toFixed(1)}%`;
             
-            // Batas maksimal tampilan kapal agar tidak menabrak ikon dermaga
             let visualPct = pct > 92 ? 92 : pct;
             setTimeout(() => { document.getElementById('kapal-icon').style.left = visualPct + '%'; }, 100);
         }
