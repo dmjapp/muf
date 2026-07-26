@@ -3,358 +3,694 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Performa - Tema Kapal</title>
-    
-    <!-- FontAwesome Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js -->
+    <title>Executive Summary YTD - DMJ</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* === TEMA NAUTICAL (KAPAL LAUT) === */
-        :root { 
-            --ocean-dark: #0f172a; 
-            --ocean-blue: #0284c7; 
-            --ocean-light: #e0f2fe;
-            --gold-sand: #fbbf24;
-            --white: #ffffff;
-            --text-dark: #334155;
-            --danger: #ef4444;
-            --success: #10b981;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f8fafc; color: var(--text-dark); display: flex; flex-direction: column; height: 100vh; overflow-x: hidden; }
-
-        /* HEADER */
-        .topbar { background: var(--ocean-dark); color: var(--white); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-bottom: 4px solid var(--gold-sand); z-index: 10;}
-        .brand { display: flex; align-items: center; gap: 15px; }
-        .brand i { font-size: 2rem; color: var(--gold-sand); }
-        .brand h1 { font-size: 1.5rem; letter-spacing: 1px; text-transform: uppercase; }
-        .brand p { font-size: 0.85rem; color: #94a3b8; }
+        :root { --bg-body: #f3f4f6; --bg-panel: #ffffff; --text-main: #334155; --text-muted: #64748b; --c-primary: #0a1d56; --text-on-primary: #ffffff; --c-accent: #f59e0b; --text-on-accent: #0a1d56; --radius: 8px; --border-color: #cbd5e1; --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); --font-angka: Arial, Helvetica, sans-serif; }
+        body[data-theme="akselerasi"] { --bg-body: #e5e7eb; --bg-panel: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --c-primary: #dc2626; --text-on-primary: #ffffff; --c-accent: #111827; --text-on-accent: #ffffff; --radius: 4px; --border-color: #cbd5e1; --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
+        body[data-theme="gamifikasi"] { --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); --text-main: #134e4a; --text-muted: #0f766e; --c-primary: #047857; --text-on-primary: #ffffff; --c-accent: #0ea5e9; --text-on-accent: #ffffff; --radius: 20px; --border-color: rgba(255, 255, 255, 0.6); --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
         
-        .controls { display: flex; gap: 15px; align-items: center; }
-        .date-picker { background: var(--ocean-blue); color: white; border: 1px solid var(--gold-sand); padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; outline: none; font-size: 1rem;}
-        
-        /* ALERT BAWAAN (CARRY-OVER) */
-        #alert-carryover { display: none; background: #fef08a; color: #854d0e; text-align: center; padding: 8px; font-size: 0.9rem; font-weight: bold; border-bottom: 1px solid #fde047; animation: slideDown 0.5s ease; }
-        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        /* TEMA FORMULA 1 - Warna Baja Terang */
+        body[data-theme="formula1"] { --bg-body: #b0c4de; --bg-panel: #ffffff; --text-main: #171717; --text-muted: #52525b; --c-primary: #ef4444; --text-on-primary: #ffffff; --c-accent: #10b981; --text-on-accent: #0a0a0a; --radius: 2px; --border-color: #94a3b8; --panel-shadow: 0 0 10px rgba(0,0,0,0.15); --font-angka: 'Courier New', Courier, monospace; }
 
-        .dashboard-container { padding: 20px 30px; flex: 1; overflow-y: auto; }
+        /* TEMA KAPAL LAUT (NAUTICAL) BARU */
+        body[data-theme="kapal"] { --bg-body: #e0f2fe; --bg-panel: rgba(255, 255, 255, 0.9); --text-main: #0f172a; --text-muted: #0369a1; --c-primary: #0284c7; --text-on-primary: #ffffff; --c-accent: #fbbf24; --text-on-accent: #0f172a; --radius: 12px; --border-color: #7dd3fc; --panel-shadow: 0 10px 25px rgba(2, 132, 199, 0.15); --font-angka: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-        /* TOP KPI CARDS */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .kpi-card { background: var(--white); padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid var(--ocean-blue); transition: transform 0.3s; }
-        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(2, 132, 199, 0.2); }
-        .kpi-card h4 { font-size: 0.8rem; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
-        .kpi-card h4 i { color: var(--ocean-blue); margin-right: 5px; }
-        .kpi-card .value { font-size: 1.5rem; font-weight: 900; color: var(--ocean-dark); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; transition: all 0.4s ease; }
         
-        .kpi-highlight { border-bottom: 4px solid var(--gold-sand); background: linear-gradient(to bottom, #fff, #fffbeb); }
-        .kpi-highlight .value { color: #b45309; }
-
-        /* ANIMASI KAPAL (VOYAGE PROGRESS) */
-        .voyage-section { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; position: relative; overflow: hidden;}
-        .voyage-title { font-size: 1rem; font-weight: bold; color: var(--ocean-dark); margin-bottom: 15px; display: flex; justify-content: space-between;}
-        
-        .sea-container { width: 100%; height: 60px; background: linear-gradient(to bottom, #7dd3fc, #0284c7); border-radius: 30px; position: relative; border-bottom: 5px solid #0c4a6e; box-shadow: inset 0 5px 10px rgba(0,0,0,0.1); }
-        
-        /* Ombak Bergerak */
-        .waves { position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.15) 15px, rgba(255,255,255,0.15) 30px); border-radius: 0 0 30px 30px; animation: moveWaves 3s linear infinite; }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0a1d56; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; color: white; }
+        #splash-screen img { width: 180px; margin-bottom: 20px; animation: pulse 1.5s infinite; }
+        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #f59e0b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-top: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes moveWaves { 0% { background-position: 0 0; } 100% { background-position: 42px 0; } }
 
-        /* Kapal & Dermaga */
-        .dock { position: absolute; right: 15px; top: 10px; font-size: 35px; color: #cbd5e1; z-index: 1; text-shadow: 2px 2px 0px rgba(0,0,0,0.2); }
-        .ship { position: absolute; top: 8px; left: 2%; font-size: 35px; color: var(--ocean-dark); z-index: 2; transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(3px 3px 2px rgba(0,0,0,0.4)); }
+        .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; display: flex; flex-direction: column; gap: 10px; }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45vw; min-width: 350px; opacity: 0.03; pointer-events: none; z-index: 40; }
+
+        body[data-theme="gamifikasi"] .sticky-header, body[data-theme="gamifikasi"] .bg-panel, body[data-theme="gamifikasi"] .insight-panel, body[data-theme="gamifikasi"] .top-bar { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: var(--header-shadow); border-bottom: 1px solid var(--border-color);}
+        .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.1); }
+
+        .c-primary { color: var(--c-primary); } .bg-primary { background-color: var(--c-primary); color: var(--text-on-primary); }
+        .c-accent { color: var(--c-accent); } .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); }
+        .bg-panel { background-color: var(--bg-panel); box-shadow: var(--panel-shadow); }
+        .border-primary { border: 2px solid var(--c-primary); } .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; }
+        .rounded { border-radius: var(--radius); } .rounded-full { border-radius: 50%; }
+        .flex { display: flex; } .flex-col { display: flex; flex-direction: column; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .text-center { text-align: center; } .font-bold { font-weight: bold; } 
         
-        .voyage-label { position: absolute; bottom: -22px; font-size: 0.8rem; font-weight: bold; color: var(--ocean-blue); white-space: nowrap; transform: translateX(-50%); background: white; padding: 2px 8px; border-radius: 12px; border: 1px solid var(--ocean-light); }
+        .font-extrabold { font-weight: 800; font-family: var(--font-angka); }
+        h3[id^="val-"] { font-family: var(--font-angka); }
+        body[data-theme="formula1"] h3[id^="val-"], body[data-theme="formula1"] #val-rata-harian, body[data-theme="formula1"] #f1-val-badge { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); letter-spacing: -1px; }
 
-        /* MAIN CONTENT GRID */
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        .text-xxs { font-size: 0.75rem; } .text-xs { font-size: 0.9rem; } .text-sm { font-size: 1.1rem; } .text-md { font-size: 1.3rem; } .text-lg { font-size: 1.6rem; } .text-xl { font-size: 2rem; }
+        
+        .grid-7 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 2px solid var(--c-primary); border-bottom: 1px solid var(--border-color); gap: 5px; padding: 10px 0;}
+        .grid-trend { display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: 15px; }
+        
+        .stat-box { padding: 10px; border-right: 1px solid var(--border-color); } .stat-box:last-child { border-right: none; }
+        .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); }
+        body[data-theme="gamifikasi"] .top-bar { background-color: rgba(255,255,255,0.3); }
 
-        .card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .card-title { color: var(--ocean-dark); font-size: 1.1rem; font-weight: bold; border-bottom: 2px solid var(--ocean-light); padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;}
+        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
+        .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
+        body[data-theme="formula1"] .b-1, body[data-theme="formula1"] .b-2, body[data-theme="formula1"] .b-3, body[data-theme="formula1"] .b-other { border-radius: 2px; }
 
-        /* PORTOFOLIO LIST (KEMUDI KAPAL) */
-        .porto-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .porto-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #f8fafc; border-radius: 8px; border-left: 4px solid var(--ocean-blue); }
-        .porto-name { font-weight: bold; color: var(--text-dark); display: flex; align-items: center; gap: 8px;}
-        .porto-name i { color: var(--gold-sand); font-size: 1.1rem; }
-        .porto-val { font-weight: 900; color: var(--ocean-dark); }
+        /* KELAS CSS EFEK KLIK LEGEND PORTOFOLIO */
+        .porto-legend-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; }
+        .porto-legend-item:hover { background-color: rgba(100, 116, 139, 0.1); border-color: var(--border-color); transform: translateX(5px); }
+        .porto-legend-item.active { background-color: var(--c-primary); color: var(--text-on-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .porto-legend-item.active .color-dot { border: 2px solid white; }
+        .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
 
-        /* LOADER */
-        #loader { position: fixed; top:0; left:0; width:100%; height:100%; background:var(--ocean-dark); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white; }
-        .anchor-spin { font-size: 4rem; color: var(--gold-sand); animation: tilt 2s infinite ease-in-out; margin-bottom: 20px;}
-        @keyframes tilt { 0%, 100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+        /* KELAS BARU UNTUK LAYOUT PORTOFOLIO & LEADERBOARD AGAR RESPONSIF */
+        .porto-layout { display: flex; align-items: stretch; padding: 15px; min-height: 250px; }
+        .porto-chart-box { width: 35%; position: relative; border-right: 1px dashed var(--border-color); padding-right: 15px; }
+        .porto-legend-box { width: 25%; padding: 0 15px; display: flex; flex-direction: column; justify-content: center; border-right: 1px dashed var(--border-color); }
+        .porto-detail-box { width: 40%; padding-left: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; overflow-y: auto; max-height: 250px; }
 
+        .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; z-index: 10; }
+        .insight-title { font-weight: 800; color: var(--c-primary); font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
+        .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-main); }
+        .insight-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; font-weight: bold; }
+        
+        .theme-select { padding: 6px 12px; border-radius: 6px; border: 2px solid var(--c-primary); font-weight: 800; font-size: 0.8rem; background-color: var(--bg-panel); color: var(--c-primary); cursor: pointer; outline: none; transition: all 0.3s;}
+        .theme-select:hover { background-color: var(--c-primary); color: var(--text-on-primary); }
+        .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
+        .f1-led { width: 14px; height: 28px; border-radius: 2px; background-color: #333; transition: all 0.5s ease; border: 1px solid #000; }
+
+        /* ALERT CARRY OVER */
+        #alert-carryover { display: none; background-color: #fef08a; color: #854d0e; text-align: center; padding: 6px 15px; font-size: 0.85rem; font-weight: bold; width: 100%; border-bottom: 1px solid #fde047;}
+
+        /* MEDIA QUERY UNTUK LAYAR KECIL (MOBILE/POTRAIT) */
+        @media (max-width: 1024px) { 
+            .grid-trend { grid-template-columns: 1fr 1fr; } 
+        }
+        @media (max-width: 768px) { 
+            .grid-trend { grid-template-columns: 1fr; } 
+            .border-bottom-primary { flex-direction: column; gap: 15px; text-align: center; } 
+            .border-bottom-primary > div { width: 100% !important; justify-content: center !important; } 
+            
+            .porto-layout { flex-direction: column; height: auto; padding: 10px; }
+            .porto-chart-box, .porto-legend-box, .porto-detail-box { width: 100%; padding: 10px 0; border-right: none; }
+            .porto-chart-box { height: 220px; border-bottom: 1px dashed var(--border-color); }
+            .porto-legend-box { border-bottom: 1px dashed var(--border-color); padding-bottom: 15px; }
+            .porto-detail-box { max-height: 400px; padding-left: 0; padding-top: 15px; }
+            .stat-box { border-right: none; border-bottom: 1px solid var(--border-color); }
+            .stat-box:last-child { border-bottom: none; }
+        }
     </style>
 </head>
-<body>
+<body data-theme="klasik">
 
-    <!-- Layar Loading Tema Kapal -->
-    <div id="loader">
-        <i class="fas fa-anchor anchor-spin"></i>
-        <h2>Menarik Jangkar Data...</h2>
-    </div>
+    <!-- ALERT JIKA DATA MUNDUR KE KEMARIN -->
+    <div id="alert-carryover"></div>
 
-    <!-- Alert Otak Cerdas (Smart-Fetch) -->
-    <div id="alert-carryover"><i class="fas fa-info-circle"></i> Data hari ini belum di-update. Menampilkan posisi navigasi terakhir (Carry-Over).</div>
+    <div id="splash-screen"><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><div class="spinner"></div><h2 style="font-size: 16px; font-weight: bold; margin-top: 10px; color: #f59e0b;">DMJ EXECUTIVE SUMMARY</h2></div>
 
-    <!-- HEADER -->
-    <div class="topbar">
-        <div class="brand">
-            <i class="fas fa-ship"></i>
+<div class="poster">
+    <img src="logo.png" class="watermark" alt="Watermark" onerror="this.style.display='none'">
+
+    <div class="sticky-header">
+        <div class="flex justify-between items-center top-bar">
+            <div class="flex items-center gap-2 c-primary font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
             <div>
-                <h1>PERFORMANCE VOYAGE</h1>
-                <p>Executive Summary Dashboard - DMJ</p>
+                <input type="date" id="tv-date-picker" class="theme-select" style="margin-right: 10px;" title="Pilih Tanggal Dashboard">
+                <select id="theme-selector" class="theme-select">
+                    <option value="klasik">🎨 KLASIK (Corporate)</option>
+                    <option value="akselerasi">🏎️ SILVERSTONE (Sporty)</option>
+                    <option value="gamifikasi">🚀 MATTE MINT (Glass/Blur)</option>
+                    <option value="formula1">🏁 FORMULA 1 (Digital)</option>
+                    <!-- TEMA BARU DITAMBAHKAN DI SINI -->
+                    <option value="kapal">⚓ KAPAL (Nautical)</option>
+                </select>
             </div>
         </div>
-        <div class="controls">
-            <input type="date" id="date-picker" class="date-picker">
-        </div>
-    </div>
 
-    <div class="dashboard-container">
-        
-        <!-- KPI ATAS -->
-        <div class="kpi-grid">
-            <div class="kpi-card"><h4 title="Pencapaian"><i class="fas fa-anchor"></i> Booking YTD</h4><div class="value" id="kpi-booking">0,000 M</div></div>
-            <div class="kpi-card"><h4 title="Target"><i class="fas fa-crosshairs"></i> Target YTD</h4><div class="value" id="kpi-target">0,000 M</div></div>
-            <div class="kpi-card kpi-highlight"><h4 title="Persentase"><i class="fas fa-percent"></i> Achiev YTD</h4><div class="value" id="kpi-achiev">0.00%</div></div>
-            <div class="kpi-card"><h4><i class="fas fa-users"></i> Captive Rate</h4><div class="value" id="kpi-captive">0.00%</div></div>
-            <div class="kpi-card"><h4><i class="fas fa-file-invoice-dollar"></i> PO + FDE</h4><div class="value" id="kpi-pofde">0,000 M</div></div>
-            <div class="kpi-card"><h4><i class="fas fa-hand-holding-usd"></i> Pencapaian IA</h4><div class="value" id="kpi-ia">0,000 M</div></div>
-        </div>
-
-        <!-- ANIMASI KAPAL (VOYAGE PROGRESS) -->
-        <div class="voyage-section">
-            <div class="voyage-title">
-                <span><i class="fas fa-route" style="color: var(--ocean-blue);"></i> Jarak Menuju Target Tahunan</span>
-                <span id="voyage-text-status" style="color: var(--gold-sand);">Mengejar Dermaga...</span>
+        <div class="flex justify-between items-center border-bottom-primary">
+            <div style="width: 25%;"><div class="logo-box"><img src="logo.png" alt="Logo" style="max-height: 55px; width: auto; display: block;" onerror="this.src='https://via.placeholder.com/150x60?text=LOGO'"></div></div>
+            <div style="width: 50%;" class="text-center">
+                <h2 class="text-xs font-bold c-primary" style="margin-bottom: 2px;">EXECUTIVE SUMMARY</h2>
+                <h1 class="font-extrabold c-primary text-xl" style="line-height: 1.1; letter-spacing: 0.5px;">PERFORMANCE BOOKING</h1>
+                <h3 class="text-sm font-bold c-primary" style="margin-bottom: 5px;">CABANG BANDA ACEH</h3>
+                <div class="bg-accent font-extrabold rounded" style="display: inline-block; padding: 4px 15px; font-size: 0.85rem;">
+                    <i class="far fa-calendar-alt"></i> <span id="val-periode">-</span>
+                </div>
             </div>
-            
-            <div class="sea-container">
-                <div class="waves"></div>
-                <!-- Ikon Dermaga (Tujuan) -->
-                <i class="fas fa-warehouse dock"></i>
-                
-                <!-- Ikon Kapal & Label Persentase -->
-                <div class="ship" id="ship-icon">
-                    <i class="fas fa-ship"></i>
-                    <div class="voyage-label" id="ship-label">0% Saat ini</div>
+            <div style="width: 25%; display: flex; justify-content: flex-end;">
+                <div class="bg-primary flex items-center gap-2 rounded" style="padding: 10px 15px; box-shadow: var(--panel-shadow);">
+                    <i class="fas fa-bullseye text-xl"></i>
+                    <div style="line-height: 1.2;"><div class="font-bold text-xs">TARGET BERSAMA</div><div style="font-size: 0.75rem; font-weight: normal; color: var(--text-on-primary);">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- AREA GRAFIK & RINCIAN -->
-        <div class="main-grid">
+    <div>
+        <div class="bg-primary font-bold text-xs text-center rounded" style="display: inline-block; padding: 4px 15px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">OVERVIEW CABANG</div>
+        <div class="grid-7 bg-panel rounded" style="border-top-left-radius: 0; border: 1px solid var(--border-color);">
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> BOOKING YTD</div><h3 id="val-booking-amount" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET YTD</div><h3 id="val-target-atas" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-line" style="color:#10b981;"></i> ACHIEV YTD</div><h3 id="val-achievement" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-users" style="color:#a855f7;"></i> CAPTIVE RATE</div><h3 id="val-captive" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-handshake" style="color:#60a5fa;"></i> PO + FDE</div><h3 id="val-pofde" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-file-invoice" style="color:#fb923c;"></i> IA</div><h3 id="val-ia" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-percent" style="color:#2563eb;"></i> WALR</div><h3 id="val-walr" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+        </div>
+    </div>
+
+    <!-- UPDATE LAYOUT HTML -->
+    <div class="border-primary rounded flex-col bg-panel" style="margin-bottom: 15px;">
+        <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">DATA DISTRIBUSI & RINCIAN PORTOFOLIO (KLIK UNTUK FILTER)</div>
+        
+        <!-- Wrapper ini sekarang menggunakan class 'porto-layout' yang merespons layar HP -->
+        <div class="porto-layout">
             
-            <!-- KARTU 1: GRAFIK DONUT -->
-            <div class="card">
-                <h3 class="card-title"><i class="fas fa-chart-pie"></i> Peta Distribusi Portofolio</h3>
-                <div style="position: relative; height: 250px; width: 100%; display: flex; justify-content: center; align-items: center;">
-                    <canvas id="portoChart"></canvas>
-                    <!-- Teks di tengah Donut -->
-                    <div style="position: absolute; text-align: center; pointer-events: none;">
-                        <div style="font-size: 0.8rem; color: #64748b; font-weight: bold;">TOTAL ALL PORTO</div>
-                        <div style="font-size: 1.3rem; font-weight: 900; color: var(--ocean-dark);" id="chart-center-val">0,000 M</div>
+            <div class="porto-chart-box" id="porto-canvas-wrapper">
+                <canvas id="portoChart"></canvas>
+                <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
+                    <span style="font-size: 0.65rem; font-weight: bold; color: var(--text-muted);">TOTAL ALL PORTO</span>
+                    <span id="val-booking-donut" class="font-extrabold c-primary text-sm">0,000 M</span>
+                </div>
+            </div>
+            
+            <div class="porto-legend-box">
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 8px; text-transform: uppercase;">Legend / Filter Portofolio:</div>
+                <div id="porto-legend-container" style="display: flex; flex-direction: column; overflow-y: auto; max-height: 220px;"></div>
+            </div>
+            
+            <div id="dynamic-leaderboards" class="porto-detail-box">
+                <!-- Kotak akan digambar otomatis oleh Javascript -->
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="bg-panel rounded" style="border: 2px solid var(--border-color); padding: 15px;">
+        <div class="flex items-center gap-2" style="margin-bottom: 15px;">
+            <div class="bg-primary rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 35px; height: 35px;">1</div>
+            <div>
+                <h2 id="trend-title" class="font-extrabold c-primary text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND (YEAR-TO-DATE)</h2>
+                <p class="font-bold text-xs" style="color: var(--text-muted); margin-top: 3px;">APAKAH TARGET TAHUNAN BISA TERCAPAI?</p>
+            </div>
+        </div>
+        
+        <div class="grid-trend">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="border-primary rounded" style="background-color: var(--bg-body); opacity: 0.9;">
+                    <div class="bg-primary text-center font-bold text-xs rounded" style="padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">POSISI SAAT INI</div>
+                    <div style="padding: 10px; font-size: 0.9rem; font-weight: bold; display: flex; flex-direction: column; gap: 6px;">
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span id="val-target-tahun" style="font-weight: normal;">Target Tahun</span><span id="val-target-kiri">0,000 M</span></div>
+                        <div class="flex justify-between c-primary"><span style="font-weight: normal;">Realisasi Booking</span><span id="val-trend-realisasi">0,000 M</span></div>
+                        <div class="flex justify-between" style="color: #10b981;"><span style="font-weight: normal;">Achiev YTD</span><span id="val-trend-achiev">0,00%</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Target</span><span id="val-trend-sisa">0,000 M</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Hari Berjalan</span><span id="val-hari-berjalan">0 Hari</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
+                    </div>
+                </div>
+                <div id="box-kesimpulan" class="flex items-center justify-center gap-2 rounded" style="padding: 10px; box-shadow: var(--panel-shadow);">
+                    <i id="icon-kesimpulan" class="fas fa-exclamation-triangle text-xl"></i>
+                    <div id="text-kesimpulan" class="font-extrabold text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="rounded" style="border: 2px solid #10b981; background-color: rgba(16, 185, 129, 0.05); height: 100%; display: flex; flex-direction: column;">
+                    <div class="rounded" style="background-color: #10b981; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">TREND HARIAN SAAT INI</div>
+                    <div class="text-center" style="padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                        <div class="font-bold text-xs" style="color: var(--text-muted);">Rata-rata booking per hari:</div>
+                        <div id="val-rata-harian" class="font-extrabold text-md" style="margin: 8px 0;">0,000 M / hari</div>
+                        <hr style="border-color: rgba(16,185,129,0.2); margin: 10px 0;">
+                        <div class="font-bold text-xs" style="color: var(--text-muted);">Proyeksi Akhir Tahun:</div>
+                        <div id="val-proyeksi" class="font-extrabold text-sm" style="color: #10b981; margin: 8px 0;">0,000 M (0,0%)</div>
                     </div>
                 </div>
             </div>
 
-            <!-- KARTU 2: RINCIAN KEMUDI KAPAL -->
-            <div class="card">
-                <h3 class="card-title"><i class="fas fa-compass"></i> Kompas Rincian Portofolio</h3>
-                <ul class="porto-list" id="porto-list-container">
-                    <!-- List portofolio akan masuk ke sini via JavaScript -->
-                    <li style="grid-column: span 2; text-align: center; color: #94a3b8; font-style: italic;">Menunggu data...</li>
-                </ul>
+            <div style="position: relative; padding: 0 10px;" id="trend-visual-container">
+                <div id="trend-label" class="font-bold text-xs text-center" style="color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">TREND BOOKING YTD</div>
+                
+                <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
+                
+                <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
+                    <div style="position: relative; width: 100%; height: 40px; background: rgba(255,255,255,0.3); border-radius: 20px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5);">
+                        <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #0ea5e9); border-radius: 20px; transition: width 1.5s ease; box-shadow: 0 0 10px rgba(14,165,233,0.5);"></div>
+                        <div id="rocket-icon" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; transition: left 1.5s ease; z-index: 10;">
+                            <div style="font-size: 2.8rem; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));">🚀</div>
+                            <div id="rocket-val-badge" class="font-bold rounded" style="background-color: #0ea5e9; color: white; padding: 2px 8px; margin-top: -5px; font-size: 0.75rem; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">0,000 M</div>
+                        </div>
+                        <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.7;">🏁</div>
+                    </div>
+                    <div class="flex justify-between font-bold text-xs" style="margin-top: 25px; color: var(--text-main);"><span>START (0)</span><span id="rocket-target-text" style="color: #0ea5e9;">FINISH</span></div>
+                </div>
+
+                <div id="f1-container" style="display: none; height: 180px; flex-direction: column; justify-content: center; align-items: center; background: #111; border-radius: 8px; border: 2px solid #3f3f46; box-shadow: inset 0 0 20px rgba(0,0,0,0.9);">
+                    <div class="font-bold text-xs" style="color: #52525b; margin-bottom: 15px; letter-spacing: 1px;">RPM TELEMETRY (ACHIEVEMENT)</div>
+                    <div id="f1-led-bar" style="display: flex; gap: 4px; padding: 5px; background: #000; border-radius: 4px; border: 1px solid #27272a;"></div>
+                    <div id="f1-val-badge" class="font-extrabold" style="margin-top: 15px; font-size: 1.6rem; color: #10b981; text-shadow: 0 0 10px rgba(16,185,129,0.5);">0,000 M</div>
+                    <div class="font-bold" style="font-size: 0.65rem; color: #a1a1aa; margin-top: 5px;" id="f1-target-text">TARGET: 0,000 M</div>
+                </div>
+
+                <!-- TEMA BARU: ANIMASI KAPAL -->
+                <div id="kapal-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
+                    <div style="position: relative; width: 100%; height: 60px; background: linear-gradient(to bottom, #7dd3fc, #0284c7); border-radius: 30px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.1); overflow: hidden; border-bottom: 5px solid #0c4a6e;">
+                        <!-- Ombak -->
+                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.15) 15px, rgba(255,255,255,0.15) 30px); animation: moveWaves 3s linear infinite;"></div>
+                        <!-- Dermaga -->
+                        <i class="fas fa-warehouse" style="position: absolute; right: 15px; top: 10px; font-size: 35px; color: #cbd5e1; z-index: 1;"></i>
+                        <!-- Kapal Bergerak -->
+                        <div id="kapal-icon" style="position: absolute; top: 8px; left: 0%; transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 2; font-size: 35px; color: #0f172a; filter: drop-shadow(3px 3px 2px rgba(0,0,0,0.4)); display: flex; flex-direction: column; align-items: center;">
+                            <i class="fas fa-ship"></i>
+                            <div id="kapal-val-badge" style="position: absolute; bottom: -20px; font-size: 0.7rem; background: white; padding: 2px 6px; border-radius: 8px; font-weight: bold; border: 1px solid #0284c7; white-space: nowrap;">0%</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between font-bold text-xs" style="margin-top: 15px; color: var(--text-main);">
+                        <span>BERANGKAT</span><span id="kapal-target-text" style="color: #0284c7;">DERMAGA (FINISH)</span>
+                    </div>
+                </div>
+
             </div>
 
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="font-bold text-center text-xs c-primary rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 8px; opacity: 0.9;">BERAPA YANG HARUS DICAPAI?</div>
+                <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
+                    <div class="flex items-center gap-1 c-primary"><i class="fas fa-chart-pie"></i> Sisa Target</div><div id="val-kanan-sisa">0,000 M</div>
+                </div>
+                <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
+                    <div class="flex items-center gap-1 c-primary"><i class="far fa-calendar-alt"></i> Sisa Hari</div><div id="val-sisa-hari-kanan">0 Hari</div>
+                </div>
+                <div class="text-center rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 15px 10px; margin-top: auto;">
+                    <div class="font-bold text-xs" style="color: var(--text-muted);">Kebutuhan rata-rata / hari:</div><div id="val-keb-harian" class="font-extrabold text-md" style="color: #10b981; margin-top: 5px;">0,000 M</div>
+                </div>
+            </div>
         </div>
-
     </div>
 
-    <!-- Firebase Script (Sama seperti Admin) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
-        
-        const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
-        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+    <div class="insight-panel">
+        <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
+        <ul id="smart-insights-list" class="insight-list"><li>Sedang memuat kesimpulan data...</li></ul>
+    </div>
+</div>
 
-        // SETUP DATE PICKER Default Hari Ini
-        const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
-        if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
-        
-        let currentVisualDate = `${yyyy}-${mm}-${dd}`;
-        const datePicker = document.getElementById('date-picker');
-        datePicker.value = currentVisualDate;
+<div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
+    <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
+    <span>Versi 3.4 (Nautical & Smart Fetch) | Copyright &copy; SRISP x DMJ 2026</span>
+</div>
 
-        // Variabel Global Chart
-        let portoDonutChart = null;
-        const formatM = (angka) => (Number(angka) || 0).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M';
+<script type="module">
+    // MENGIMPOR MODUL LENGKAP TERMASUK QUERY UNTUK SMART FETCH
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, query, where, collection, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // ==========================================
-        // OTAK CERDAS: SMART-FETCH (CARRY-OVER)
-        // ==========================================
-        async function fetchSmartData(targetDate) {
-            document.getElementById('loader').style.display = 'flex';
-            const alertCarry = document.getElementById('alert-carryover');
-            alertCarry.style.display = 'none';
+    const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
+    if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
+    let documentIdHarian = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('tv-date-picker').value = documentIdHarian;
 
-            let finalData = null;
-            let actualDateSource = targetDate;
+    let globalDataSnapshot = null;
+    let unsubHarian = null;
 
-            try {
-                // 1. Coba cari data tepat di tanggal yang diminta
-                const docRef = doc(db, "laporan_harian", targetDate);
-                const docSnap = await getDoc(docRef);
+    window.toM = function(val) { return (val / 1000).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M'; }
+    const colorPalette = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#0ea5e9', '#f43f5e', '#14b8a6', '#eab308', '#d946ef', '#64748b'];
+    
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('realtime-clock').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
+    }, 1000);
 
-                if (docSnap.exists() && docSnap.data().portofolio_dinamis) {
-                    finalData = docSnap.data();
-                } else {
-                    // 2. JIKA KOSONG: Lacak mundur ke masa lalu! (Ini solusi dari masalah Anda)
-                    const q = query(collection(db, "laporan_harian"), where("__name__", "<", targetDate), orderBy("__name__", "desc"), limit(1));
-                    const prevSnap = await getDocs(q);
-                    
-                    if (!prevSnap.empty) {
-                        finalData = prevSnap.docs[0].data();
-                        actualDateSource = prevSnap.docs[0].id;
-                        alertCarry.innerHTML = `<i class="fas fa-ship"></i> Radar menangkap data belum diupdate hari ini. Menampilkan posisi terakhir dari tanggal: <strong>${actualDateSource}</strong>`;
-                        alertCarry.style.display = 'block';
-                    }
-                }
+    let portoChartObj = null; let trendChartObj = null; 
 
-                renderDashboard(finalData);
+    const savedTheme = localStorage.getItem('dmj_dashboard_theme') || 'klasik';
+    document.getElementById('theme-selector').value = savedTheme;
+    document.body.setAttribute('data-theme', savedTheme);
+    Chart.defaults.color = savedTheme === 'gamifikasi' ? '#0f766e' : (savedTheme === 'klasik' ? '#64748b' : '#94a3b8');
 
-            } catch (error) {
-                console.error("Error Fetching Data:", error);
-                alert("Terjadi kesalahan navigasi. Gagal memuat data dari satelit.");
-            }
+    document.getElementById('theme-selector').addEventListener('change', (e) => {
+        const selectedTheme = e.target.value;
+        localStorage.setItem('dmj_dashboard_theme', selectedTheme);
+        document.body.setAttribute('data-theme', selectedTheme);
+        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (selectedTheme === 'klasik' ? '#64748b' : '#94a3b8');
+        if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
+    });
 
-            document.getElementById('loader').style.display = 'none';
+    const speedometerNeedle = {
+        id: 'speedometerNeedle',
+        afterDraw(chart) {
+            const { ctx } = chart;
+            const dataTotal = chart.config.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const currentValue = chart.config.data.datasets[0].data[0];
+            let angle = Math.PI + (Math.PI * (currentValue / (dataTotal || 1)));
+            if (currentValue >= dataTotal && dataTotal > 0) angle = Math.PI * 2; 
+
+            const meta = chart.getDatasetMeta(0);
+            if(!meta.data.length) return;
+            const cx = meta.data[0].x; const cy = meta.data[0].y; const outerRadius = meta.data[0].outerRadius;
+
+            const primaryColor = getComputedStyle(document.body).getPropertyValue('--c-primary').trim();
+            const textMainColor = getComputedStyle(document.body).getPropertyValue('--text-main').trim();
+            const fontAngka = getComputedStyle(document.body).getPropertyValue('--font-angka').trim();
+
+            ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle);
+            ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(outerRadius - 15, 0); ctx.lineTo(0, 6);
+            ctx.fillStyle = primaryColor; ctx.fill();
+            
+            ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.fillStyle = primaryColor; ctx.fill();
+            ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.restore();
+
+            ctx.font = `900 1.5rem ${fontAngka}`; ctx.fillStyle = textMainColor; ctx.textAlign = 'center';
+            ctx.fillText(window.toM(currentValue), cx, cy + 30);
+            ctx.font = 'bold 0.8rem Arial'; ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim(); ctx.fillText('PENCAPAIAN YTD', cx, cy + 48);
         }
+    };
 
-        // ==========================================
-        // FUNGSI RENDER TAMPILAN
-        // ==========================================
-        function renderDashboard(data) {
-            if (!data) data = {}; // Cegah error jika database benar-benar kosong
+    // FUNGSI SMART-FETCH YANG TELAH DI-UPGRADE (CARRY OVER LOGIC)
+    async function muatDataTV() {
+        if(unsubHarian) unsubHarian(); 
+        const splash = document.getElementById('splash-screen');
+        if (splash) { splash.style.opacity = '1'; }
 
-            // 1. Kalkulasi Total Booking Portofolio
-            let totalBooking = 0;
-            const portoObj = data.portofolio_dinamis || {};
-            const labels = [];
-            const values = [];
-            const backgroundColors = ['#0284c7', '#fbbf24', '#10b981', '#6366f1', '#f43f5e', '#8b5cf6', '#14b8a6', '#f97316', '#64748b', '#0ea5e9', '#eab308'];
+        unsubHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), async (docSnap) => {
+            if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
+            
+            let finalData = {};
+            let isCarryOver = false;
+            let sourceDate = documentIdHarian;
 
-            const listContainer = document.getElementById('porto-list-container');
-            listContainer.innerHTML = '';
-
-            let colorIndex = 0;
-            for (const [key, val] of Object.entries(portoObj)) {
-                const numericVal = Number(val) || 0;
-                totalBooking += numericVal;
-                
-                if (numericVal >= 0) { // Masukkan semua ke chart, walau 0
-                    labels.push(key);
-                    values.push(numericVal);
-                    
-                    // Render List dengan Ikon Kemudi (Dharmachakra)
-                    listContainer.innerHTML += `
-                        <li class="porto-item">
-                            <span class="porto-name"><i class="fas fa-dharmachakra"></i> ${key}</span>
-                            <span class="porto-val">${formatM(numericVal)}</span>
-                        </li>
-                    `;
+            if (docSnap.exists() && docSnap.data().portofolio_dinamis) {
+                finalData = docSnap.data();
+            } else {
+                // LOGIKA CERDAS: Lacak mundur jika data hari ini kosong
+                const q = query(collection(db, "laporan_harian"), where("__name__", "<", documentIdHarian), orderBy("__name__", "desc"), limit(1));
+                const prevSnap = await getDocs(q);
+                if (!prevSnap.empty) {
+                    finalData = prevSnap.docs[0].data();
+                    sourceDate = prevSnap.docs[0].id;
+                    isCarryOver = true;
                 }
             }
 
-            if (Object.keys(portoObj).length === 0) {
-                listContainer.innerHTML = '<li style="grid-column: span 2; text-align: center; color: #94a3b8;">Tidak ada data portofolio.</li>';
+            globalDataSnapshot = finalData;
+
+            // Tampilkan Notifikasi Jika Carry-Over Aktif
+            const alertBox = document.getElementById('alert-carryover');
+            if (isCarryOver) {
+                alertBox.innerHTML = `<i class="fas fa-info-circle"></i> Data tanggal yang Anda tuju belum di-update. Menampilkan riwayat terakhir dari tanggal: <strong>${sourceDate}</strong>`;
+                alertBox.style.display = 'block';
+            } else {
+                if (alertBox) alertBox.style.display = 'none';
             }
 
-            // 2. Ambil Target dan Hitung Achiev
-            const target = Number(data.target) || 0;
-            let achievPct = 0;
-            if (target > 0) {
-                achievPct = (totalBooking / target) * 100;
-            }
-
-            // 3. Update Angka KPI Card
-            document.getElementById('kpi-booking').innerText = formatM(totalBooking);
-            document.getElementById('kpi-target').innerText = formatM(target);
-            document.getElementById('kpi-achiev').innerText = achievPct.toFixed(2) + '%';
-            document.getElementById('kpi-captive').innerText = (Number(data.captive) || 0).toFixed(2) + '%';
-            document.getElementById('kpi-pofde').innerText = formatM(data.pofde);
-            document.getElementById('kpi-ia').innerText = formatM(data.ia);
-
-            // 4. JALANKAN ANIMASI KAPAL
-            // Batasi visual kapal maksimal 95% agar tidak menabrak / keluar batas layar dermaga
-            let visualShipPosition = achievPct > 95 ? 95 : achievPct;
-            
-            const shipIcon = document.getElementById('ship-icon');
-            const shipLabel = document.getElementById('ship-label');
-            const voyageStatus = document.getElementById('voyage-text-status');
-
-            // Beri sedikit delay agar CSS transition terlihat elegan
-            setTimeout(() => {
-                shipIcon.style.left = `calc(${visualShipPosition}% + 10px)`;
-                shipLabel.innerHTML = `Pencapaian: ${achievPct.toFixed(1)}%`;
-                
-                if (achievPct >= 100) {
-                    voyageStatus.innerHTML = '<i class="fas fa-check-circle"></i> Berlabuh di Dermaga! (Target Tercapai)';
-                    voyageStatus.style.color = 'var(--success)';
-                } else {
-                    voyageStatus.innerHTML = 'Berlayar Mengejar Dermaga...';
-                    voyageStatus.style.color = 'var(--gold-sand)';
-                }
-            }, 500);
-
-            // 5. UPDATE CHART DONUT
-            document.getElementById('chart-center-val').innerText = formatM(totalBooking);
-            
-            if (portoDonutChart) portoDonutChart.destroy();
-            
-            const ctx = document.getElementById('portoChart').getContext('2d');
-            portoDonutChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: backgroundColors.slice(0, labels.length),
-                        borderWidth: 0,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '75%', // Lubang tengah yang besar
-                    plugins: {
-                        legend: { display: false }, // Legend dimatikan karena sudah ada list custom di sebelahnya
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) { return ` ${context.label}: ${formatM(context.raw)}`; }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Listener jika Pimpinan mengubah tanggal kalender di TV
-        datePicker.addEventListener('change', (e) => {
-            currentVisualDate = e.target.value;
-            fetchSmartData(currentVisualDate);
+            renderDashboard(globalDataSnapshot);
         });
+    }
 
-        // Trigger Load Pertama Kali
-        window.onload = () => { fetchSmartData(currentVisualDate); };
+    document.getElementById('tv-date-picker').addEventListener('change', (e) => {
+        documentIdHarian = e.target.value;
+        muatDataTV();
+    });
 
-    </script>
+    muatDataTV();
+
+    function renderDashboard(data) {
+        const theme = document.getElementById('theme-selector').value;
+
+        let dateObj = new Date(documentIdHarian); 
+        const thn = dateObj.getFullYear();
+        const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+        
+        let textPeriode = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
+        if(data.periode_custom && data.periode_custom.trim() !== '') {
+            textPeriode = data.periode_custom.trim().toUpperCase();
+        }
+        document.getElementById('val-periode').innerText = textPeriode;
+
+        window.dataLeaderboardLengkap = data.leaderboard_dinamis || {};
+        const dynamicContainer = document.getElementById('dynamic-leaderboards');
+        
+        window.gambarKotakLeaderboard = function(kategoriFilter) {
+            dynamicContainer.innerHTML = ''; 
+            let keysToRender = [];
+            
+            if (kategoriFilter === 'ALL') {
+                keysToRender = Object.keys(window.dataLeaderboardLengkap).filter(k => k.toUpperCase().includes('ALL'));
+                if(keysToRender.length === 0 && Object.keys(window.dataLeaderboardLengkap).length > 0) {
+                    keysToRender = Object.keys(window.dataLeaderboardLengkap); 
+                }
+            } else {
+                keysToRender = Object.keys(window.dataLeaderboardLengkap).filter(k => k.toUpperCase().includes(kategoriFilter.toUpperCase()));
+            }
+
+            if(keysToRender.length === 0) {
+                dynamicContainer.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color: var(--text-muted); font-weight: bold; font-size: 0.9rem; text-align:center;"><i class="fas fa-info-circle" style="margin-right:8px;"></i> Belum ada rincian data / leaderboards yang diinput untuk portofolio ini.</div>`;
+                return;
+            }
+
+            keysToRender.forEach(kat => {
+                let catItems = window.dataLeaderboardLengkap[kat] || [];
+                catItems.sort((a,b) => b.val - a.val);
+                let maxVal = catItems.length > 0 ? catItems[0].val : 1; if(maxVal === 0) maxVal = 1;
+                
+                let listHTML = '';
+                catItems.slice(0, 5).forEach((item, index) => {
+                    let badgeClass = index === 0 ? 'b-1' : index === 1 ? 'b-2' : index === 2 ? 'b-3' : 'b-other';
+                    let barWidth = (item.val / maxVal) * 100;
+                    let barColor = theme === 'formula1' ? '#ef4444' : '#10b981'; 
+                    listHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                        <div class="flex items-center" style="width: 35%; font-size: 0.8rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"><span class="badge-num ${badgeClass}">${index+1}</span> ${item.name}</div>
+                        <div class="flex items-center" style="width: 65%; justify-content: flex-end;">
+                            <div style="width: 50%; margin-right: 10px; background-color: var(--border-color); height: 6px; border-radius: var(--radius); overflow: hidden;"><div style="width: ${barWidth}%; background-color: ${barColor}; height: 100%;"></div></div>
+                            <div class="c-primary font-bold font-extrabold" style="width: 45%; text-align: right; font-size: 0.85rem;">${window.toM(item.val)}</div></div></div>`;
+                });
+                
+                if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Data kosong</div>';
+                
+                // IKON JANGKAR UNTUK TEMA KAPAL LAUT
+                let iconClass = "fas fa-trophy";
+                if (theme === 'kapal') {
+                    iconClass = "fas fa-anchor";
+                } else {
+                    if (kat.includes("NCAR") || kat.includes("MCAR") || kat.includes("CCAR")) iconClass = "fas fa-car-side";
+                    else if (kat.includes("UCAR") || kat.includes("UMCY")) iconClass = "fas fa-car";
+                }
+
+                const box = document.createElement('div'); 
+                box.innerHTML = `<div style="font-weight: 800; font-size: 0.85rem; color: var(--c-primary); border-bottom: 2px solid var(--c-primary); margin-bottom: 15px; padding-bottom: 5px;"><i class="${iconClass} c-accent"></i> ${kat}</div><div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">${listHTML}</div>`;
+                dynamicContainer.appendChild(box);
+            });
+        };
+
+        let totalBooking = 0; let portoData = [];
+        if (data.portofolio_dinamis) {
+            for (const [name, val] of Object.entries(data.portofolio_dinamis)) { totalBooking += (val || 0); portoData.push({ name, val: val || 0 }); }
+        }
+        portoData.sort((a,b) => b.val - a.val);
+
+        const TARGET = data.target || 0;
+        const ACHIEV = TARGET > 0 ? ((totalBooking / TARGET) * 100).toFixed(2) : "0.00";
+        
+        document.getElementById('val-booking-amount').innerText = window.toM(totalBooking);
+        document.getElementById('val-target-atas').innerText = window.toM(TARGET);
+        document.getElementById('val-achievement').innerText = ACHIEV + "%";
+        document.getElementById('val-captive').innerText = (data.captive || 0).toFixed(2) + "%";
+        document.getElementById('val-walr').innerText = (data.walr || 0).toFixed(2) + "%";
+        document.getElementById('val-pofde').innerText = window.toM(data.pofde || 0);
+        document.getElementById('val-ia').innerText = window.toM(data.ia || 0);
+        document.getElementById('val-booking-donut').innerText = window.toM(totalBooking);
+
+        let chartLabels = []; let chartValues = []; let chartColors = [];
+        
+        let legendHTML = `<div class="porto-legend-item active" onclick="window.filterLeaderboard('ALL', this)" style="justify-content: center; color: var(--c-accent); border: 1px dashed var(--c-accent); margin-bottom: 15px;">
+            <i class="fas fa-star" style="margin-right: 5px;"></i> LIHAT SEMUA RINCIAN
+        </div>`;
+        
+        portoData.forEach((item, index) => {
+            const color = colorPalette[index % colorPalette.length];
+            chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
+            
+            // IKON KEMUDI KAPAL UNTUK TEMA KAPAL LAUT
+            let bulletIcon = `<span class="color-dot" style="background-color:${color}"></span>`;
+            if (theme === 'kapal') {
+                bulletIcon = `<i class="fas fa-dharmachakra" style="color:${color}; margin-right:8px;"></i>`;
+            }
+
+            legendHTML += `<div class="porto-legend-item" onclick="window.filterLeaderboard('${item.name}', this)">
+                <div class="flex items-center">${bulletIcon} ${item.name}</div> 
+                <span>${window.toM(item.val)}</span>
+            </div>`;
+        });
+        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Belum ada portofolio.</div>';
+
+        window.filterLeaderboard = function(portoName, element) {
+            document.querySelectorAll('.porto-legend-item').forEach(el => el.classList.remove('active'));
+            if(element) element.classList.add('active');
+            window.gambarKotakLeaderboard(portoName);
+        };
+
+        window.gambarKotakLeaderboard('ALL');
+
+        if(portoChartObj) portoChartObj.destroy();
+        const ctxPorto = document.getElementById('portoChart').getContext('2d');
+        const centerText = document.getElementById('porto-center-text');
+        
+        if (theme === 'klasik' || theme === 'kapal') { 
+            centerText.style.display = 'flex'; 
+            portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: false } } } }); 
+        } else if (theme === 'akselerasi' || theme === 'formula1') { 
+            centerText.style.display = 'none'; 
+            portoChartObj = new Chart(ctxPorto, { 
+                type: 'bar', 
+                data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, 
+                options: { 
+                    indexAxis: 'y', maintainAspectRatio: false, responsive: true, 
+                    scales: { 
+                        x: { display: false }, 
+                        y: { grid: { display: false }, ticks: { font: {size: 10, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } 
+                    }, 
+                    plugins: { legend: { display: false } } 
+                } 
+            }); 
+        } else if (theme === 'gamifikasi') { 
+            centerText.style.display = 'none'; 
+            portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + 'AA'), borderColor: 'rgba(255,255,255,0.5)' }] }, options: { maintainAspectRatio: false, responsive: true, scales: { r: { grid: {color: 'rgba(15,118,110,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } }); 
+        }
+
+        const startOfYear = new Date(thn, 0, 1); const endOfYear = new Date(thn, 11, 31);
+        const diffTime = Math.abs(dateObj - startOfYear);
+        const hariBerjalan = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const totalDaysInYear = Math.ceil(Math.abs(endOfYear - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
+        const sisaHari = Math.max(0, totalDaysInYear - hariBerjalan);
+
+        document.getElementById('val-target-tahun').innerText = `Target Tahun ${thn}`;
+        document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
+        document.getElementById('val-sisa-hari').innerText = `${sisaHari} Hari`;
+        document.getElementById('val-sisa-hari-kanan').innerText = `${sisaHari} Hari`;
+
+        const sisaTarget = Math.max(0, TARGET - totalBooking);
+        const rataHarian = hariBerjalan > 0 ? (totalBooking / hariBerjalan) : 0; 
+        const proyeksiAkhirTahun = rataHarian * totalDaysInYear;
+        const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
+        const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
+
+        document.getElementById('val-target-kiri').innerText = window.toM(TARGET);
+        document.getElementById('val-trend-realisasi').innerText = window.toM(totalBooking);
+        document.getElementById('val-trend-achiev').innerText = ACHIEV + "%";
+        document.getElementById('val-trend-sisa').innerText = window.toM(sisaTarget);
+        document.getElementById('val-kanan-sisa').innerText = window.toM(sisaTarget);
+        document.getElementById('val-rata-harian').innerText = window.toM(rataHarian) + " / hari";
+        document.getElementById('val-proyeksi').innerText = window.toM(proyeksiAkhirTahun) + " (" + persentaseProyeksi + "%)";
+        document.getElementById('val-keb-harian').innerText = window.toM(kebutuhanHarian) + " / hari";
+
+        const boxKesimpulan = document.getElementById('box-kesimpulan');
+        const iconKesimpulan = document.getElementById('icon-kesimpulan');
+        const textKesimpulan = document.getElementById('text-kesimpulan');
+
+        if(proyeksiAkhirTahun >= TARGET && TARGET > 0) {
+            boxKesimpulan.style.backgroundColor = "rgba(16, 185, 129, 0.1)"; boxKesimpulan.style.border = "2px solid #10b981";
+            iconKesimpulan.className = "fas fa-check-circle text-xl"; iconKesimpulan.style.color = "#10b981";
+            textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TAHUNAN AKAN TERCAPAI.</span>';
+            textKesimpulan.style.color = "#10b981";
+        } else {
+            boxKesimpulan.style.backgroundColor = "rgba(220, 38, 38, 0.1)"; boxKesimpulan.style.border = "2px solid #dc2626";
+            iconKesimpulan.className = "fas fa-exclamation-triangle text-xl"; iconKesimpulan.style.color = "#dc2626";
+            textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span>';
+            textKesimpulan.style.color = "#dc2626";
+        }
+
+        let insights = [];
+        if (portoData.length > 0 && totalBooking > 0) { 
+            let topP = portoData[0]; 
+            insights.push(`<li><span style="font-size:1.2rem;">🔥</span> <div>Portofolio Paling Berpengaruh: <strong class="c-primary">${topP.name}</strong> mendominasi dengan kontribusi <strong class="c-primary">${window.toM(topP.val)}</strong> (${((topP.val / totalBooking) * 100).toFixed(1)}%).</div></li>`); 
+            
+            let botP = portoData[portoData.length - 1]; 
+            insights.push(`<li><span style="font-size:1.2rem;">🚨</span> <div>Portofolio Butuh Perhatian: <strong style="color:#dc2626">${botP.name}</strong> dengan pencapaian terendah sebesar <strong style="color:#dc2626">${window.toM(botP.val)}</strong>.</div></li>`); 
+        }
+        
+        if (proyeksiAkhirTahun >= TARGET && TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata harian cabang.</div></li>`);
+        else if (TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">⚠️</span> <div>Butuh akselerasi! Kejar rata-rata harian cabang menjadi <strong style="color:#dc2626">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
+        
+        if((data.pofde || 0) > 0) insights.push(`<li><span style="font-size:1.2rem;">💰</span> <div>Terdapat potensi sebesar <strong class="c-accent">${window.toM(data.pofde)}</strong> (PO+FDE) yang siap dikawal menjadi realisasi bulan ini.</div></li>`);
+        
+        document.getElementById('smart-insights-list').innerHTML = insights.join('');
+
+        if(trendChartObj) trendChartObj.destroy();
+        const ctxTrend = document.getElementById('trendChart').getContext('2d');
+        const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
+        const rocketContainer = document.getElementById('rocket-container');
+        const f1Container = document.getElementById('f1-container');
+        const kapalContainer = document.getElementById('kapal-container');
+        const trendLabel = document.getElementById('trend-label');
+
+        let pct = TARGET > 0 ? (totalBooking / TARGET) * 100 : 0;
+
+        if (theme === 'klasik') {
+            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none'; kapalContainer.style.display = 'none';
+            trendLabel.innerText = "TREND BOOKING YTD (AKUMULATIF)";
+            
+            let xLabels = []; let realisasiData = []; let proyeksiData = [];
+            for(let i=1; i<=12; i++) {
+                xLabels.push(blnNames[i-1]);
+                let accDays = Math.ceil((new Date(thn, i, 0) - startOfYear) / (1000*60*60*24));
+                if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
+                else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
+            }
+            trendChartObj = new Chart(ctxTrend, { type: 'line', data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: {color: 'rgba(150,150,150,0.1)'}, max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { grid: {display: false}, ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } });
+        } 
+        else if (theme === 'akselerasi') {
+            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none'; kapalContainer.style.display = 'none';
+            trendLabel.innerText = "SPEEDOMETER PENCAPAIAN TARGET";
+            
+            let sisaB = Math.max(0, TARGET - totalBooking);
+            let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#fbbf24' : '#dc2626'; 
+            const bgColorTrack = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
+
+            trendChartObj = new Chart(ctxTrend, { type: 'doughnut', data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, bgColorTrack], borderWidth: 0 }] }, options: { rotation: 270, circumference: 180, cutout: '75%', responsive: true, maintainAspectRatio: false, layout: { padding: { bottom: 50 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } }, plugins: [speedometerNeedle] });
+        } 
+        else if (theme === 'gamifikasi') {
+            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'flex'; f1Container.style.display = 'none'; kapalContainer.style.display = 'none';
+            trendLabel.innerText = "AKSELERASI ROKET PENCAPAIAN TAHUNAN";
+            if(pct > 100) pct = 100;
+            document.getElementById('rocket-target-text').innerText = `FINISH (${window.toM(TARGET)})`;
+            document.getElementById('rocket-val-badge').innerText = window.toM(totalBooking); 
+            setTimeout(() => { document.getElementById('rocket-track').style.width = pct + '%'; document.getElementById('rocket-icon').style.left = pct + '%'; }, 100);
+        }
+        else if (theme === 'formula1') {
+            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'none'; f1Container.style.display = 'flex'; kapalContainer.style.display = 'none';
+            trendLabel.innerText = "F1 TELEMETRY SYSTEM";
+            document.getElementById('f1-val-badge').innerText = window.toM(totalBooking);
+            document.getElementById('f1-target-text').innerText = `TARGET: ${window.toM(TARGET)}`;
+
+            let totalLeds = 15; let activeLeds = Math.round((pct / 100) * totalLeds);
+            if (pct > 0 && activeLeds === 0) activeLeds = 1; if (activeLeds > totalLeds) activeLeds = totalLeds;
+
+            let ledHtml = '';
+            for(let i=0; i<totalLeds; i++) {
+                let bg = '#333'; let glow = 'none';
+                if(i < activeLeds) {
+                    if(i < 5) { bg = '#10b981'; glow = '0 0 8px #10b981'; } else if(i < 10) { bg = '#eab308'; glow = '0 0 8px #eab308'; } else if(i < 13) { bg = '#ef4444'; glow = '0 0 8px #ef4444'; } else { bg = '#3b82f6'; glow = '0 0 10px #3b82f6'; } 
+                }
+                ledHtml += `<div class="f1-led" style="background-color: ${bg}; box-shadow: ${glow};"></div>`;
+            }
+            document.getElementById('f1-led-bar').innerHTML = ledHtml;
+        }
+        else if (theme === 'kapal') {
+            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none'; kapalContainer.style.display = 'flex';
+            trendLabel.innerText = "PELAYARAN MENUJU TARGET (YTD)";
+            document.getElementById('kapal-target-text').innerText = `DERMAGA (${window.toM(TARGET)})`;
+            document.getElementById('kapal-val-badge').innerText = `${pct.toFixed(1)}%`;
+            
+            // Batas maksimal tampilan kapal agar tidak menabrak ikon dermaga
+            let visualPct = pct > 92 ? 92 : pct;
+            setTimeout(() => { document.getElementById('kapal-icon').style.left = visualPct + '%'; }, 100);
+        }
+    }
+</script>
 </body>
 </html>
