@@ -125,11 +125,8 @@
                             <div class="form-group"><label>Password (Min. 6 Karakter)</label><input type="text" id="pic-pass" placeholder="Contoh: rahasia123"></div>
                             <div class="form-group">
                                 <label>Hak Akses Portofolio</label>
+                                <!-- Pilihan ini akan berubah otomatis sesuai portofolio yang ada -->
                                 <select id="pic-role">
-                                    <option value="NCAR">PIC NCAR</option>
-                                    <option value="CCAR">PIC CCAR</option>
-                                    <option value="NMCY">PIC NMCY</option>
-                                    <option value="USECAR">PIC USECAR</option>
                                     <option value="all">Super Admin (Akses Penuh)</option>
                                 </select>
                             </div>
@@ -166,7 +163,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, deleteField, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; // Ditambahkan deleteDoc
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, deleteField, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
         
         const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
         
@@ -185,10 +182,44 @@
         let originalPortoKeys = []; 
         let currentPortos = [{name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}];
 
-        window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
-        window.hapusPorto = function(idx) { currentPortos.splice(idx, 1); renderPortoForm(); };
+        // --- SINKRONISASI DROPDOWN KELOLA USER ---
+        window.updateRoleDropdown = function() {
+            const roleSelect = document.getElementById('pic-role');
+            if(!roleSelect) return;
+            
+            // Simpan pilihan sebelumnya agar tidak reset saat mengetik
+            const selectedRole = roleSelect.value;
+            roleSelect.innerHTML = '';
+            
+            currentPortos.forEach(p => {
+                const namaPorto = p.name.trim().toUpperCase();
+                if(namaPorto !== '') {
+                    roleSelect.innerHTML += `<option value="${namaPorto}">PIC ${namaPorto}</option>`;
+                }
+            });
+            roleSelect.innerHTML += `<option value="all">Super Admin (Akses Penuh)</option>`;
+            
+            // Kembalikan pilihan jika masih ada di daftar
+            if(Array.from(roleSelect.options).some(opt => opt.value === selectedRole)) {
+                roleSelect.value = selectedRole;
+            }
+        };
+
+        window.tambahPorto = function() { 
+            currentPortos.push({name: '', value: ''}); 
+            renderPortoForm(); 
+        };
+        
+        window.hapusPorto = function(idx) { 
+            currentPortos.splice(idx, 1); 
+            renderPortoForm(); 
+        };
+        
         window.updatePorto = function(idx, field, val) {
-            if(field === 'name') currentPortos[idx].name = val.toUpperCase();
+            if(field === 'name') {
+                currentPortos[idx].name = val.toUpperCase();
+                updateRoleDropdown(); // Langsung update dropdown saat mengetik nama portofolio!
+            }
             if(field === 'value') currentPortos[idx].value = val;
         };
 
@@ -217,6 +248,9 @@
                 `;
                 wrapper.appendChild(div);
             });
+            
+            // Pastikan dropdown sinkron saat render ulang
+            updateRoleDropdown();
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -348,7 +382,6 @@
             const listContainer = document.getElementById('list-tim');
             listContainer.innerHTML = '';
             
-            // Dapatkan email akun yang sedang login (agar tidak bisa menghapus diri sendiri)
             const emailAktif = auth.currentUser ? auth.currentUser.email : '';
 
             snapshot.forEach((docSnap) => {
