@@ -28,6 +28,7 @@
         .topbar { background: white; padding: 20px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5; }
         .topbar h2 { color: var(--primary); font-size: 1.2rem; display: flex; align-items: center; gap: 10px;}
         
+        /* Kalender Admin */
         #input-tanggal-admin { border: 2px solid var(--primary); background: #f8fafc; color: var(--primary); font-size: 1.1rem; font-weight: bold; padding: 5px 10px; border-radius: 6px; outline: none; cursor: pointer;}
         #input-tanggal-admin:focus { border-color: var(--accent); }
 
@@ -124,12 +125,12 @@
                 </div>
             </div>
 
-            <!-- PANEL 2: BUILDER LEADERBOARD -->
+            <!-- PANEL 2: BUILDER LEADERBOARD DINAMIS -->
             <div id="panel-leaderboard" class="panel">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;">
                         <h3 style="color: var(--primary); font-size: 1.2rem;"><i class="fas fa-trophy"></i> Builder Dashboard Leaderboard</h3>
-                        <button class="btn-primary" onclick="tambahKategoriLeaderboard()"><i class="fas fa-plus"></i> Tambah Kategori Baru</button>
+                        <button class="btn-primary" onclick="tambahKategoriLeaderboard()"><i class="fas fa-plus"></i> Tambah Kategori / Dashboard Baru</button>
                     </div>
                     <form id="form-leaderboard">
                         <div id="leaderboard-wrapper"></div>
@@ -188,9 +189,10 @@
         </div>
     </div>
 
+    <!-- SCRIPT NAVIGASI TAB OTOMATIS -->
     <script>
         document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('click', (e) => {
                 document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
                 document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
                 item.classList.add('active');
@@ -199,6 +201,7 @@
         });
     </script>
 
+    <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -208,8 +211,10 @@
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
         const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp"); const secondaryAuth = getAuth(secondaryApp);
 
+        // SETUP DATE PICKER
         const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
         if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
+        
         let documentIdHarian = `${yyyy}-${mm}-${dd}`;
         document.getElementById('input-tanggal-admin').value = documentIdHarian;
 
@@ -218,6 +223,7 @@
         let currentPortos = [];
         let currentLeaderboards = {}; 
 
+        // === FUNGSI GANTI PASSWORD ===
         document.getElementById('form-ganti-password').addEventListener('submit', async (e) => {
             e.preventDefault();
             const pw1 = document.getElementById('new-pw').value;
@@ -229,11 +235,12 @@
                 alert("Password berhasil diubah!");
                 document.getElementById('form-ganti-password').reset();
             } catch(error) {
-                if(error.code === 'auth/requires-recent-login') { alert("Silakan Keluar (Logout) dan Login kembali untuk verifikasi keamanan sebelum ganti password."); } 
+                if(error.code === 'auth/requires-recent-login') { alert("Demi keamanan, silakan Keluar (Logout) dan Login kembali untuk mengganti password."); } 
                 else { alert("Gagal: " + error.message); }
             }
         });
 
+        // === FUNGSI LEADERBOARD BUILDER ===
         window.tambahKategoriLeaderboard = function() {
             let name = prompt("Masukkan nama Dashboard/Kategori baru\n(Contoh: TOP 5 MARKETING):");
             if(name && name.trim() !== '') {
@@ -254,9 +261,9 @@
             for(let kat in currentLeaderboards) {
                 let itemsHtml = '';
                 currentLeaderboards[kat].forEach((item, idx) => {
-                    itemsHtml += `<div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" value="${item.name}" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'name', this.value)" placeholder="Nama" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;"><input type="number" value="${item.val}" step="any" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" onchange="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" placeholder="Nilai" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;"><button type="button" onclick="hapusBarisLeaderboard('${kat}', ${idx})" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;" title="Hapus"><i class="fas fa-trash"></i></button></div>`;
+                    itemsHtml += `<div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" value="${item.name}" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'name', this.value)" placeholder="Nama" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;"><input type="number" value="${item.val}" step="any" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" onchange="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" placeholder="Nilai (M)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;"><button type="button" onclick="hapusBarisLeaderboard('${kat}', ${idx})" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;" title="Hapus Baris"><i class="fas fa-trash"></i></button></div>`;
                 });
-                container.innerHTML += `<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-bottom:20px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;"><h4 style="color:var(--primary);">${kat}</h4><button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;">Hapus Kategori</button></div><div id="items-${kat}">${itemsHtml}</div><button type="button" onclick="tambahBarisLeaderboard('${kat}')" style="background:var(--secondary); color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-top:10px;"><i class="fas fa-plus"></i> Tambah Baris</button></div>`;
+                container.innerHTML += `<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-bottom:20px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;"><h4 style="color:var(--primary);"><i class="fas fa-trophy c-accent"></i> ${kat}</h4><button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hapus Kategori</button></div><div id="items-${kat}">${itemsHtml}</div><button type="button" onclick="tambahBarisLeaderboard('${kat}')" style="background:var(--secondary); color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-top:10px;"><i class="fas fa-plus"></i> Tambah Baris Peringkat</button></div>`;
             }
         }
 
@@ -270,9 +277,10 @@
 
                 await setDoc(doc(db, "laporan_harian", documentIdHarian), { leaderboard_dinamis: cleanLeaderboard, logs_aktivitas: arrayUnion(logMsg) }, { merge: true });
                 alert("Data Leaderboard berhasil di-update ke TV!");
-            } catch (error) { alert("Gagal menyimpan leaderboard."); }
+            } catch (error) { alert("Gagal menyimpan data leaderboard."); }
         });
 
+        // === FUNGSI PORTOFOLIO UTAMA ===
         window.updateRoleDropdown = function() {
             const roleSelect = document.getElementById('pic-role'); if(!roleSelect) return;
             const selectedRole = roleSelect.value; roleSelect.innerHTML = '';
@@ -282,7 +290,7 @@
         };
 
         window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
-        window.hapusPorto = function(idx) { if(confirm("Hapus portofolio ini?")) { currentPortos.splice(idx, 1); renderPortoForm(); } };
+        window.hapusPorto = function(idx) { if(confirm("Hapus portofolio ini dari daftar?")) { currentPortos.splice(idx, 1); renderPortoForm(); } };
         window.updatePorto = function(idx, field, val) {
             if(field === 'name') { currentPortos[idx].name = val.toUpperCase(); updateRoleDropdown(); }
             if(field === 'value') currentPortos[idx].value = val;
@@ -304,14 +312,14 @@
                 div.innerHTML = `
                     <div style="flex: 1; min-width: 150px;">
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Nama Portofolio</label>
-                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-weight:bold;">
+                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold;">
                     </div>
                     <div style="flex: 1; min-width: 150px;">
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Pencapaian (Miliar)</label>
-                        <input type="number" value="${p.value}" step="any" placeholder="0" onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px;">
+                        <input type="number" value="${p.value}" step="any" placeholder="0" onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
                         ${badgeHTML}
                     </div>
-                    ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;" title="Hapus"><i class="fas fa-times"></i></button></div>` : ''}
+                    ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;" title="Exit/Hapus Portofolio"><i class="fas fa-times"></i></button></div>` : ''}
                 `;
                 wrapper.appendChild(div);
             });
@@ -327,6 +335,7 @@
             });
         }
 
+        // === AUTENTIKASI & LOAD DATA (DENGAN MESIN WAKTU) ===
         let unsubscribeHarian = null;
 
         onAuthStateChanged(auth, async (user) => {
@@ -335,7 +344,7 @@
                 if (userDocSnap.exists()) {
                     currentUserData = userDocSnap.data();
                     terapkanHakAkses(currentUserData);
-                    muatDataHarian(); 
+                    muatDataHarian(); // Mulai load data untuk tanggal aktif
                 } else { alert("Akses Ditolak."); keluar(true); }
             } else { window.location.href = 'login.html'; }
         });
@@ -353,7 +362,7 @@
 
         function muatDataHarian() {
             document.getElementById('loader').style.display = 'flex';
-            if(unsubscribeHarian) unsubscribeHarian(); 
+            if(unsubscribeHarian) unsubscribeHarian(); // Hentikan memantau tanggal sebelumnya
             
             unsubscribeHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), (docSnap) => {
                 if(docSnap.exists()) { harianData = docSnap.data(); } else { harianData = {}; }
@@ -381,6 +390,7 @@
             });
         }
 
+        // KETIKA TANGGAL KALENDER DIUBAH (REVISI DATA LAMA)
         document.getElementById('input-tanggal-admin').addEventListener('change', (e) => {
             documentIdHarian = e.target.value;
             muatDataHarian();
@@ -425,8 +435,9 @@
             } catch (error) { alert("Gagal menyimpan."); }
         });
 
+        // === KELOLA USER ===
         window.cabutAksesUser = async function(emailPIC) {
-            if(confirm(`Cabut akses login untuk email ${emailPIC}?`)) {
+            if(confirm(`Tolak akses login untuk email ${emailPIC}. Lanjutkan?`)) {
                 try { await deleteDoc(doc(db, "users", emailPIC)); alert("Akses dicabut!"); } catch (error) { alert("Error"); }
             }
         };
@@ -453,13 +464,13 @@
                 const data = docSnap.data(); const email = docSnap.id;
                 const badgeColor = data.role === 'superadmin' ? 'var(--primary)' : 'var(--accent)';
                 const roleText = data.role === 'superadmin' ? 'Super Admin' : `PIC ${data.portofolio}`;
-                let tombolHapus = email !== emailAktif ? `<button onclick="cabutAksesUser('${email}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:12px;" title="Cabut"><i class="fas fa-trash"></i></button>` : '';
+                let tombolHapus = email !== emailAktif ? `<button onclick="cabutAksesUser('${email}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:12px;" title="Cabut Akses"><i class="fas fa-trash"></i></button>` : '';
                 listContainer.innerHTML += `<li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;"><div><strong style="display:block; color: var(--text-main);">${data.nama}</strong><span style="font-size:0.75rem; color:var(--text-light);">${email}</span></div><div style="display: flex; align-items: center;"><span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>${tombolHapus}</div></li>`;
             });
         });
 
         function keluar(force = false) { 
-            if (force || confirm("Keluar dari Panel Admin?")) {
+            if (force || confirm("Apakah Anda yakin ingin keluar dari Panel Admin?")) {
                 signOut(auth).then(() => { window.location.href = 'login.html'; }); 
             }
         }

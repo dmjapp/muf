@@ -6,39 +6,68 @@
     <title>Executive Summary YTD - DMJ</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root { --bg-body: #f3f4f6; --bg-panel: #ffffff; --text-main: #334155; --text-muted: #64748b; --c-primary: #0a1d56; --text-on-primary: #ffffff; --c-accent: #f59e0b; --text-on-accent: #0a1d56; --radius: 8px; --border-color: #cbd5e1; --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); --font-angka: Arial, Helvetica, sans-serif; }
+        body[data-theme="akselerasi"] { --bg-body: #e5e7eb; --bg-panel: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --c-primary: #dc2626; --text-on-primary: #ffffff; --c-accent: #111827; --text-on-accent: #ffffff; --radius: 4px; --border-color: #cbd5e1; --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
+        body[data-theme="gamifikasi"] { --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); --text-main: #134e4a; --text-muted: #0f766e; --c-primary: #047857; --text-on-primary: #ffffff; --c-accent: #0ea5e9; --text-on-accent: #ffffff; --radius: 20px; --border-color: rgba(255, 255, 255, 0.6); --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
+        body[data-theme="formula1"] { --bg-body: #0a0a0a; --bg-panel: #171717; --text-main: #f8fafc; --text-muted: #a1a1aa; --c-primary: #ef4444; --text-on-primary: #ffffff; --c-accent: #10b981; --text-on-accent: #0a0a0a; --radius: 2px; --border-color: #27272a; --panel-shadow: 0 0 10px rgba(0,0,0,0.8); --font-angka: 'Courier New', Courier, monospace; }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; }
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0a1d56; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: white; }
+        html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; transition: all 0.4s ease; }
+        
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0a1d56; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; color: white; }
+        #splash-screen img { width: 180px; margin-bottom: 20px; animation: pulse 1.5s infinite; }
         .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #f59e0b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-top: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
         .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; display: flex; flex-direction: column; gap: 10px; }
         .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45vw; min-width: 350px; opacity: 0.03; pointer-events: none; z-index: 40; }
+
+        body[data-theme="gamifikasi"] .sticky-header, body[data-theme="gamifikasi"] .bg-panel, body[data-theme="gamifikasi"] .insight-panel, body[data-theme="gamifikasi"] .top-bar { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
         .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: var(--header-shadow); border-bottom: 1px solid var(--border-color);}
         .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.1); }
+
         .c-primary { color: var(--c-primary); } .bg-primary { background-color: var(--c-primary); color: var(--text-on-primary); }
         .c-accent { color: var(--c-accent); } .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); }
         .bg-panel { background-color: var(--bg-panel); box-shadow: var(--panel-shadow); }
         .border-primary { border: 2px solid var(--c-primary); } .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; }
-        .rounded { border-radius: var(--radius); } .flex { display: flex; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } 
+        .rounded { border-radius: var(--radius); } .rounded-full { border-radius: 50%; }
+        .flex { display: flex; } .flex-col { display: flex; flex-direction: column; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .text-center { text-align: center; } .font-bold { font-weight: bold; } 
+        
         .font-extrabold { font-weight: 800; font-family: var(--font-angka); }
+        h3[id^="val-"] { font-family: var(--font-angka); }
+        body[data-theme="formula1"] h3[id^="val-"], body[data-theme="formula1"] #val-rata-harian, body[data-theme="formula1"] #f1-val-badge { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); letter-spacing: -1px; }
+
         .text-xxs { font-size: 0.75rem; } .text-xs { font-size: 0.9rem; } .text-sm { font-size: 1.1rem; } .text-md { font-size: 1.3rem; } .text-lg { font-size: 1.6rem; } .text-xl { font-size: 2rem; }
+        
         .grid-7 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 2px solid var(--c-primary); border-bottom: 1px solid var(--border-color); gap: 5px; padding: 10px 0;}
         .grid-dynamic { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 15px;} 
         .grid-trend { display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: 15px; }
+        @media (max-width: 1024px) { .grid-trend { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) { .grid-trend { grid-template-columns: 1fr; } .border-bottom-primary { flex-direction: column; gap: 15px; text-align: center; } .border-bottom-primary > div { width: 100% !important; justify-content: center !important; } }
+
         .stat-box { padding: 10px; border-right: 1px solid var(--border-color); } .stat-box:last-child { border-right: none; }
         .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); }
+        body[data-theme="gamifikasi"] .top-bar { background-color: rgba(255,255,255,0.3); }
+
         .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
+        body[data-theme="formula1"] .b-1, body[data-theme="formula1"] .b-2, body[data-theme="formula1"] .b-3, body[data-theme="formula1"] .b-other { border-radius: 2px; }
+
         .porto-legend { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
         .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+
         .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; z-index: 10; }
         .insight-title { font-weight: 800; color: var(--c-primary); font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
         .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-main); }
         .insight-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; font-weight: bold; }
-        .theme-select { padding: 6px 12px; border-radius: 6px; border: 2px solid var(--c-primary); font-weight: 800; font-size: 0.8rem; background-color: var(--bg-panel); color: var(--c-primary); cursor: pointer; outline: none; }
+        
+        .theme-select { padding: 6px 12px; border-radius: 6px; border: 2px solid var(--c-primary); font-weight: 800; font-size: 0.8rem; background-color: var(--bg-panel); color: var(--c-primary); cursor: pointer; outline: none; transition: all 0.3s;}
+        .theme-select:hover { background-color: var(--c-primary); color: var(--text-on-primary); }
         .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
+        .f1-led { width: 14px; height: 28px; border-radius: 2px; background-color: #333; transition: all 0.5s ease; border: 1px solid #000; }
     </style>
 </head>
 <body data-theme="klasik">
@@ -46,11 +75,13 @@
     <div id="splash-screen"><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><div class="spinner"></div><h2 style="font-size: 16px; font-weight: bold; margin-top: 10px; color: #f59e0b;">DMJ EXECUTIVE SUMMARY</h2></div>
 
 <div class="poster">
+    <img src="logo.png" class="watermark" alt="Watermark" onerror="this.style.display='none'">
+
     <div class="sticky-header">
         <div class="flex justify-between items-center top-bar">
             <div class="flex items-center gap-2 c-primary font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
             <div>
-                <input type="date" id="tv-date-picker" class="theme-select" style="margin-right: 10px;">
+                <input type="date" id="tv-date-picker" class="theme-select" style="margin-right: 10px;" title="Pilih Tanggal Dashboard">
                 <select id="theme-selector" class="theme-select">
                     <option value="klasik">🎨 KLASIK (Corporate)</option>
                     <option value="akselerasi">🏎️ SILVERSTONE (Sporty)</option>
@@ -59,11 +90,12 @@
                 </select>
             </div>
         </div>
+
         <div class="flex justify-between items-center border-bottom-primary">
             <div style="width: 25%;"><div class="logo-box"><img src="logo.png" alt="Logo" style="max-height: 55px; width: auto; display: block;" onerror="this.src='https://via.placeholder.com/150x60?text=LOGO'"></div></div>
             <div style="width: 50%;" class="text-center">
                 <h2 class="text-xs font-bold c-primary" style="margin-bottom: 2px;">EXECUTIVE SUMMARY</h2>
-                <h1 class="font-extrabold c-primary text-xl" style="line-height: 1.1;">PERFORMANCE BOOKING</h1>
+                <h1 class="font-extrabold c-primary text-xl" style="line-height: 1.1; letter-spacing: 0.5px;">PERFORMANCE BOOKING</h1>
                 <h3 class="text-sm font-bold c-primary" style="margin-bottom: 5px;">CABANG BANDA ACEH</h3>
                 <div class="bg-accent font-extrabold rounded" style="display: inline-block; padding: 4px 15px; font-size: 0.85rem;">
                     <i class="far fa-calendar-alt"></i> <span id="val-periode">-</span>
@@ -72,7 +104,7 @@
             <div style="width: 25%; display: flex; justify-content: flex-end;">
                 <div class="bg-primary flex items-center gap-2 rounded" style="padding: 10px 15px; box-shadow: var(--panel-shadow);">
                     <i class="fas fa-bullseye text-xl"></i>
-                    <div style="line-height: 1.2;"><div class="font-bold text-xs">TARGET BERSAMA</div><div style="font-size: 0.75rem; font-weight: normal; color: var(--text-on-primary);">GROWTH BERKUALITAS</div></div>
+                    <div style="line-height: 1.2;"><div class="font-bold text-xs">TARGET BERSAMA</div><div style="font-size: 0.75rem; font-weight: normal; color: var(--text-on-primary);">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
                 </div>
             </div>
         </div>
@@ -81,19 +113,20 @@
     <div>
         <div class="bg-primary font-bold text-xs text-center rounded" style="display: inline-block; padding: 4px 15px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">OVERVIEW CABANG</div>
         <div class="grid-7 bg-panel rounded" style="border-top-left-radius: 0; border: 1px solid var(--border-color);">
-            <div class="text-center stat-box"><div class="text-xxs font-bold text-muted">BOOKING YTD</div><h3 id="val-booking-amount" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold text-muted">TARGET YTD</div><h3 id="val-target-atas" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold text-muted">ACHIEV YTD</div><h3 id="val-achievement" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold text-muted">CAPTIVE RATE</div><h3 id="val-captive" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold text-muted">PO + FDE</div><h3 id="val-pofde" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold text-muted">IA</div><h3 id="val-ia" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold text-muted">WALR</div><h3 id="val-walr" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> BOOKING YTD</div><h3 id="val-booking-amount" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET YTD</div><h3 id="val-target-atas" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-line" style="color:#10b981;"></i> ACHIEV YTD</div><h3 id="val-achievement" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-users" style="color:#a855f7;"></i> CAPTIVE RATE</div><h3 id="val-captive" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-handshake" style="color:#60a5fa;"></i> PO + FDE</div><h3 id="val-pofde" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-file-invoice" style="color:#fb923c;"></i> IA</div><h3 id="val-ia" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-percent" style="color:#2563eb;"></i> WALR</div><h3 id="val-walr" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
         </div>
     </div>
 
     <div id="dynamic-leaderboards" class="grid-dynamic">
         <div class="border-primary rounded flex-col bg-panel">
             <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">BOOKING BY PORTOFOLIO</div>
+            <!-- Perbaikan UI: min-height elastis agar label ChartJS selalu sejajar presisi -->
             <div class="flex items-stretch" style="padding: 15px; height: 100%; min-height: 220px;">
                 <div style="width: 45%; position: relative;" id="porto-canvas-wrapper">
                     <canvas id="portoChart"></canvas>
@@ -111,7 +144,8 @@
         <div class="flex items-center gap-2" style="margin-bottom: 15px;">
             <div class="bg-primary rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 35px; height: 35px;">1</div>
             <div>
-                <h2 id="trend-title" class="font-extrabold c-primary text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND & CLOSING BULANAN</h2>
+                <h2 id="trend-title" class="font-extrabold c-primary text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND (YEAR-TO-DATE)</h2>
+                <p class="font-bold text-xs" style="color: var(--text-muted); margin-top: 3px;">APAKAH TARGET TAHUNAN BISA TERCAPAI?</p>
             </div>
         </div>
         
@@ -120,51 +154,65 @@
                 <div class="border-primary rounded" style="background-color: var(--bg-body); opacity: 0.9;">
                     <div class="bg-primary text-center font-bold text-xs rounded" style="padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">POSISI SAAT INI</div>
                     <div style="padding: 10px; font-size: 0.9rem; font-weight: bold; display: flex; flex-direction: column; gap: 6px;">
-                        <div class="flex justify-between text-muted"><span id="val-target-tahun">Target Tahun</span><span id="val-target-kiri">0,000 M</span></div>
-                        <div class="flex justify-between c-primary"><span>Realisasi Booking</span><span id="val-trend-realisasi">0,000 M</span></div>
-                        <div class="flex justify-between" style="color: #10b981;"><span>Achiev YTD</span><span id="val-trend-achiev">0,00%</span></div>
-                        <div class="flex justify-between text-muted"><span>Sisa Target</span><span id="val-trend-sisa">0,000 M</span></div>
-                        <div class="flex justify-between text-muted"><span>Hari Berjalan</span><span id="val-hari-berjalan">0 Hari</span></div>
-                        <div class="flex justify-between text-muted"><span>Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span id="val-target-tahun" style="font-weight: normal;">Target Tahun</span><span id="val-target-kiri">0,000 M</span></div>
+                        <div class="flex justify-between c-primary"><span style="font-weight: normal;">Realisasi Booking</span><span id="val-trend-realisasi">0,000 M</span></div>
+                        <div class="flex justify-between" style="color: #10b981;"><span style="font-weight: normal;">Achiev YTD</span><span id="val-trend-achiev">0,00%</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Target</span><span id="val-trend-sisa">0,000 M</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Hari Berjalan</span><span id="val-hari-berjalan">0 Hari</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
                     </div>
                 </div>
                 <div id="box-kesimpulan" class="flex items-center justify-center gap-2 rounded" style="padding: 10px; box-shadow: var(--panel-shadow);">
                     <i id="icon-kesimpulan" class="fas fa-exclamation-triangle text-xl"></i>
-                    <div id="text-kesimpulan" class="font-extrabold text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span>MENGANALISIS...</span></div>
+                    <div id="text-kesimpulan" class="font-extrabold text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>
                 </div>
             </div>
 
-            <!-- KOTAK CLOSING BULANAN -->
             <div>
-                <div class="rounded" style="border: 2px solid #3b82f6; background-color: rgba(59, 130, 246, 0.05); height: 100%; display: flex; flex-direction: column;">
-                    <div class="rounded" style="background-color: #3b82f6; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">CLOSING BULAN INI (<span id="label-nama-bulan">BULAN</span>)</div>
-                    <div class="text-center" style="padding: 12px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-                        <div class="font-bold text-xxs text-muted">Target Bulan Ini (<span id="label-rasio-bulan">N/12</span>):</div>
-                        <div id="val-target-bulan" class="font-extrabold text-sm c-primary" style="margin: 3px 0;">0,000 M</div>
-                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
-                        <div class="font-bold text-xxs text-muted">Target Harian (Ideal Standar):</div>
-                        <div id="val-target-harian-ideal" class="font-extrabold text-sm" style="color: #3b82f6; margin: 3px 0;">0,000 M / hari</div>
-                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
-                        <div class="font-bold text-xxs text-muted">Sisa Hari Kerja Bulan Ini:</div>
-                        <div id="val-sisa-hari-bulan" class="font-extrabold text-xs" style="color: #3b82f6; margin: 3px 0;">0 Hari</div>
-                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
-                        <div class="font-bold text-xxs text-muted">Kebutuhan Harian (Wajib Kejar):</div>
-                        <div id="val-keb-harian-bulan" class="font-extrabold text-md" style="color: #10b981; margin-top: 3px;">0,000 M / hari</div>
+                <div class="rounded" style="border: 2px solid #10b981; background-color: rgba(16, 185, 129, 0.05); height: 100%; display: flex; flex-direction: column;">
+                    <div class="rounded" style="background-color: #10b981; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">TREND HARIAN SAAT INI</div>
+                    <div class="text-center" style="padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                        <div class="font-bold text-xs" style="color: var(--text-muted);">Rata-rata booking per hari:</div>
+                        <div id="val-rata-harian" class="font-extrabold text-md" style="margin: 8px 0;">0,000 M / hari</div>
+                        <hr style="border-color: rgba(16,185,129,0.2); margin: 10px 0;">
+                        <div class="font-bold text-xs" style="color: var(--text-muted);">Proyeksi Akhir Tahun:</div>
+                        <div id="val-proyeksi" class="font-extrabold text-sm" style="color: #10b981; margin: 8px 0;">0,000 M (0,0%)</div>
                     </div>
                 </div>
             </div>
 
             <div style="position: relative; padding: 0 10px;" id="trend-visual-container">
-                <div id="trend-label" class="font-bold text-xs text-center text-muted" style="margin-bottom: 10px; text-transform: uppercase;">TREND BOOKING YTD</div>
+                <div id="trend-label" class="font-bold text-xs text-center" style="color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">TREND BOOKING YTD</div>
                 <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
+                <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
+                    <div style="position: relative; width: 100%; height: 40px; background: rgba(255,255,255,0.3); border-radius: 20px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5);">
+                        <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #0ea5e9); border-radius: 20px; transition: width 1.5s ease; box-shadow: 0 0 10px rgba(14,165,233,0.5);"></div>
+                        <div id="rocket-icon" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; transition: left 1.5s ease; z-index: 10;">
+                            <div style="font-size: 2.8rem; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));">🚀</div>
+                            <div id="rocket-val-badge" class="font-bold rounded" style="background-color: #0ea5e9; color: white; padding: 2px 8px; margin-top: -5px; font-size: 0.75rem; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">0,000 M</div>
+                        </div>
+                        <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.7;">🏁</div>
+                    </div>
+                    <div class="flex justify-between font-bold text-xs" style="margin-top: 25px; color: var(--text-main);"><span>START (0)</span><span id="rocket-target-text" style="color: #0ea5e9;">FINISH</span></div>
+                </div>
+                <div id="f1-container" style="display: none; height: 180px; flex-direction: column; justify-content: center; align-items: center; background: #111; border-radius: 8px; border: 2px solid #3f3f46; box-shadow: inset 0 0 20px rgba(0,0,0,0.9);">
+                    <div class="font-bold text-xs" style="color: #52525b; margin-bottom: 15px; letter-spacing: 1px;">RPM TELEMETRY (ACHIEVEMENT)</div>
+                    <div id="f1-led-bar" style="display: flex; gap: 4px; padding: 5px; background: #000; border-radius: 4px; border: 1px solid #27272a;"></div>
+                    <div id="f1-val-badge" class="font-extrabold" style="margin-top: 15px; font-size: 1.6rem; color: #10b981; text-shadow: 0 0 10px rgba(16,185,129,0.5);">0,000 M</div>
+                    <div class="font-bold" style="font-size: 0.65rem; color: #a1a1aa; margin-top: 5px;" id="f1-target-text">TARGET: 0,000 M</div>
+                </div>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div class="font-bold text-center text-xs c-primary rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 8px;">BERAPA YANG HARUS DICAPAI?</div>
-                <div class="flex justify-between items-center font-bold text-xs rounded bg-body border p-2" style="border: 1px solid var(--border-color);"><div class="c-primary"><i class="fas fa-chart-pie"></i> Sisa Target</div><div id="val-kanan-sisa">0,000 M</div></div>
-                <div class="flex justify-between items-center font-bold text-xs rounded bg-body border p-2" style="border: 1px solid var(--border-color);"><div class="c-primary"><i class="far fa-calendar-alt"></i> Sisa Hari</div><div id="val-sisa-hari-kanan">0 Hari</div></div>
-                <div class="text-center rounded bg-body p-2" style="border: 1px solid var(--border-color); margin-top: auto;">
-                    <div class="text-xxs text-muted">Kebutuhan rata-rata / hari:</div><div id="val-keb-harian" class="font-extrabold text-md" style="color: #10b981; margin-top: 5px;">0,000 M</div>
+                <div class="font-bold text-center text-xs c-primary rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 8px; opacity: 0.9;">BERAPA YANG HARUS DICAPAI?</div>
+                <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
+                    <div class="flex items-center gap-1 c-primary"><i class="fas fa-chart-pie"></i> Sisa Target</div><div id="val-kanan-sisa">0,000 M</div>
+                </div>
+                <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
+                    <div class="flex items-center gap-1 c-primary"><i class="far fa-calendar-alt"></i> Sisa Hari</div><div id="val-sisa-hari-kanan">0 Hari</div>
+                </div>
+                <div class="text-center rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 15px 10px; margin-top: auto;">
+                    <div class="font-bold text-xs" style="color: var(--text-muted);">Kebutuhan rata-rata / hari:</div><div id="val-keb-harian" class="font-extrabold text-md" style="color: #10b981; margin-top: 5px;">0,000 M</div>
                 </div>
             </div>
         </div>
@@ -172,13 +220,13 @@
 
     <div class="insight-panel">
         <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
-        <ul id="smart-insights-list" class="insight-list"><li>Memuat data analisis...</li></ul>
+        <ul id="smart-insights-list" class="insight-list"><li>Sedang memuat kesimpulan data...</li></ul>
     </div>
 </div>
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
-    <span><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 4.3 (Original Unmodified Engine) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
+    <span>Versi 3.2 (Smart Insight + Alignment Fix) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -216,21 +264,50 @@
         const selectedTheme = e.target.value;
         localStorage.setItem('dmj_dashboard_theme', selectedTheme);
         document.body.setAttribute('data-theme', selectedTheme);
-        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (savedTheme === 'klasik' ? '#64748b' : '#94a3b8');
+        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (selectedTheme === 'klasik' ? '#64748b' : '#94a3b8');
         if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
     });
+
+    const speedometerNeedle = {
+        id: 'speedometerNeedle',
+        afterDraw(chart) {
+            const { ctx } = chart;
+            const dataTotal = chart.config.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const currentValue = chart.config.data.datasets[0].data[0];
+            let angle = Math.PI + (Math.PI * (currentValue / (dataTotal || 1)));
+            if (currentValue >= dataTotal && dataTotal > 0) angle = Math.PI * 2; 
+
+            const meta = chart.getDatasetMeta(0);
+            if(!meta.data.length) return;
+            const cx = meta.data[0].x; const cy = meta.data[0].y; const outerRadius = meta.data[0].outerRadius;
+
+            const primaryColor = getComputedStyle(document.body).getPropertyValue('--c-primary').trim();
+            const textMainColor = getComputedStyle(document.body).getPropertyValue('--text-main').trim();
+            const fontAngka = getComputedStyle(document.body).getPropertyValue('--font-angka').trim();
+
+            ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle);
+            ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(outerRadius - 15, 0); ctx.lineTo(0, 6);
+            ctx.fillStyle = primaryColor; ctx.fill();
+            
+            ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.fillStyle = primaryColor; ctx.fill();
+            ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.restore();
+
+            ctx.font = `900 1.5rem ${fontAngka}`; ctx.fillStyle = textMainColor; ctx.textAlign = 'center';
+            ctx.fillText(window.toM(currentValue), cx, cy + 30);
+            ctx.font = 'bold 0.8rem Arial'; ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim(); ctx.fillText('PENCAPAIAN YTD', cx, cy + 48);
+        }
+    };
 
     function muatDataTV() {
         if(unsubHarian) unsubHarian(); 
         const splash = document.getElementById('splash-screen');
-        if (splash) splash.style.opacity = '1';
+        if (splash) { splash.style.opacity = '1'; }
 
         unsubHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), (docSnap) => {
             if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
             globalDataSnapshot = docSnap.exists() ? docSnap.data() : {};
             renderDashboard(globalDataSnapshot);
-        }, (error) => {
-            if (splash) splash.remove();
         });
     }
 
@@ -246,9 +323,7 @@
 
         let dateObj = new Date(documentIdHarian); 
         const thn = dateObj.getFullYear();
-        const bulanIndex = dateObj.getMonth() + 1; 
         const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
-        const blnFullNames = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
         
         let textPeriode = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
         if(data.periode_custom && data.periode_custom.trim() !== '') {
@@ -302,17 +377,16 @@
         document.getElementById('val-booking-donut').innerText = window.toM(totalBooking);
 
         let legendHTML = ''; let chartLabels = []; let chartValues = []; let chartColors = [];
-        if (portoData.length > 0) {
-            portoData.forEach((item, index) => {
-                const color = colorPalette[index % colorPalette.length];
-                chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
-                if (index < 8) legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${window.toM(item.val)}</span></div>`;
-            });
-        } else {
-            chartLabels = ['Belum Ada Data']; chartValues = [1]; chartColors = ['#cbd5e1'];
-            legendHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Belum ada data portofolio pada tanggal ini.</div>';
+        portoData.forEach((item, index) => {
+            const color = colorPalette[index % colorPalette.length];
+            chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
+            if (index < 8) legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${window.toM(item.val)}</span></div>`;
+        });
+        if (portoData.length > 8) {
+            let sisaVal = portoData.slice(8).reduce((sum, curr) => sum + curr.val, 0);
+            legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${window.toM(sisaVal)}</span></div>`;
         }
-        document.getElementById('porto-legend-container').innerHTML = legendHTML;
+        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted);">Belum ada data portofolio.</div>';
 
         if(portoChartObj) portoChartObj.destroy();
         const ctxPorto = document.getElementById('portoChart').getContext('2d');
@@ -357,21 +431,6 @@
         const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
         const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
 
-        // KALKULASI TARGET & KEBUTUHAN HARIAN BULAN INI
-        const targetBulanan = TARGET / 12;
-        const totalHariBulanIni = new Date(thn, dateObj.getMonth() + 1, 0).getDate();
-        const targetHarianIdeal = targetBulanan / totalHariBulanIni;
-        const hariBerjalanBulanIni = dateObj.getDate();
-        const sisaHariBulanIni = Math.max(0, totalHariBulanIni - hariBerjalanBulanIni);
-        const kebutuhanHarianBulan = sisaHariBulanIni > 0 ? (targetBulanan / totalHariBulanIni) : 0;
-
-        if(document.getElementById('label-nama-bulan')) document.getElementById('label-nama-bulan').innerText = blnFullNames[dateObj.getMonth()];
-        if(document.getElementById('label-rasio-bulan')) document.getElementById('label-rasio-bulan').innerText = `${bulanIndex}/12`;
-        if(document.getElementById('val-target-bulan')) document.getElementById('val-target-bulan').innerText = window.toM(targetBulanan);
-        if(document.getElementById('val-target-harian-ideal')) document.getElementById('val-target-harian-ideal').innerText = window.toM(targetHarianIdeal) + " / hari";
-        if(document.getElementById('val-sisa-hari-bulan')) document.getElementById('val-sisa-hari-bulan').innerText = `${sisaHariBulanIni} Hari (dari ${totalHariBulanIni} hari)`;
-        if(document.getElementById('val-keb-harian-bulan')) document.getElementById('val-keb-harian-bulan').innerText = window.toM(kebutuhanHarianBulan) + " / hari";
-
         document.getElementById('val-target-kiri').innerText = window.toM(TARGET);
         document.getElementById('val-trend-realisasi').innerText = window.toM(totalBooking);
         document.getElementById('val-trend-achiev').innerText = ACHIEV + "%";
@@ -404,8 +463,6 @@
             
             let botP = portoData[portoData.length - 1]; 
             insights.push(`<li><span style="font-size:1.2rem;">🚨</span> <div>Portofolio Butuh Perhatian: <strong style="color:#dc2626">${botP.name}</strong> dengan pencapaian terendah sebesar <strong style="color:#dc2626">${window.toM(botP.val)}</strong>.</div></li>`); 
-        } else {
-            insights.push(`<li><span style="font-size:1.2rem;">ℹ️</span> <div>Belum ada data portofolio pada tanggal ini.</div></li>`);
         }
         
         if (proyeksiAkhirTahun >= TARGET && TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata harian cabang.</div></li>`);
@@ -417,18 +474,63 @@
 
         if(trendChartObj) trendChartObj.destroy();
         const ctxTrend = document.getElementById('trendChart').getContext('2d');
-        let xLabels = []; let realisasiData = []; let proyeksiData = [];
-        for(let i=1; i<=12; i++) {
-            xLabels.push(blnNames[i-1]);
-            let accDays = Math.ceil((new Date(thn, i, 0) - startOfYear) / (1000*60*60*24));
-            if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
-            else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
+        const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
+        const rocketContainer = document.getElementById('rocket-container');
+        const f1Container = document.getElementById('f1-container');
+        const trendLabel = document.getElementById('trend-label');
+
+        let pct = TARGET > 0 ? (totalBooking / TARGET) * 100 : 0;
+
+        if (theme === 'klasik') {
+            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none';
+            trendLabel.innerText = "TREND BOOKING YTD (AKUMULATIF)";
+            
+            let xLabels = []; let realisasiData = []; let proyeksiData = [];
+            for(let i=1; i<=12; i++) {
+                xLabels.push(blnNames[i-1]);
+                let accDays = Math.ceil((new Date(thn, i, 0) - startOfYear) / (1000*60*60*24));
+                if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
+                else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
+            }
+            trendChartObj = new Chart(ctxTrend, { type: 'line', data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: {color: 'rgba(150,150,150,0.1)'}, max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { grid: {display: false}, ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } });
+        } 
+        else if (theme === 'akselerasi') {
+            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none';
+            trendLabel.innerText = "SPEEDOMETER PENCAPAIAN TARGET";
+            
+            let sisaB = Math.max(0, TARGET - totalBooking);
+            let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#fbbf24' : '#dc2626'; 
+            const bgColorTrack = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
+
+            trendChartObj = new Chart(ctxTrend, { type: 'doughnut', data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, bgColorTrack], borderWidth: 0 }] }, options: { rotation: 270, circumference: 180, cutout: '75%', responsive: true, maintainAspectRatio: false, layout: { padding: { bottom: 50 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } }, plugins: [speedometerNeedle] });
+        } 
+        else if (theme === 'gamifikasi') {
+            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'flex'; f1Container.style.display = 'none';
+            trendLabel.innerText = "AKSELERASI ROKET PENCAPAIAN TAHUNAN";
+            if(pct > 100) pct = 100;
+            document.getElementById('rocket-target-text').innerText = `FINISH (${window.toM(TARGET)})`;
+            document.getElementById('rocket-val-badge').innerText = window.toM(totalBooking); 
+            setTimeout(() => { document.getElementById('rocket-track').style.width = pct + '%'; document.getElementById('rocket-icon').style.left = pct + '%'; }, 100);
         }
-        trendChartObj = new Chart(ctxTrend, { 
-            type: 'line', 
-            data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, 
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: {color: 'rgba(150,150,150,0.1)'}, max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { grid: {display: false}, ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } 
-        });
+        else if (theme === 'formula1') {
+            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'none'; f1Container.style.display = 'flex';
+            trendLabel.innerText = "F1 TELEMETRY SYSTEM";
+            document.getElementById('f1-val-badge').innerText = window.toM(totalBooking);
+            document.getElementById('f1-target-text').innerText = `TARGET: ${window.toM(TARGET)}`;
+
+            let totalLeds = 15; let activeLeds = Math.round((pct / 100) * totalLeds);
+            if (pct > 0 && activeLeds === 0) activeLeds = 1; if (activeLeds > totalLeds) activeLeds = totalLeds;
+
+            let ledHtml = '';
+            for(let i=0; i<totalLeds; i++) {
+                let bg = '#333'; let glow = 'none';
+                if(i < activeLeds) {
+                    if(i < 5) { bg = '#10b981'; glow = '0 0 8px #10b981'; } else if(i < 10) { bg = '#eab308'; glow = '0 0 8px #eab308'; } else if(i < 13) { bg = '#ef4444'; glow = '0 0 8px #ef4444'; } else { bg = '#3b82f6'; glow = '0 0 10px #3b82f6'; } 
+                }
+                ledHtml += `<div class="f1-led" style="background-color: ${bg}; box-shadow: ${glow};"></div>`;
+            }
+            document.getElementById('f1-led-bar').innerHTML = ledHtml;
+        }
     }
 </script>
 </body>
