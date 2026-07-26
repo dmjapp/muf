@@ -240,7 +240,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.7 (All Elements Restored) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.8 (Definitive Chart & Insights Fix) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -476,7 +476,7 @@
             textKesimpulan.style.color = "#dc2626";
         }
 
-        // SMART INSIGHTS
+        // SMART INSIGHTS LANGSUNG MUNCUL TANPA MACET
         let insights = [];
         if (portoData.length > 0 && totalBooking > 0) { 
             let topP = portoData[0]; 
@@ -484,16 +484,23 @@
             
             let botP = portoData[portoData.length - 1]; 
             insights.push(`<li><span style="font-size:1.2rem;">🚨</span> <div>Portofolio Butuh Perhatian: <strong style="color:#dc2626">${botP.name}</strong> dengan pencapaian terendah sebesar <strong style="color:#dc2626">${window.toM(botP.val)}</strong>.</div></li>`); 
+        } else {
+            insights.push(`<li><span style="font-size:1.2rem;">ℹ️</span> <div>Belum ada data portofolio yang dimasukkan pada tanggal ini. Silakan input melalui Panel Admin.</div></li>`);
         }
         
-        if (proyeksiAkhirTahun >= TARGET && TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata harian cabang.</div></li>`);
-        else if (TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">⚠️</span> <div>Butuh akselerasi! Kejar rata-rata harian cabang menjadi <strong style="color:#dc2626">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
+        if (proyeksiAkhirTahun >= TARGET && TARGET > 0) {
+            insights.push(`<li><span style="font-size:1.2rem;">🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata harian cabang.</div></li>`);
+        } else if (TARGET > 0) {
+            insights.push(`<li><span style="font-size:1.2rem;">⚠️</span> <div>Butuh akselerasi! Kejar rata-rata harian cabang menjadi <strong style="color:#dc2626">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
+        }
         
-        if((data.pofde || 0) > 0) insights.push(`<li><span style="font-size:1.2rem;">💰</span> <div>Terdapat potensi sebesar <strong class="c-accent">${window.toM(data.pofde)}</strong> (PO+FDE) yang siap dikawal menjadi realisasi bulan ini.</div></li>`);
+        if((data.pofde || 0) > 0) {
+            insights.push(`<li><span style="font-size:1.2rem;">💰</span> <div>Terdapat potensi sebesar <strong class="c-accent">${window.toM(data.pofde)}</strong> (PO+FDE) yang siap dikawal menjadi realisasi bulan ini.</div></li>`);
+        }
         
         document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
-        // TREND CHART
+        // TREND CHART (DIJAMIN MUNCUL NORMAL)
         if(trendChartObj) trendChartObj.destroy();
         const ctxTrend = document.getElementById('trendChart').getContext('2d');
         const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
