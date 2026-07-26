@@ -74,7 +74,8 @@
         .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
         .f1-led { width: 14px; height: 28px; border-radius: 2px; background-color: #333; transition: all 0.5s ease; border: 1px solid #000; }
 
-        .unallocated-banner { font-size:0.75rem; color:#d97706; background:rgba(254, 243, 199, 0.8); padding:8px; border-radius:6px; text-align:center; border: 1px dashed #fcd34d; margin-top: 5px; font-weight: bold; }
+        /* BANNER UNALLOCATED DIPERBAIKI: Lebih kecil dan rapat di dalam card */
+        .unallocated-banner { font-size: 0.7rem; color: #d97706; background: rgba(254, 243, 199, 0.6); padding: 6px; border-radius: 4px; text-align: center; border: 1px dashed #fcd34d; margin-top: 8px; font-weight: bold; width: 100%; box-sizing: border-box; }
 
         @media (max-width: 1024px) { 
             .grid-trend { grid-template-columns: 1fr 1fr; } 
@@ -255,7 +256,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.5 (Card Separator & Sorting Edition) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.6 (Card UI & Reset Edition) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -377,7 +378,6 @@
                 keysToRender = Object.keys(window.dataLeaderboardLengkap).filter(k => k.toUpperCase().includes(kategoriFilter.toUpperCase()));
             }
 
-            // URUTKAN KATEGORI DARI NILAI PORTOFOLIO TERBESAR KE TERKECIL (SORTING DESCENDING)
             keysToRender.sort((a, b) => {
                 let valA = 0, valB = 0;
                 for (const [pName, pVal] of Object.entries(portoDinamis)) {
@@ -442,13 +442,12 @@
                 if (kat.includes("NCAR") || kat.includes("MCAR") || kat.includes("CCAR")) iconClass = "fas fa-car-side";
                 else if (kat.includes("UCAR") || kat.includes("UMCY")) iconClass = "fas fa-car";
 
-                // Desain Card Pembatas (Pembeda Jelas Antar Portofolio)
                 const box = document.createElement('div'); 
                 box.style.cssText = "background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);";
                 box.innerHTML = `
                     <div style="font-weight: 800; font-size: 0.85rem; color: var(--c-primary); border-bottom: 2px solid var(--c-primary); margin-bottom: 10px; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
                         <span style="display:flex; align-items:center; gap:6px;"><i class="${iconClass} c-accent"></i> ${kat}</span>
-                        <span style="font-size:0.7rem; background: var(--c-primary); color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Target: ${window.toM(targetPortoVal)}</span>
+                        <span style="font-size:0.7rem; background: var(--c-primary); color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Pencapaian: ${window.toM(targetPortoVal)}</span>
                     </div>
                     <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">${listHTML}</div>`;
                 dynamicContainer.appendChild(box);
