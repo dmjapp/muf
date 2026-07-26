@@ -10,7 +10,6 @@
             --primary: #0a1d56; --secondary: #1e3a8a; --accent: #f59e0b;
             --bg-body: #f1f5f9; --bg-card: #ffffff; --text-main: #334155; --text-light: #64748b;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
@@ -83,7 +82,6 @@
                 <div class="card">
                     <h3 class="card-header"><i class="fas fa-chart-line"></i> Form Input Real-time</h3>
                     <form id="form-harian">
-                        
                         <div id="area-eksekutif" style="display: none; background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e2e8f0; position: relative;">
                             <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 8px 0 0 8px;"></div>
                             <h4 style="margin-bottom: 15px; color: var(--accent);"><i class="fas fa-crown"></i> KONTROL KHUSUS PIMPINAN</h4>
@@ -98,9 +96,7 @@
 
                         <!-- DINAMIS PORTOFOLIO -->
                         <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM (DINAMIS)</h4>
-                        <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
-                            <!-- Kolom dinamis akan di-render di sini oleh JavaScript -->
-                        </div>
+                        <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;"></div>
                         <button type="button" id="btn-add-porto" class="btn-primary" style="display: none; font-size: 0.85rem;" onclick="tambahPorto()"><i class="fas fa-plus"></i> Tambah Portofolio</button>
 
                         <div style="margin-top: 25px; text-align: right; border-top: 1px solid #e2e8f0; padding-top: 15px;">
@@ -110,18 +106,53 @@
                 </div>
             </div>
 
-            <!-- PANEL 2 & 3 DISINGKAT (TETAP SAMA SEPERTI SEBELUMNYA) -->
+            <!-- PANEL 2: UPLOAD EXCEL -->
             <div id="panel-excel" class="panel">
                 <div class="card"><h3 class="card-header"><i class="fas fa-file-excel"></i> Upload Data (Tahap Pengembangan)</h3>
                     <div style="border: 2px dashed #cbd5e1; padding: 40px 20px; text-align: center; border-radius: 8px; background: #f8fafc;"><i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i><h4 style="margin-bottom: 10px;">Tarik & Lepas File Excel di Sini</h4></div>
                 </div>
             </div>
+
+            <!-- PANEL 3: KELOLA USER (100% DINAMIS) -->
             <div id="panel-users" class="panel">
-                <div class="card"><h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3><p>Fitur Manajemen User Database akan diaktifkan penuh setelah Deployment.</p></div>
+                <div class="card">
+                    <h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3>
+                    
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 300px;">
+                            <h4 style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primary);">Buat Akun Tim Baru</h4>
+                            <div class="form-group"><label>Nama Lengkap PIC</label><input type="text" id="pic-nama" placeholder="Contoh: Ncar Team"></div>
+                            <div class="form-group"><label>Email Login</label><input type="email" id="pic-email" placeholder="Contoh: ncar@dmj.com"></div>
+                            <div class="form-group"><label>Password (Min. 6 Karakter)</label><input type="text" id="pic-pass" placeholder="Contoh: rahasia123"></div>
+                            <div class="form-group">
+                                <label>Hak Akses Portofolio</label>
+                                <select id="pic-role">
+                                    <option value="NCAR">PIC NCAR</option>
+                                    <option value="CCAR">PIC CCAR</option>
+                                    <option value="NMCY">PIC NMCY</option>
+                                    <option value="USECAR">PIC USECAR</option>
+                                    <option value="all">Super Admin (Akses Penuh)</option>
+                                </select>
+                            </div>
+                            <button class="btn-primary" id="btn-daftar-pic" style="width: 100%;"><i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password</button>
+                        </div>
+                        
+                        <div style="flex: 1; min-width: 300px; border-left: 1px solid #e2e8f0; padding-left: 20px;">
+                            <h4 style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primary);">Daftar Tim Terdaftar (Real-time)</h4>
+                            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.9rem; max-height: 400px; overflow-y: auto;">
+                                <ul id="list-tim" style="list-style: none; display: flex; flex-direction: column; gap: 15px;">
+                                    <li>Memuat daftar tim dari database...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 
+    <!-- LOGIKA TAB NAVIGATION -->
     <script>
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -136,33 +167,31 @@
     <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteField, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         
         const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        
+        // App Utama untuk Login & Firestore
+        const app = initializeApp(firebaseConfig); 
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
+
+        // TRIK SECONDARY APP: Agar SuperAdmin tidak ter-logout saat bikin akun PIC baru
+        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+        const secondaryAuth = getAuth(secondaryApp);
 
         const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
         if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; const documentIdHarian = `${yyyy}-${mm}-${dd}`;
         document.getElementById('tanggal-hari-ini').innerText = `${dd}-${mm}-${yyyy}`;
 
         let currentUserData = null;
-        let originalPortoKeys = []; // Menyimpan kunci lama untuk mendeteksi penghapusan
-        let currentPortos = [
-            {name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}
-        ];
+        let originalPortoKeys = []; 
+        let currentPortos = [{name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}];
 
-        // --- FUNGSI DINAMIS TERBUKA UNTUK WINDOW ---
-        window.tambahPorto = function() {
-            currentPortos.push({name: '', value: ''});
-            renderPortoForm();
-        };
-
-        window.hapusPorto = function(idx) {
-            currentPortos.splice(idx, 1);
-            renderPortoForm();
-        };
-
+        // --- FUNGSI DINAMIS PORTOFOLIO ---
+        window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
+        window.hapusPorto = function(idx) { currentPortos.splice(idx, 1); renderPortoForm(); };
         window.updatePorto = function(idx, field, val) {
             if(field === 'name') currentPortos[idx].name = val.toUpperCase();
             if(field === 'value') currentPortos[idx].value = val;
@@ -189,10 +218,7 @@
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Pencapaian (Miliar)</label>
                         <input type="number" value="${p.value}" step="any" placeholder="0" ${isLocked ? 'disabled style="background:#e2e8f0; color:#94a3b8;"' : ''} onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
                     </div>
-                    ${isAdmin ? `
-                    <div style="padding-top: 22px;">
-                        <button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer; transition:0.3s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'"><i class="fas fa-trash"></i></button>
-                    </div>` : ''}
+                    ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;"><i class="fas fa-trash"></i></button></div>` : ''}
                 `;
                 wrapper.appendChild(div);
             });
@@ -231,7 +257,6 @@
                 if(data.ia) document.getElementById('input-ia').value = data.ia;
                 if(data.walr) document.getElementById('input-walr').value = data.walr;
                 
-                // Ambil data portofolio dinamis
                 if(data.portofolio_dinamis) {
                     currentPortos = [];
                     originalPortoKeys = Object.keys(data.portofolio_dinamis);
@@ -258,7 +283,6 @@
             if(!ia.disabled && ia.value) dataUpdate.ia = Number(ia.value);
             if(!wlr.disabled && wlr.value) dataUpdate.walr = Number(wlr.value);
 
-            // Logika Penyimpanan Portofolio Dinamis dengan Penghapusan (deleteField)
             const portoDinamis = {};
             const newKeys = [];
             currentPortos.forEach(p => {
@@ -269,23 +293,82 @@
                 }
             });
 
-            // Jika ada portofolio yang dihapus, kirim perintah deleteField() ke database
             originalPortoKeys.forEach(oldKey => {
-                if(!newKeys.includes(oldKey)) {
-                    portoDinamis[oldKey] = deleteField();
-                }
+                if(!newKeys.includes(oldKey)) portoDinamis[oldKey] = deleteField();
             });
 
-            if(Object.keys(portoDinamis).length > 0) {
-                dataUpdate.portofolio_dinamis = portoDinamis;
-            }
+            if(Object.keys(portoDinamis).length > 0) dataUpdate.portofolio_dinamis = portoDinamis;
 
             try {
                 await setDoc(doc(db, "laporan_harian", documentIdHarian), dataUpdate, { merge: true });
                 const status = document.getElementById('status-simpan');
                 status.style.display = 'block'; setTimeout(() => { status.style.display = 'none'; }, 3000);
-                originalPortoKeys = newKeys; // Update referensi kunci setelah sukses
+                originalPortoKeys = newKeys; 
             } catch (error) { console.error("Gagal:", error); alert("Gagal menyimpan."); }
+        });
+
+        // --- MANAJEMEN USER (DINAMIS DARI UI) ---
+        document.getElementById('btn-daftar-pic').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-daftar-pic');
+            const nama = document.getElementById('pic-nama').value;
+            const email = document.getElementById('pic-email').value;
+            const pass = document.getElementById('pic-pass').value;
+            const role = document.getElementById('pic-role').value;
+
+            if(!nama || !email || !pass) { alert("Tolong lengkapi Nama, Email, dan Password!"); return; }
+            if(pass.length < 6) { alert("Password harus minimal 6 karakter!"); return; }
+
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                
+                // 1. Daftarkan Kunci (Email & Pass) pakai Secondary App agar Admin tidak logout
+                await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+                
+                // 2. Beri Hak Akses (Role) ke Database Firestore
+                await setDoc(doc(db, "users", email), {
+                    nama: nama,
+                    portofolio: role,
+                    role: role === 'all' ? 'superadmin' : 'pic'
+                });
+                
+                // 3. Logout Secondary App untuk keamanan
+                await secondaryAuth.signOut();
+
+                alert(`Berhasil! Tim ${nama} sekarang bisa login menggunakan email: ${email}`);
+                document.getElementById('pic-nama').value = '';
+                document.getElementById('pic-email').value = '';
+                document.getElementById('pic-pass').value = '';
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
+
+            } catch (error) {
+                console.error(error);
+                let pesanError = "Gagal mendaftar.";
+                if(error.code === 'auth/email-already-in-use') pesanError = "Email ini sudah pernah didaftarkan!";
+                alert(pesanError);
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
+            }
+        });
+
+        // Listen Daftar User Real-time
+        onSnapshot(collection(db, "users"), (snapshot) => {
+            const listContainer = document.getElementById('list-tim');
+            listContainer.innerHTML = '';
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const email = docSnap.id;
+                const badgeColor = data.role === 'superadmin' ? 'var(--primary)' : 'var(--accent)';
+                const roleText = data.role === 'superadmin' ? 'Super Admin' : `PIC ${data.portofolio}`;
+
+                listContainer.innerHTML += `
+                    <li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
+                        <div>
+                            <strong style="display:block; color: var(--text-main);">${data.nama}</strong>
+                            <span style="font-size:0.75rem; color:var(--text-light);">${email}</span>
+                        </div>
+                        <span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>
+                    </li>
+                `;
+            });
         });
 
         function keluar() { signOut(auth).then(() => { window.location.href = 'login.html'; }); }
