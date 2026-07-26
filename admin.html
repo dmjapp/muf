@@ -12,7 +12,6 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* Layout Dasar Desktop */
         body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
         .sidebar { width: 280px; background-color: var(--primary); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; flex-shrink: 0;}
@@ -20,8 +19,7 @@
         .sidebar-header img { width: 120px; margin-bottom: 10px; background: white; padding: 5px; border-radius: 8px;}
         .sidebar-header h3 { font-size: 1.1rem; color: var(--accent); }
 
-        /* Posisi User Info Dipindah ke Bawah Logo */
-        .user-info { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; text-align: center; }
+        .user-info { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.9rem; text-align: center; }
         .user-info span { display: block; color: var(--accent); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;}
         .btn-logout { width: 100%; padding: 8px; margin-top: 10px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .btn-logout:hover { background: #b91c1c; }
@@ -44,6 +42,7 @@
         .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-light); font-size: 0.9rem; }
         .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 1rem; }
         .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+        .form-group input:disabled, .form-group input[readonly] { background-color: #e2e8f0; cursor: not-allowed; color: #94a3b8; }
 
         .btn-save { background: #10b981; color: white; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%;}
         .btn-save:hover { background: #059669; }
@@ -58,7 +57,6 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Penyesuaian Responsif untuk Layar HP (Potrait) */
         @media (max-width: 768px) {
             body { display: block; overflow-y: auto; height: auto; }
             .sidebar { width: 100%; height: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-bottom: 2px solid var(--accent); }
@@ -81,7 +79,6 @@
         <div class="sidebar-header">
             <img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'">
             <h3>EXECUTIVE PORTAL</h3>
-            <!-- User Info dipindah ke sini (Bawah Logo) -->
             <div class="user-info">
                 <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 3px;">Login sebagai:</div>
                 <span id="user-display-name">Memuat...</span>
@@ -93,6 +90,8 @@
             <div class="menu-item active" data-target="panel-input"><i class="fas fa-edit"></i> Input Harian</div>
             <div class="menu-item" id="menu-excel" data-target="panel-excel" style="display:none;"><i class="fas fa-file-excel"></i> Upload Excel</div>
             <div class="menu-item" id="menu-users" data-target="panel-users" style="display:none;"><i class="fas fa-users"></i> Kelola User</div>
+            <!-- INI ADALAH MENU TAB TAMBAHAN (CONTOH) -->
+            <div class="menu-item" id="menu-custom" data-target="panel-custom" style="display:none;"><i class="fas fa-folder-plus"></i> Tab Tambahan</div>
         </div>
     </div>
 
@@ -120,13 +119,12 @@
                             </div>
                         </div>
 
-                        <!-- DINAMIS PORTOFOLIO -->
                         <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM</h4>
                         <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px;"></div>
                         <button type="button" id="btn-add-porto" class="btn-primary" style="display: none; font-size: 0.85rem;" onclick="tambahPorto()"><i class="fas fa-plus"></i> Tambah Portofolio</button>
 
                         <div style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-                            <button type="submit" class="btn-save"><i class="fas fa-satellite-dish"></i> UPDATE TV DASHBOARD</button>
+                            <button type="submit" class="btn-save"><i class="fas fa-satellite-dish"></i> UPDATE DASHBOARD</button>
                         </div>
                     </form>
                 </div>
@@ -143,41 +141,54 @@
             <div id="panel-users" class="panel">
                 <div class="card">
                     <h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3>
-                    
                     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                         <div style="flex: 1; min-width: 300px;">
                             <h4 style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primary);">Buat Akun Tim Baru</h4>
                             <div class="form-group"><label>Nama Lengkap PIC</label><input type="text" id="pic-nama" placeholder="Contoh: Ncar Team"></div>
                             <div class="form-group"><label>Email Login</label><input type="email" id="pic-email" placeholder="Contoh: ncar@dmj.com"></div>
                             <div class="form-group"><label>Password (Min. 6 Karakter)</label><input type="text" id="pic-pass" placeholder="Contoh: rahasia123"></div>
-                            <div class="form-group">
-                                <label>Hak Akses Portofolio</label>
-                                <select id="pic-role"><option value="all">Super Admin (Akses Penuh)</option></select>
-                            </div>
+                            <div class="form-group"><label>Hak Akses Portofolio</label><select id="pic-role"><option value="all">Super Admin (Akses Penuh)</option></select></div>
                             <button class="btn-primary" id="btn-daftar-pic" style="width: 100%;"><i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password</button>
                         </div>
-                        
                         <div style="flex: 1; min-width: 300px; border-left: 1px solid #e2e8f0; padding-left: 20px;">
                             <h4 style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primary);">Daftar Tim Terdaftar (Real-time)</h4>
                             <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.9rem; max-height: 400px; overflow-y: auto;">
-                                <ul id="list-tim" style="list-style: none; display: flex; flex-direction: column; gap: 15px;">
-                                    <li>Memuat daftar tim dari database...</li>
-                                </ul>
+                                <ul id="list-tim" style="list-style: none; display: flex; flex-direction: column; gap: 15px;"><li>Memuat daftar...</li></ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- PANEL 4: TAB TAMBAHAN (CONTOH) -->
+            <div id="panel-custom" class="panel">
+                <div class="card">
+                    <h3 class="card-header"><i class="fas fa-folder-plus"></i> Ruangan Tab Tambahan</h3>
+                    <p style="color: var(--text-main); line-height: 1.6; margin-bottom: 15px;">
+                        Ini adalah contoh ruangan (Tab) baru yang ditambahkan. Bapak bisa meminta saya untuk memasukkan tabel, formulir baru, atau fitur lain di dalam kotak ini. <br><br>
+                        <strong>Cara kerjanya (Cara Tambah Tab):</strong><br>
+                        1. Di kode HTML Menu (Sidebar), tambahkan atribut <code>data-target="nama-id-panel"</code>.<br>
+                        2. Buat ruangan baru dengan atribut <code>id="nama-id-panel" class="panel"</code> seperti layar ini.<br>
+                        3. Saat menu diklik, sistem akan otomatis membuka ruangan panel yang sesuai.
+                    </p>
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <!-- SCRIPT NAVIGASI TAB OTOMATIS -->
     <script>
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
+                // Hilangkan warna aktif dari semua menu
                 document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                // Sembunyikan semua ruangan (panel)
                 document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                
+                // Aktifkan warna menu yang diklik
                 item.classList.add('active');
+                // Tampilkan panel yang targetnya sesuai dengan menu yang diklik
                 document.getElementById(item.getAttribute('data-target')).classList.add('active');
             });
         });
@@ -220,7 +231,15 @@
         };
 
         window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
-        window.hapusPorto = function(idx) { currentPortos.splice(idx, 1); renderPortoForm(); };
+        
+        // EXIT / HAPUS PORTOFOLIO DENGAN KONFIRMASI
+        window.hapusPorto = function(idx) { 
+            if(confirm("Apakah Anda yakin ingin menghapus portofolio ini dari daftar?")) {
+                currentPortos.splice(idx, 1); 
+                renderPortoForm(); 
+            }
+        };
+
         window.updatePorto = function(idx, field, val) {
             if(field === 'name') { currentPortos[idx].name = val.toUpperCase(); updateRoleDropdown(); }
             if(field === 'value') currentPortos[idx].value = val;
@@ -235,24 +254,21 @@
 
             currentPortos.forEach((p, idx) => {
                 const isLocked = !isAdmin && currentUserData.portofolio !== p.name;
-                
-                // JIKA TERKUNCI (BUKAN MILIK PIC), SEMBUNYIKAN SEPENUHNYA DARI LAYAR
                 if (isLocked) return; 
 
                 const div = document.createElement('div');
-                // Penyesuaian Flexbox agar responsif di HP
                 div.style.cssText = 'display:flex; flex-wrap: wrap; gap:10px; align-items:center; background:#f8fafc; padding:15px; border:1px solid #e2e8f0; border-radius:8px;';
                 
                 div.innerHTML = `
                     <div style="flex: 1; min-width: 150px;">
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Nama Portofolio</label>
-                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly style="background:#e2e8f0; color:#94a3b8;"'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold;">
+                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold;">
                     </div>
                     <div style="flex: 1; min-width: 150px;">
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Pencapaian (Miliar)</label>
                         <input type="number" value="${p.value}" step="any" placeholder="0" onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
                     </div>
-                    ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;"><i class="fas fa-trash"></i></button></div>` : ''}
+                    ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;" title="Exit/Hapus Portofolio"><i class="fas fa-times"></i></button></div>` : ''}
                 `;
                 wrapper.appendChild(div);
             });
@@ -277,6 +293,7 @@
                 document.getElementById('area-eksekutif').style.display = 'block';
                 document.getElementById('menu-excel').style.display = 'flex';
                 document.getElementById('menu-users').style.display = 'flex';
+                document.getElementById('menu-custom').style.display = 'flex'; // MENAMPILKAN TAB TAMBAHAN
             }
             document.getElementById('loader').style.display = 'none';
         }
@@ -397,7 +414,12 @@
             });
         });
 
-        function keluar() { signOut(auth).then(() => { window.location.href = 'login.html'; }); }
+        // EXIT / KELUAR DENGAN KONFIRMASI
+        function keluar() { 
+            if (confirm("Apakah Anda yakin ingin keluar dari Panel Admin?")) {
+                signOut(auth).then(() => { window.location.href = 'login.html'; }); 
+            }
+        }
         document.getElementById('btn-logout').addEventListener('click', keluar);
     </script>
 </body>
