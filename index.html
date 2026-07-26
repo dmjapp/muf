@@ -12,7 +12,7 @@
         body[data-theme="akselerasi"] { --bg-body: #e5e7eb; --bg-panel: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --c-primary: #dc2626; --text-on-primary: #ffffff; --c-accent: #111827; --text-on-accent: #ffffff; --radius: 4px; --border-color: #cbd5e1; --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
         body[data-theme="gamifikasi"] { --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); --text-main: #134e4a; --text-muted: #0f766e; --c-primary: #047857; --text-on-primary: #ffffff; --c-accent: #0ea5e9; --text-on-accent: #ffffff; --radius: 20px; --border-color: rgba(255, 255, 255, 0.6); --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
         
-        /* TEMA FORMULA 1 - Diubah ke warna baja terang */
+        /* TEMA FORMULA 1 - Warna Baja Terang */
         body[data-theme="formula1"] { --bg-body: #b0c4de; --bg-panel: #ffffff; --text-main: #171717; --text-muted: #52525b; --c-primary: #ef4444; --text-on-primary: #ffffff; --c-accent: #10b981; --text-on-accent: #0a0a0a; --radius: 2px; --border-color: #94a3b8; --panel-shadow: 0 0 10px rgba(0,0,0,0.15); --font-angka: 'Courier New', Courier, monospace; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,8 +58,13 @@
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
         body[data-theme="formula1"] .b-1, body[data-theme="formula1"] .b-2, body[data-theme="formula1"] .b-3, body[data-theme="formula1"] .b-other { border-radius: 2px; }
 
-        .porto-legend { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
-        .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+        /* KELAS CSS BARU UNTUK EFEK KLIK LEGEND PORTOFOLIO */
+        .porto-legend-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; }
+        .porto-legend-item:hover { background-color: rgba(100, 116, 139, 0.1); border-color: var(--border-color); transform: translateX(5px); }
+        .porto-legend-item.active { background-color: var(--c-primary); color: var(--text-on-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .porto-legend-item.active .color-dot { border: 2px solid white; }
+
+        .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
 
         .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; z-index: 10; }
         .insight-title { font-weight: 800; color: var(--c-primary); font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
@@ -125,19 +130,24 @@
         </div>
     </div>
 
-    <div id="dynamic-leaderboards" class="grid-dynamic">
-        <div class="border-primary rounded flex-col bg-panel">
-            <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">BOOKING BY PORTOFOLIO</div>
-            <!-- Perbaikan UI: min-height elastis agar label ChartJS selalu sejajar presisi -->
-            <div class="flex items-stretch" style="padding: 15px; height: 100%; min-height: 220px;">
-                <div style="width: 45%; position: relative;" id="porto-canvas-wrapper">
-                    <canvas id="portoChart"></canvas>
-                    <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
-                        <span style="font-size: 0.65rem; font-weight: bold; color: var(--text-muted);">TOTAL</span>
-                        <span id="val-booking-donut" class="font-extrabold c-primary text-sm">0,000 M</span>
-                    </div>
+    <div class="border-primary rounded flex-col bg-panel" style="margin-bottom: 15px;">
+        <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">DATA DISTRIBUSI & RINCIAN PORTOFOLIO (KLIK UNTUK FILTER)</div>
+        <div class="flex items-stretch" style="padding: 15px; min-height: 250px;">
+            <div style="width: 35%; position: relative; border-right: 1px dashed var(--border-color); padding-right: 15px;" id="porto-canvas-wrapper">
+                <canvas id="portoChart"></canvas>
+                <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
+                    <span style="font-size: 0.65rem; font-weight: bold; color: var(--text-muted);">TOTAL ALL PORTO</span>
+                    <span id="val-booking-donut" class="font-extrabold c-primary text-sm">0,000 M</span>
                 </div>
-                <div id="porto-legend-container" style="width: 55%; padding-left: 15px; display: flex; flex-direction: column; justify-content: center;"></div>
+            </div>
+            <div style="width: 25%; padding: 0 15px; display: flex; flex-direction: column; justify-content: center; border-right: 1px dashed var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 8px; text-transform: uppercase;">Legend / Filter Portofolio:</div>
+                <div id="porto-legend-container" style="display: flex; flex-direction: column; overflow-y: auto; max-height: 220px;"></div>
+            </div>
+            
+            <!-- Tempat Leaderboard Dinamis Dirender -->
+            <div id="dynamic-leaderboards" style="width: 40%; padding-left: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; overflow-y: auto; max-height: 250px;">
+                <!-- Kotak akan digambar otomatis oleh Javascript -->
             </div>
         </div>
     </div>
@@ -228,7 +238,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.2 (Smart Insight + Alignment Fix) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.3 (Interactive Drill-Down Edition) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -333,16 +343,39 @@
         }
         document.getElementById('val-periode').innerText = textPeriode;
 
+        // 1. SIMPAN DATA LEADERBOARD KE VARIABEL GLOBAL WINDOW UNTUK FILTERING
+        window.dataLeaderboardLengkap = data.leaderboard_dinamis || {};
         const dynamicContainer = document.getElementById('dynamic-leaderboards');
-        while (dynamicContainer.children.length > 1) { dynamicContainer.removeChild(dynamicContainer.lastChild); }
+        
+        // FUNGSI UNTUK MENGGAMBAR KOTAK RINCIAN DATA (DIPANGGIL SAAT LEGEND DIKLIK)
+        window.gambarKotakLeaderboard = function(kategoriFilter) {
+            dynamicContainer.innerHTML = ''; // Kosongkan kontainer rincian
+            let keysToRender = [];
+            
+            // Logika filter: Jika ALL, cari yang ada kata "ALL". Jika tidak ada, tampilkan semua kotak.
+            if (kategoriFilter === 'ALL') {
+                keysToRender = Object.keys(window.dataLeaderboardLengkap).filter(k => k.toUpperCase().includes('ALL'));
+                if(keysToRender.length === 0 && Object.keys(window.dataLeaderboardLengkap).length > 0) {
+                    keysToRender = Object.keys(window.dataLeaderboardLengkap); // Default tampilkan semua jika gak ada label khusus 'ALL'
+                }
+            } else {
+                // Tampilkan rincian yang nama kategorinya mengandung nama portofolio (misal: "NCAR")
+                keysToRender = Object.keys(window.dataLeaderboardLengkap).filter(k => k.toUpperCase().includes(kategoriFilter.toUpperCase()));
+            }
 
-        if(data.leaderboard_dinamis) {
-            for(let kat in data.leaderboard_dinamis) {
-                let catItems = data.leaderboard_dinamis[kat] || [];
+            if(keysToRender.length === 0) {
+                dynamicContainer.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color: var(--text-muted); font-weight: bold; font-size: 0.9rem; text-align:center;"><i class="fas fa-info-circle" style="margin-right:8px;"></i> Belum ada rincian data / leaderboards yang diinput untuk portofolio ini.</div>`;
+                return;
+            }
+
+            // Mulai Menggambar Kotak-Kotak
+            keysToRender.forEach(kat => {
+                let catItems = window.dataLeaderboardLengkap[kat] || [];
                 catItems.sort((a,b) => b.val - a.val);
                 let maxVal = catItems.length > 0 ? catItems[0].val : 1; if(maxVal === 0) maxVal = 1;
                 
                 let listHTML = '';
+                // Limit hanya Top 5 yang dirender di kotak dashboard
                 catItems.slice(0, 5).forEach((item, index) => {
                     let badgeClass = index === 0 ? 'b-1' : index === 1 ? 'b-2' : index === 2 ? 'b-3' : 'b-other';
                     let barWidth = (item.val / maxVal) * 100;
@@ -353,12 +386,19 @@
                             <div style="width: 50%; margin-right: 10px; background-color: var(--border-color); height: 6px; border-radius: var(--radius); overflow: hidden;"><div style="width: ${barWidth}%; background-color: ${barColor}; height: 100%;"></div></div>
                             <div class="c-primary font-bold font-extrabold" style="width: 45%; text-align: right; font-size: 0.85rem;">${window.toM(item.val)}</div></div></div>`;
                 });
-                if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Belum ada data</div>';
-                const box = document.createElement('div'); box.className = 'border-primary rounded flex-col bg-panel';
-                box.innerHTML = `<div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"><i class="fas fa-trophy c-accent"></i> ${kat}</div><div style="padding: 15px; display: flex; flex-direction: column; justify-content: center; height: 100%;">${listHTML}</div>`;
+                
+                if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Data kosong</div>';
+                
+                let iconClass = "fas fa-trophy";
+                if (kat.includes("NCAR") || kat.includes("MCAR") || kat.includes("CCAR")) iconClass = "fas fa-car-side";
+                else if (kat.includes("UCAR") || kat.includes("UMCY")) iconClass = "fas fa-car";
+
+                const box = document.createElement('div'); 
+                // Style kotak rincian sedikit dibedakan agar responsif dengan ruang
+                box.innerHTML = `<div style="font-weight: 800; font-size: 0.85rem; color: var(--c-primary); border-bottom: 2px solid var(--c-primary); margin-bottom: 15px; padding-bottom: 5px;"><i class="${iconClass} c-accent"></i> ${kat}</div><div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">${listHTML}</div>`;
                 dynamicContainer.appendChild(box);
-            }
-        }
+            });
+        };
 
         let totalBooking = 0; let portoData = [];
         if (data.portofolio_dinamis) {
@@ -378,16 +418,37 @@
         document.getElementById('val-ia').innerText = window.toM(data.ia || 0);
         document.getElementById('val-booking-donut').innerText = window.toM(totalBooking);
 
-        let legendHTML = ''; let chartLabels = []; let chartValues = []; let chartColors = [];
+        let chartLabels = []; let chartValues = []; let chartColors = [];
         
-        // MODIFIKASI: Menampilkan SEMUA portofolio, menghilangkan pembatasan index dan grup "Lainnya"
+        // 2. GENERATE LEGEND INTERAKTIF
+        let legendHTML = `<div class="porto-legend-item active" onclick="window.filterLeaderboard('ALL', this)" style="justify-content: center; color: var(--c-accent); border: 1px dashed var(--c-accent); margin-bottom: 15px;">
+            <i class="fas fa-star" style="margin-right: 5px;"></i> LIHAT SEMUA RINCIAN DATA
+        </div>`;
+        
         portoData.forEach((item, index) => {
             const color = colorPalette[index % colorPalette.length];
             chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
-            legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${window.toM(item.val)}</span></div>`;
+            // Tombol Legend Portofolio
+            legendHTML += `<div class="porto-legend-item" onclick="window.filterLeaderboard('${item.name}', this)">
+                <div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> 
+                <span>${window.toM(item.val)}</span>
+            </div>`;
         });
-        
-        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted);">Belum ada data portofolio.</div>';
+        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Belum ada portofolio.</div>';
+
+        // 3. FUNGSI PENGHUBUNG KLIK LEGEND KE KOTAK RINCIAN
+        window.filterLeaderboard = function(portoName, element) {
+            // Hapus efek aktif di semua legend
+            document.querySelectorAll('.porto-legend-item').forEach(el => el.classList.remove('active'));
+            // Tambahkan efek aktif di legend yang barusan diklik
+            if(element) element.classList.add('active');
+            
+            // Refresh kotak leaderboard di kanan
+            window.gambarKotakLeaderboard(portoName);
+        };
+
+        // Render Rincian Data pertama kali (Tampilkan 'ALL' secara default)
+        window.gambarKotakLeaderboard('ALL');
 
         if(portoChartObj) portoChartObj.destroy();
         const ctxPorto = document.getElementById('portoChart').getContext('2d');
