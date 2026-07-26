@@ -8,45 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --bg-body: #f3f4f6; --bg-panel: #ffffff;
-            --text-main: #334155; --text-muted: #64748b;
-            --c-primary: #0a1d56; --text-on-primary: #ffffff;
-            --c-accent: #f59e0b; --text-on-accent: #0a1d56;
-            --radius: 8px; --border-color: #cbd5e1;
-            --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1);
-            --font-angka: Arial, Helvetica, sans-serif;
-        }
-
-        body[data-theme="akselerasi"] {
-            --bg-body: #e5e7eb; --bg-panel: #f8fafc;
-            --text-main: #1e293b; --text-muted: #64748b;
-            --c-primary: #dc2626; --text-on-primary: #ffffff;
-            --c-accent: #111827; --text-on-accent: #ffffff;
-            --radius: 4px; --border-color: #cbd5e1;
-            --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8);
-            --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05);
-        }
-
-        body[data-theme="gamifikasi"] {
-            --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); 
-            --text-main: #134e4a; --text-muted: #0f766e;
-            --c-primary: #047857; --text-on-primary: #ffffff;
-            --c-accent: #0ea5e9; --text-on-accent: #ffffff;
-            --radius: 20px; --border-color: rgba(255, 255, 255, 0.6);
-            --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-        }
-
-        body[data-theme="formula1"] {
-            --bg-body: #0a0a0a; --bg-panel: #171717; 
-            --text-main: #f8fafc; --text-muted: #a1a1aa;
-            --c-primary: #ef4444; --text-on-primary: #ffffff;
-            --c-accent: #10b981; --text-on-accent: #0a0a0a;
-            --radius: 2px; --border-color: #27272a;
-            --panel-shadow: 0 0 10px rgba(0,0,0,0.8);
-            --font-angka: 'Courier New', Courier, monospace; 
-        }
+        :root { --bg-body: #f3f4f6; --bg-panel: #ffffff; --text-main: #334155; --text-muted: #64748b; --c-primary: #0a1d56; --text-on-primary: #ffffff; --c-accent: #f59e0b; --text-on-accent: #0a1d56; --radius: 8px; --border-color: #cbd5e1; --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); --font-angka: Arial, Helvetica, sans-serif; }
+        body[data-theme="akselerasi"] { --bg-body: #e5e7eb; --bg-panel: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --c-primary: #dc2626; --text-on-primary: #ffffff; --c-accent: #111827; --text-on-accent: #ffffff; --radius: 4px; --border-color: #cbd5e1; --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
+        body[data-theme="gamifikasi"] { --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); --text-main: #134e4a; --text-muted: #0f766e; --c-primary: #047857; --text-on-primary: #ffffff; --c-accent: #0ea5e9; --text-on-accent: #ffffff; --radius: 20px; --border-color: rgba(255, 255, 255, 0.6); --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
+        body[data-theme="formula1"] { --bg-body: #0a0a0a; --bg-panel: #171717; --text-main: #f8fafc; --text-muted: #a1a1aa; --c-primary: #ef4444; --text-on-primary: #ffffff; --c-accent: #10b981; --text-on-accent: #0a0a0a; --radius: 2px; --border-color: #27272a; --panel-shadow: 0 0 10px rgba(0,0,0,0.8); --font-angka: 'Courier New', Courier, monospace; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; transition: all 0.4s ease; }
@@ -68,15 +33,11 @@
         .c-accent { color: var(--c-accent); } .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); }
         .bg-panel { background-color: var(--bg-panel); box-shadow: var(--panel-shadow); }
         .border-primary { border: 2px solid var(--c-primary); } .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; }
-        
         .rounded { border-radius: var(--radius); } .rounded-full { border-radius: 50%; }
-        .flex { display: flex; } .flex-col { display: flex; flex-direction: column; }
-        .items-center { align-items: center; } .justify-between { justify-content: space-between; } 
-        .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .text-center { text-align: center; } .font-bold { font-weight: bold; } 
+        .flex { display: flex; } .flex-col { display: flex; flex-direction: column; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .text-center { text-align: center; } .font-bold { font-weight: bold; } 
         
         .font-extrabold { font-weight: 800; font-family: var(--font-angka); }
         h3[id^="val-"] { font-family: var(--font-angka); }
-        
         body[data-theme="formula1"] h3[id^="val-"], body[data-theme="formula1"] #val-rata-harian, body[data-theme="formula1"] #f1-val-badge { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); letter-spacing: -1px; }
 
         .text-xxs { font-size: 0.75rem; } .text-xs { font-size: 0.9rem; } .text-sm { font-size: 1.1rem; } .text-md { font-size: 1.3rem; } .text-lg { font-size: 1.6rem; } .text-xl { font-size: 2rem; }
@@ -120,6 +81,8 @@
         <div class="flex justify-between items-center top-bar">
             <div class="flex items-center gap-2 c-primary font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
             <div>
+                <!-- KALENDER TV DITAMBAHKAN DI SINI -->
+                <input type="date" id="tv-date-picker" class="theme-select" style="margin-right: 10px;" title="Pilih Tanggal Dashboard">
                 <select id="theme-selector" class="theme-select">
                     <option value="klasik">🎨 KLASIK (Corporate)</option>
                     <option value="akselerasi">🏎️ SILVERSTONE (Sporty)</option>
@@ -130,17 +93,13 @@
         </div>
 
         <div class="flex justify-between items-center border-bottom-primary">
-            <div style="width: 25%;">
-                <div class="logo-box">
-                    <img src="logo.png" alt="Logo" style="max-height: 55px; width: auto; display: block;" onerror="this.src='https://via.placeholder.com/150x60?text=LOGO'">
-                </div>
-            </div>
+            <div style="width: 25%;"><div class="logo-box"><img src="logo.png" alt="Logo" style="max-height: 55px; width: auto; display: block;" onerror="this.src='https://via.placeholder.com/150x60?text=LOGO'"></div></div>
             <div style="width: 50%;" class="text-center">
                 <h2 class="text-xs font-bold c-primary" style="margin-bottom: 2px;">EXECUTIVE SUMMARY</h2>
                 <h1 class="font-extrabold c-primary text-xl" style="line-height: 1.1; letter-spacing: 0.5px;">PERFORMANCE BOOKING</h1>
                 <h3 class="text-sm font-bold c-primary" style="margin-bottom: 5px;">CABANG BANDA ACEH</h3>
                 <div class="bg-accent font-extrabold rounded" style="display: inline-block; padding: 4px 15px; font-size: 0.85rem;">
-                    <i class="far fa-calendar-alt"></i> PERIODE : <span id="val-periode">-</span>
+                    <i class="far fa-calendar-alt"></i> <span id="val-periode">-</span>
                 </div>
             </div>
             <div style="width: 25%; display: flex; justify-content: flex-end;">
@@ -259,6 +218,7 @@
         </div>
     </div>
 
+    <!-- SMART INSIGHTS DENGAN INDIKATOR BARU -->
     <div class="insight-panel">
         <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
         <ul id="smart-insights-list" class="insight-list"><li>Sedang memuat kesimpulan data...</li></ul>
@@ -267,7 +227,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.0 (Smart Dashboard Builder) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.1 (Full Smart Time-Machine) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -278,11 +238,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
+    // SETUP TV DATE PICKER
     const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
-    if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; const documentIdHarian = `${yyyy}-${mm}-${dd}`;
-    const harianRef = doc(db, "laporan_harian", documentIdHarian); 
+    if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
+    let documentIdHarian = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('tv-date-picker').value = documentIdHarian;
 
     let globalDataSnapshot = null;
+    let unsubHarian = null;
 
     window.toM = function(val) { return (val / 1000).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M'; }
     const colorPalette = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#0ea5e9', '#f43f5e', '#14b8a6', '#eab308', '#d946ef', '#64748b'];
@@ -338,19 +301,44 @@
         }
     };
 
-    onSnapshot(harianRef, (docSnap) => {
+    // FUNGSI MEMUAT DATA TV (REAL-TIME BERDASARKAN TANGGAL)
+    function muatDataTV() {
+        if(unsubHarian) unsubHarian(); // Stop listen tanggal sebelumnya
+        
         const splash = document.getElementById('splash-screen');
-        if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
-        if (docSnap.exists()) {
-            globalDataSnapshot = docSnap.data();
+        if (splash) { splash.style.opacity = '1'; }
+
+        unsubHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), (docSnap) => {
+            if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
+            globalDataSnapshot = docSnap.exists() ? docSnap.data() : {};
             renderDashboard(globalDataSnapshot);
-        }
+        });
+    }
+
+    // KETIKA TANGGAL TV DIUBAH
+    document.getElementById('tv-date-picker').addEventListener('change', (e) => {
+        documentIdHarian = e.target.value;
+        muatDataTV();
     });
+
+    // PANGGIL PERTAMA KALI
+    muatDataTV();
 
     function renderDashboard(data) {
         const theme = document.getElementById('theme-selector').value;
 
-        // --- Render Leaderboard Dinamis dari Admin Panel ---
+        // --- CUSTOM TEKS PERIODE ---
+        let dateObj = new Date(documentIdHarian); 
+        const thn = dateObj.getFullYear();
+        const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+        
+        let textPeriode = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
+        if(data.periode_custom && data.periode_custom.trim() !== '') {
+            textPeriode = data.periode_custom.trim().toUpperCase();
+        }
+        document.getElementById('val-periode').innerText = textPeriode;
+
+        // --- Render Leaderboard Dinamis ---
         const dynamicContainer = document.getElementById('dynamic-leaderboards');
         while (dynamicContainer.children.length > 1) { dynamicContainer.removeChild(dynamicContainer.lastChild); }
 
@@ -371,17 +359,14 @@
                             <div style="width: 50%; margin-right: 10px; background-color: var(--border-color); height: 6px; border-radius: var(--radius); overflow: hidden;"><div style="width: ${barWidth}%; background-color: ${barColor}; height: 100%;"></div></div>
                             <div class="c-primary font-bold font-extrabold" style="width: 45%; text-align: right; font-size: 0.85rem;">${window.toM(item.val)}</div></div></div>`;
                 });
-                
                 if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Belum ada data</div>';
-                
-                const box = document.createElement('div');
-                box.className = 'border-primary rounded flex-col bg-panel';
+                const box = document.createElement('div'); box.className = 'border-primary rounded flex-col bg-panel';
                 box.innerHTML = `<div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"><i class="fas fa-trophy c-accent"></i> ${kat}</div><div style="padding: 15px; display: flex; flex-direction: column; justify-content: center; height: 100%;">${listHTML}</div>`;
                 dynamicContainer.appendChild(box);
             }
         }
 
-        // --- Render Portofolio Utama ---
+        // --- Render Portofolio ---
         let totalBooking = 0; let portoData = [];
         if (data.portofolio_dinamis) {
             for (const [name, val] of Object.entries(data.portofolio_dinamis)) { totalBooking += (val || 0); portoData.push({ name, val: val || 0 }); }
@@ -416,27 +401,16 @@
         const ctxPorto = document.getElementById('portoChart').getContext('2d');
         const centerText = document.getElementById('porto-center-text');
         
-        if (theme === 'klasik') {
-            centerText.style.display = 'flex';
-            portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-        } else if (theme === 'akselerasi' || theme === 'formula1') {
-            centerText.style.display = 'none';
-            portoChartObj = new Chart(ctxPorto, { type: 'bar', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: {size: 9, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } }, plugins: { legend: { display: false } } } });
-        } else if (theme === 'gamifikasi') {
-            centerText.style.display = 'none';
-            portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + 'AA'), borderColor: 'rgba(255,255,255,0.5)' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { grid: {color: 'rgba(15,118,110,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } });
-        }
+        if (theme === 'klasik') { centerText.style.display = 'flex'; portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); } 
+        else if (theme === 'akselerasi' || theme === 'formula1') { centerText.style.display = 'none'; portoChartObj = new Chart(ctxPorto, { type: 'bar', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: {size: 9, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } }, plugins: { legend: { display: false } } } }); } 
+        else if (theme === 'gamifikasi') { centerText.style.display = 'none'; portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + 'AA'), borderColor: 'rgba(255,255,255,0.5)' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { grid: {color: 'rgba(15,118,110,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } }); }
 
-        let dateObj = new Date();
-        const thn = dateObj.getFullYear();
-        const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
         const startOfYear = new Date(thn, 0, 1); const endOfYear = new Date(thn, 11, 31);
         const diffTime = Math.abs(dateObj - startOfYear);
         const hariBerjalan = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
         const totalDaysInYear = Math.ceil(Math.abs(endOfYear - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
         const sisaHari = Math.max(0, totalDaysInYear - hariBerjalan);
 
-        document.getElementById('val-periode').innerText = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
         document.getElementById('val-target-tahun').innerText = `Target Tahun ${thn}`;
         document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
         document.getElementById('val-sisa-hari').innerText = `${sisaHari} Hari`;
@@ -473,17 +447,24 @@
             textKesimpulan.style.color = "#dc2626";
         }
 
+        // --- SMART INSIGHTS DENGAN INDIKATOR BARU ---
         let insights = [];
-        if (portoData.length > 0 && totalBooking > 0) { let topP = portoData[0]; insights.push(`<li><span style="font-size:1.2rem;">🔥</span> <div>Portofolio <strong class="c-primary">${topP.name}</strong> mendominasi dengan kontribusi <strong class="c-primary">${window.toM(topP.val)}</strong> (${((topP.val / totalBooking) * 100).toFixed(1)}%).</div></li>`); }
+        if (portoData.length > 0 && totalBooking > 0) { 
+            let topP = portoData[0]; 
+            insights.push(`<li><span style="font-size:1.2rem;">🔥</span> <div>Portofolio Paling Berpengaruh: <strong class="c-primary">${topP.name}</strong> mendominasi dengan kontribusi <strong class="c-primary">${window.toM(topP.val)}</strong> (${((topP.val / totalBooking) * 100).toFixed(1)}%).</div></li>`); 
+            
+            let botP = portoData[portoData.length - 1]; 
+            insights.push(`<li><span style="font-size:1.2rem;">🚨</span> <div>Portofolio Butuh Perhatian: <strong style="color:#dc2626">${botP.name}</strong> dengan pencapaian terendah sebesar <strong style="color:#dc2626">${window.toM(botP.val)}</strong>.</div></li>`); 
+        }
         
         if (proyeksiAkhirTahun >= TARGET && TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata harian cabang.</div></li>`);
         else if (TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">⚠️</span> <div>Butuh akselerasi! Kejar rata-rata harian cabang menjadi <strong style="color:#dc2626">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
         
-        if((data.pofde || 0) > 0) {
-            insights.push(`<li><span style="font-size:1.2rem;">💰</span> <div>Terdapat potensi sebesar <strong class="c-accent">${window.toM(data.pofde)}</strong> (PO+FDE) yang siap dikawal menjadi realisasi bulan ini.</div></li>`);
-        }
+        if((data.pofde || 0) > 0) insights.push(`<li><span style="font-size:1.2rem;">💰</span> <div>Terdapat potensi sebesar <strong class="c-accent">${window.toM(data.pofde)}</strong> (PO+FDE) yang siap dikawal menjadi realisasi bulan ini.</div></li>`);
+        
         document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
+        // --- VISUAL TREND ---
         if(trendChartObj) trendChartObj.destroy();
         const ctxTrend = document.getElementById('trendChart').getContext('2d');
         const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
@@ -504,11 +485,7 @@
                 if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
                 else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
             }
-            trendChartObj = new Chart(ctxTrend, { 
-                type: 'line', 
-                data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, 
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: {color: 'rgba(150,150,150,0.1)'}, max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { grid: {display: false}, ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } 
-            });
+            trendChartObj = new Chart(ctxTrend, { type: 'line', data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: {color: 'rgba(150,150,150,0.1)'}, max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { grid: {display: false}, ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } });
         } 
         else if (theme === 'akselerasi') {
             trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none';
@@ -518,49 +495,30 @@
             let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#fbbf24' : '#dc2626'; 
             const bgColorTrack = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
 
-            trendChartObj = new Chart(ctxTrend, { 
-                type: 'doughnut', 
-                data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, bgColorTrack], borderWidth: 0 }] }, 
-                options: { 
-                    rotation: 270, circumference: 180, cutout: '75%', responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { bottom: 50 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } 
-                },
-                plugins: [speedometerNeedle] 
-            });
+            trendChartObj = new Chart(ctxTrend, { type: 'doughnut', data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, bgColorTrack], borderWidth: 0 }] }, options: { rotation: 270, circumference: 180, cutout: '75%', responsive: true, maintainAspectRatio: false, layout: { padding: { bottom: 50 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } }, plugins: [speedometerNeedle] });
         } 
         else if (theme === 'gamifikasi') {
             trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'flex'; f1Container.style.display = 'none';
             trendLabel.innerText = "AKSELERASI ROKET PENCAPAIAN TAHUNAN";
-            
             if(pct > 100) pct = 100;
             document.getElementById('rocket-target-text').innerText = `FINISH (${window.toM(TARGET)})`;
             document.getElementById('rocket-val-badge').innerText = window.toM(totalBooking); 
-            
-            setTimeout(() => {
-                document.getElementById('rocket-track').style.width = pct + '%';
-                document.getElementById('rocket-icon').style.left = pct + '%';
-            }, 100);
+            setTimeout(() => { document.getElementById('rocket-track').style.width = pct + '%'; document.getElementById('rocket-icon').style.left = pct + '%'; }, 100);
         }
         else if (theme === 'formula1') {
             trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'none'; f1Container.style.display = 'flex';
             trendLabel.innerText = "F1 TELEMETRY SYSTEM";
-            
             document.getElementById('f1-val-badge').innerText = window.toM(totalBooking);
             document.getElementById('f1-target-text').innerText = `TARGET: ${window.toM(TARGET)}`;
 
-            let totalLeds = 15;
-            let activeLeds = Math.round((pct / 100) * totalLeds);
-            if (pct > 0 && activeLeds === 0) activeLeds = 1; 
-            if (activeLeds > totalLeds) activeLeds = totalLeds;
+            let totalLeds = 15; let activeLeds = Math.round((pct / 100) * totalLeds);
+            if (pct > 0 && activeLeds === 0) activeLeds = 1; if (activeLeds > totalLeds) activeLeds = totalLeds;
 
             let ledHtml = '';
             for(let i=0; i<totalLeds; i++) {
                 let bg = '#333'; let glow = 'none';
                 if(i < activeLeds) {
-                    if(i < 5) { bg = '#10b981'; glow = '0 0 8px #10b981'; } 
-                    else if(i < 10) { bg = '#eab308'; glow = '0 0 8px #eab308'; } 
-                    else if(i < 13) { bg = '#ef4444'; glow = '0 0 8px #ef4444'; } 
-                    else { bg = '#3b82f6'; glow = '0 0 10px #3b82f6'; } 
+                    if(i < 5) { bg = '#10b981'; glow = '0 0 8px #10b981'; } else if(i < 10) { bg = '#eab308'; glow = '0 0 8px #eab308'; } else if(i < 13) { bg = '#ef4444'; glow = '0 0 8px #ef4444'; } else { bg = '#3b82f6'; glow = '0 0 10px #3b82f6'; } 
                 }
                 ledHtml += `<div class="f1-led" style="background-color: ${bg}; box-shadow: ${glow};"></div>`;
             }
