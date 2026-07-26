@@ -11,7 +11,6 @@
             --bg-body: #f1f5f9; --bg-card: #ffffff; --text-main: #334155; --text-light: #64748b;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
         body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
         .sidebar { width: 280px; background-color: var(--primary); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; flex-shrink: 0;}
@@ -19,7 +18,7 @@
         .sidebar-header img { width: 120px; margin-bottom: 10px; background: white; padding: 5px; border-radius: 8px;}
         .sidebar-header h3 { font-size: 1.1rem; color: var(--accent); }
 
-        .user-info { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.9rem; text-align: center; }
+        .user-info { margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.2); font-size: 0.9rem; text-align: center; }
         .user-info span { display: block; color: var(--accent); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;}
         .btn-logout { width: 100%; padding: 8px; margin-top: 10px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .btn-logout:hover { background: #b91c1c; }
@@ -88,10 +87,9 @@
         </div>
         <div class="menu">
             <div class="menu-item active" data-target="panel-input"><i class="fas fa-edit"></i> Input Harian</div>
-            <div class="menu-item" id="menu-excel" data-target="panel-excel" style="display:none;"><i class="fas fa-file-excel"></i> Upload Excel</div>
+            <div class="menu-item" id="menu-leaderboard" data-target="panel-leaderboard" style="display:none;"><i class="fas fa-trophy"></i> Kelola Dashboard</div>
             <div class="menu-item" id="menu-users" data-target="panel-users" style="display:none;"><i class="fas fa-users"></i> Kelola User</div>
-            <!-- INI ADALAH MENU TAB TAMBAHAN (CONTOH) -->
-            <div class="menu-item" id="menu-custom" data-target="panel-custom" style="display:none;"><i class="fas fa-folder-plus"></i> Tab Tambahan</div>
+            <div class="menu-item" data-target="panel-profil"><i class="fas fa-user-shield"></i> Keamanan Akun</div>
         </div>
     </div>
 
@@ -130,10 +128,23 @@
                 </div>
             </div>
 
-            <!-- PANEL 2: UPLOAD EXCEL -->
-            <div id="panel-excel" class="panel">
-                <div class="card"><h3 class="card-header"><i class="fas fa-file-excel"></i> Upload Data (Tahap Pengembangan)</h3>
-                    <div style="border: 2px dashed #cbd5e1; padding: 40px 20px; text-align: center; border-radius: 8px; background: #f8fafc;"><i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i><h4 style="margin-bottom: 10px;">Tarik & Lepas File Excel di Sini</h4></div>
+            <!-- PANEL 2: BUILDER LEADERBOARD DINAMIS -->
+            <div id="panel-leaderboard" class="panel">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); font-size: 1.2rem;"><i class="fas fa-trophy"></i> Builder Dashboard Leaderboard</h3>
+                        <button class="btn-primary" onclick="tambahKategoriLeaderboard()"><i class="fas fa-plus"></i> Tambah Kategori / Dashboard Baru</button>
+                    </div>
+                    <p style="color: var(--text-light); margin-bottom: 20px; font-size: 0.9rem;">Di sini Anda bisa membuat kotak klasemen/leaderboard berapapun jumlahnya secara otomatis (Misal: Top 5 Marketing, Top 5 Dealer, dll). Jangan lupa klik <strong>SIMPAN</strong> di paling bawah setelah mengubah data.</p>
+                    
+                    <form id="form-leaderboard">
+                        <div id="leaderboard-wrapper">
+                            <!-- Leaderboard dinamis dirender di sini -->
+                        </div>
+                        <div style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <button type="submit" class="btn-save"><i class="fas fa-save"></i> SIMPAN & UPDATE DASHBOARD</button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -160,17 +171,17 @@
                 </div>
             </div>
 
-            <!-- PANEL 4: TAB TAMBAHAN (CONTOH) -->
-            <div id="panel-custom" class="panel">
+            <!-- PANEL 4: KEAMANAN AKUN (GANTI PASSWORD) -->
+            <div id="panel-profil" class="panel">
                 <div class="card">
-                    <h3 class="card-header"><i class="fas fa-folder-plus"></i> Ruangan Tab Tambahan</h3>
-                    <p style="color: var(--text-main); line-height: 1.6; margin-bottom: 15px;">
-                        Ini adalah contoh ruangan (Tab) baru yang ditambahkan. Bapak bisa meminta saya untuk memasukkan tabel, formulir baru, atau fitur lain di dalam kotak ini. <br><br>
-                        <strong>Cara kerjanya (Cara Tambah Tab):</strong><br>
-                        1. Di kode HTML Menu (Sidebar), tambahkan atribut <code>data-target="nama-id-panel"</code>.<br>
-                        2. Buat ruangan baru dengan atribut <code>id="nama-id-panel" class="panel"</code> seperti layar ini.<br>
-                        3. Saat menu diklik, sistem akan otomatis membuka ruangan panel yang sesuai.
-                    </p>
+                    <h3 class="card-header"><i class="fas fa-user-shield"></i> Ganti Password Akun</h3>
+                    <div style="max-width: 400px;">
+                        <form id="form-ganti-password">
+                            <div class="form-group"><label>Password Baru (Min. 6 Karakter)</label><input type="password" id="new-pw" required></div>
+                            <div class="form-group"><label>Konfirmasi Password Baru</label><input type="password" id="confirm-pw" required></div>
+                            <button type="submit" class="btn-primary" style="width: 100%;"><i class="fas fa-key"></i> Simpan Password Baru</button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -181,14 +192,9 @@
     <script>
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
-                // Hilangkan warna aktif dari semua menu
                 document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                // Sembunyikan semua ruangan (panel)
                 document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                
-                // Aktifkan warna menu yang diklik
                 item.classList.add('active');
-                // Tampilkan panel yang targetnya sesuai dengan menu yang diklik
                 document.getElementById(item.getAttribute('data-target')).classList.add('active');
             });
         });
@@ -197,26 +203,113 @@
     <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, deleteField, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
         
         const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
-        
-        const app = initializeApp(firebaseConfig); 
-        const auth = getAuth(app); 
-        const db = getFirestore(app);
-
-        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
-        const secondaryAuth = getAuth(secondaryApp);
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp"); const secondaryAuth = getAuth(secondaryApp);
 
         const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
         if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; const documentIdHarian = `${yyyy}-${mm}-${dd}`;
         document.getElementById('tanggal-hari-ini').innerText = `${dd}-${mm}-${yyyy}`;
 
         let currentUserData = null;
-        let originalPortoKeys = []; 
         let currentPortos = [{name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}];
+        let currentLeaderboards = {}; // Penyimpanan data leaderboard dinamis
 
+        // === FUNGSI GANTI PASSWORD ===
+        document.getElementById('form-ganti-password').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pw1 = document.getElementById('new-pw').value;
+            const pw2 = document.getElementById('confirm-pw').value;
+            if(pw1 !== pw2) { alert("Password tidak cocok!"); return; }
+            if(pw1.length < 6) { alert("Minimal 6 karakter"); return; }
+            try {
+                await updatePassword(auth.currentUser, pw1);
+                alert("Password berhasil diubah!");
+                document.getElementById('form-ganti-password').reset();
+            } catch(error) {
+                if(error.code === 'auth/requires-recent-login') {
+                    alert("Demi keamanan, sistem membutuhkan verifikasi ulang. Silakan Keluar (Logout) dan Login kembali, lalu coba ganti password lagi.");
+                } else { alert("Gagal: " + error.message); }
+            }
+        });
+
+        // === FUNGSI LEADERBOARD BUILDER (DINAMIS) ===
+        window.tambahKategoriLeaderboard = function() {
+            let name = prompt("Masukkan nama Dashboard/Kategori baru\n(Contoh: TOP 5 MARKETING):");
+            if(name && name.trim() !== '') {
+                name = name.trim().toUpperCase();
+                if(!currentLeaderboards[name]) { currentLeaderboards[name] = []; renderLeaderboards(); } 
+                else { alert("Kategori tersebut sudah ada!"); }
+            }
+        };
+
+        window.hapusKategoriLeaderboard = function(kat) {
+            if(confirm(`Apakah Anda yakin ingin menghapus seluruh dashboard "${kat}"?`)) {
+                delete currentLeaderboards[kat]; renderLeaderboards();
+            }
+        };
+
+        window.tambahBarisLeaderboard = function(kat) {
+            currentLeaderboards[kat].push({name: '', val: 0}); renderLeaderboards();
+        };
+
+        window.hapusBarisLeaderboard = function(kat, idx) {
+            currentLeaderboards[kat].splice(idx, 1); renderLeaderboards();
+        };
+
+        window.updateBarisLeaderboard = function(kat, idx, field, val) {
+            if(field === 'name') currentLeaderboards[kat][idx].name = val.toUpperCase();
+            if(field === 'val') currentLeaderboards[kat][idx].val = Number(val);
+        };
+
+        function renderLeaderboards() {
+            const container = document.getElementById('leaderboard-wrapper');
+            container.innerHTML = '';
+            for(let kat in currentLeaderboards) {
+                let itemsHtml = '';
+                currentLeaderboards[kat].forEach((item, idx) => {
+                    itemsHtml += `
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" value="${item.name}" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'name', this.value)" placeholder="Nama (Contoh: Budi)" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                        <input type="number" value="${item.val}" step="any" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" onchange="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" placeholder="Nilai (Miliar)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                        <button type="button" onclick="hapusBarisLeaderboard('${kat}', ${idx})" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;" title="Hapus Baris"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                });
+
+                container.innerHTML += `
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;">
+                        <h4 style="color:var(--primary);"><i class="fas fa-trophy c-accent"></i> ${kat}</h4>
+                        <button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hapus Kategori</button>
+                    </div>
+                    <div id="items-${kat}">${itemsHtml}</div>
+                    <button type="button" onclick="tambahBarisLeaderboard('${kat}')" style="background:var(--secondary); color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-top:10px;"><i class="fas fa-plus"></i> Tambah Baris Peringkat</button>
+                </div>`;
+            }
+            if(Object.keys(currentLeaderboards).length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8; font-style:italic;">Belum ada dashboard leaderboard. Klik tombol di atas untuk menambah.</div>';
+            }
+        }
+
+        document.getElementById('form-leaderboard').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                // Bersihkan baris yang kosong sebelum save
+                let cleanLeaderboard = {};
+                for(let kat in currentLeaderboards) {
+                    let cleanedItems = currentLeaderboards[kat].filter(item => item.name.trim() !== '');
+                    cleanLeaderboard[kat] = cleanedItems;
+                }
+                
+                await setDoc(doc(db, "laporan_harian", documentIdHarian), { leaderboard_dinamis: cleanLeaderboard }, { merge: true });
+                alert("Data Leaderboard berhasil di-update ke TV!");
+            } catch (error) { console.error("Gagal:", error); alert("Gagal menyimpan data leaderboard."); }
+        });
+
+        // === FUNGSI PORTOFOLIO UTAMA ===
         window.updateRoleDropdown = function() {
             const roleSelect = document.getElementById('pic-role');
             if(!roleSelect) return;
@@ -231,15 +324,9 @@
         };
 
         window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
-        
-        // EXIT / HAPUS PORTOFOLIO DENGAN KONFIRMASI
         window.hapusPorto = function(idx) { 
-            if(confirm("Apakah Anda yakin ingin menghapus portofolio ini dari daftar?")) {
-                currentPortos.splice(idx, 1); 
-                renderPortoForm(); 
-            }
+            if(confirm("Hapus portofolio ini dari daftar?")) { currentPortos.splice(idx, 1); renderPortoForm(); }
         };
-
         window.updatePorto = function(idx, field, val) {
             if(field === 'name') { currentPortos[idx].name = val.toUpperCase(); updateRoleDropdown(); }
             if(field === 'value') currentPortos[idx].value = val;
@@ -248,17 +335,13 @@
         function renderPortoForm() {
             const wrapper = document.getElementById('porto-wrapper');
             wrapper.innerHTML = '';
-            
             const isAdmin = currentUserData && (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all');
             document.getElementById('btn-add-porto').style.display = isAdmin ? 'inline-block' : 'none';
 
             currentPortos.forEach((p, idx) => {
-                const isLocked = !isAdmin && currentUserData.portofolio !== p.name;
-                if (isLocked) return; 
-
+                if (!isAdmin && currentUserData.portofolio !== p.name) return; 
                 const div = document.createElement('div');
                 div.style.cssText = 'display:flex; flex-wrap: wrap; gap:10px; align-items:center; background:#f8fafc; padding:15px; border:1px solid #e2e8f0; border-radius:8px;';
-                
                 div.innerHTML = `
                     <div style="flex: 1; min-width: 150px;">
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Nama Portofolio</label>
@@ -275,6 +358,7 @@
             updateRoleDropdown();
         }
 
+        // === AUTENTIKASI & LOAD DATA ===
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDocSnap = await getDoc(doc(db, "users", user.email));
@@ -291,9 +375,8 @@
             document.getElementById('user-role-badge').innerText = `Akses: ${userData.portofolio.toUpperCase()}`;
             if (userData.role === 'superadmin' || userData.portofolio === 'all') {
                 document.getElementById('area-eksekutif').style.display = 'block';
-                document.getElementById('menu-excel').style.display = 'flex';
+                document.getElementById('menu-leaderboard').style.display = 'flex';
                 document.getElementById('menu-users').style.display = 'flex';
-                document.getElementById('menu-custom').style.display = 'flex'; // MENAMPILKAN TAB TAMBAHAN
             }
             document.getElementById('loader').style.display = 'none';
         }
@@ -310,23 +393,23 @@
                 
                 if(data.portofolio_dinamis) {
                     currentPortos = [];
-                    originalPortoKeys = Object.keys(data.portofolio_dinamis);
                     for (const [key, val] of Object.entries(data.portofolio_dinamis)) {
                         currentPortos.push({name: key, value: val});
                     }
                 }
+                if(data.leaderboard_dinamis) {
+                    currentLeaderboards = data.leaderboard_dinamis;
+                }
             }
             renderPortoForm();
+            renderLeaderboards();
         }
 
         document.getElementById('form-harian').addEventListener('submit', async (e) => {
             e.preventDefault();
             const dataUpdate = {};
-            const tgt = document.getElementById('input-target');
-            const cpt = document.getElementById('input-captive');
-            const pof = document.getElementById('input-pofde');
-            const ia = document.getElementById('input-ia');
-            const wlr = document.getElementById('input-walr');
+            const tgt = document.getElementById('input-target'); const cpt = document.getElementById('input-captive');
+            const pof = document.getElementById('input-pofde'); const ia = document.getElementById('input-ia'); const wlr = document.getElementById('input-walr');
 
             if(!tgt.disabled && tgt.value) dataUpdate.target = Number(tgt.value);
             if(!cpt.disabled && cpt.value) dataUpdate.captive = Number(cpt.value);
@@ -335,86 +418,54 @@
             if(!wlr.disabled && wlr.value) dataUpdate.walr = Number(wlr.value);
 
             const portoDinamis = {};
-            const newKeys = [];
             currentPortos.forEach(p => {
-                if(p.name.trim() !== '') {
-                    const cleanKey = p.name.trim().toUpperCase();
-                    portoDinamis[cleanKey] = p.value ? Number(p.value) : 0;
-                    newKeys.push(cleanKey);
-                }
+                if(p.name.trim() !== '') portoDinamis[p.name.trim().toUpperCase()] = p.value ? Number(p.value) : 0;
             });
 
-            originalPortoKeys.forEach(oldKey => {
-                if(!newKeys.includes(oldKey)) portoDinamis[oldKey] = deleteField();
-            });
-
-            if(Object.keys(portoDinamis).length > 0) dataUpdate.portofolio_dinamis = portoDinamis;
+            // Trik menyimpan dengan replace seluruh object portofolio
+            dataUpdate.portofolio_dinamis = portoDinamis;
 
             try {
                 await setDoc(doc(db, "laporan_harian", documentIdHarian), dataUpdate, { merge: true });
                 const status = document.getElementById('status-simpan');
                 status.style.display = 'block'; setTimeout(() => { status.style.display = 'none'; }, 3000);
-                originalPortoKeys = newKeys; 
             } catch (error) { console.error("Gagal:", error); alert("Gagal menyimpan."); }
         });
 
+        // === KELOLA USER & KELUAR ===
         window.cabutAksesUser = async function(emailPIC) {
-            if(confirm(`Tindakan ini akan menolak akses login untuk email ${emailPIC}.\n\nApakah Anda yakin ingin mencabut akses tim ini?`)) {
-                try {
-                    await deleteDoc(doc(db, "users", emailPIC));
-                    alert("Akses berhasil dicabut!");
-                } catch (error) { console.error(error); alert("Terjadi kesalahan saat menghapus akses."); }
+            if(confirm(`Tindakan ini akan menolak akses login untuk email ${emailPIC}.\n\nLanjutkan?`)) {
+                try { await deleteDoc(doc(db, "users", emailPIC)); alert("Akses berhasil dicabut!"); } catch (error) { alert("Error"); }
             }
         };
 
         document.getElementById('btn-daftar-pic').addEventListener('click', async () => {
             const btn = document.getElementById('btn-daftar-pic');
-            const nama = document.getElementById('pic-nama').value;
-            const email = document.getElementById('pic-email').value;
-            const pass = document.getElementById('pic-pass').value;
-            const role = document.getElementById('pic-role').value;
-
-            if(!nama || !email || !pass) { alert("Tolong lengkapi Nama, Email, dan Password!"); return; }
-            if(pass.length < 6) { alert("Password harus minimal 6 karakter!"); return; }
-
+            const nama = document.getElementById('pic-nama').value; const email = document.getElementById('pic-email').value;
+            const pass = document.getElementById('pic-pass').value; const role = document.getElementById('pic-role').value;
+            if(!nama || !email || !pass) return; if(pass.length < 6) return;
             try {
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                btn.innerHTML = 'Memproses...';
                 await createUserWithEmailAndPassword(secondaryAuth, email, pass);
                 await setDoc(doc(db, "users", email), { nama: nama, portofolio: role, role: role === 'all' ? 'superadmin' : 'pic' });
-                await secondaryAuth.signOut();
-                alert(`Berhasil! Tim ${nama} sekarang bisa login.`);
+                await secondaryAuth.signOut(); alert("Berhasil!");
                 document.getElementById('pic-nama').value = ''; document.getElementById('pic-email').value = ''; document.getElementById('pic-pass').value = '';
                 btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
-            } catch (error) {
-                console.error(error);
-                let pesanError = "Gagal mendaftar.";
-                if(error.code === 'auth/email-already-in-use') pesanError = "Email ini sudah pernah didaftarkan!";
-                alert(pesanError);
-                btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
-            }
+            } catch (error) { alert(error.message); btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim'; }
         });
 
         onSnapshot(collection(db, "users"), (snapshot) => {
-            const listContainer = document.getElementById('list-tim');
-            listContainer.innerHTML = '';
+            const listContainer = document.getElementById('list-tim'); listContainer.innerHTML = '';
             const emailAktif = auth.currentUser ? auth.currentUser.email : '';
-
             snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const email = docSnap.id;
+                const data = docSnap.data(); const email = docSnap.id;
                 const badgeColor = data.role === 'superadmin' ? 'var(--primary)' : 'var(--accent)';
                 const roleText = data.role === 'superadmin' ? 'Super Admin' : `PIC ${data.portofolio}`;
                 let tombolHapus = email !== emailAktif ? `<button onclick="cabutAksesUser('${email}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:12px;" title="Cabut Akses"><i class="fas fa-trash"></i></button>` : '';
-
-                listContainer.innerHTML += `
-                    <li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
-                        <div><strong style="display:block; color: var(--text-main);">${data.nama}</strong><span style="font-size:0.75rem; color:var(--text-light);">${email}</span></div>
-                        <div style="display: flex; align-items: center;"><span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>${tombolHapus}</div>
-                    </li>`;
+                listContainer.innerHTML += `<li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;"><div><strong style="display:block; color: var(--text-main);">${data.nama}</strong><span style="font-size:0.75rem; color:var(--text-light);">${email}</span></div><div style="display: flex; align-items: center;"><span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>${tombolHapus}</div></li>`;
             });
         });
 
-        // EXIT / KELUAR DENGAN KONFIRMASI
         function keluar() { 
             if (confirm("Apakah Anda yakin ingin keluar dari Panel Admin?")) {
                 signOut(auth).then(() => { window.location.href = 'login.html'; }); 
