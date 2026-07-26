@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DMJ Executive Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --primary-color: #0a1d56;
+            --accent-color: #f59e0b;
+            --text-color: #334155;
+            --error-color: #dc2626;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body {
+            background-color: var(--bg-color);
+            background-image: linear-gradient(135deg, #f0f2f5 0%, #e2e8f0 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        .login-container {
+            background: var(--glass-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .logo-box img {
+            max-height: 60px;
+            width: auto;
+        }
+
+        h2 { color: var(--primary-color); font-weight: 800; font-size: 1.5rem; margin-bottom: 5px; }
+        p.subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 30px; font-weight: 500; }
+
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: #f8fafc;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(10, 29, 86, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover { background-color: #081643; }
+        .login-btn:active { transform: scale(0.98); }
+
+        .error-message {
+            color: var(--error-color);
+            background-color: #fee2e2;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #f87171;
+        }
+
+        .footer-text { margin-top: 30px; font-size: 0.75rem; color: #94a3b8; }
+        
+        /* Spinner */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="logo-box">
+            <img src="logo.png" alt="DMJ Logo">
+        </div>
+        
+        <h2>EXECUTIVE PORTAL</h2>
+        <p class="subtitle">Silakan masuk menggunakan kredensial Anda.</p>
+
+        <div id="error-box" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> <span id="error-text">Email atau Password salah.</span>
+        </div>
+
+        <form id="login-form">
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="Alamat Email" required autocomplete="email">
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" id="login-btn" class="login-btn">
+                <span id="btn-text">Masuk ke Panel</span>
+                <div id="btn-loader" class="loader"></div>
+            </button>
+        </form>
+
+        <div class="footer-text">
+            Digital Management Journal<br>
+            &copy; 2026 SRISP x DMJ
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4",
+            authDomain: "dmj-muf.firebaseapp.com",
+            projectId: "dmj-muf",
+            storageBucket: "dmj-muf.firebasestorage.app",
+            messagingSenderId: "151482891980",
+            appId: "1:151482891980:web:2b69494a0e6ced5deecc69"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginForm = document.getElementById('login-form');
+        const errorBox = document.getElementById('error-box');
+        const errorText = document.getElementById('error-text');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const loginBtn = document.getElementById('login-btn');
+
+        // Cek jika sudah login, langsung lempar ke admin.html
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = 'admin.html';
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Loading state
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'block';
+            loginBtn.disabled = true;
+            errorBox.style.display = 'none';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Login sukses, akan otomatis diarahkan oleh onAuthStateChanged di atas
+                })
+                .catch((error) => {
+                    // Reset tombol
+                    btnText.style.display = 'inline-block';
+                    btnLoader.style.display = 'none';
+                    loginBtn.disabled = false;
+                    
+                    // Tampilkan pesan error
+                    errorBox.style.display = 'block';
+                    if(error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                        errorText.innerText = "Kredensial tidak valid. Silakan periksa kembali Email dan Password Anda.";
+                    } else {
+                        errorText.innerText = "Terjadi kesalahan: " + error.message;
+                    }
+                });
+        });
+    </script>
+</body>
+</html>
