@@ -94,7 +94,6 @@
                             </div>
                         </div>
 
-                        <!-- DINAMIS PORTOFOLIO -->
                         <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM (DINAMIS)</h4>
                         <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;"></div>
                         <button type="button" id="btn-add-porto" class="btn-primary" style="display: none; font-size: 0.85rem;" onclick="tambahPorto()"><i class="fas fa-plus"></i> Tambah Portofolio</button>
@@ -113,7 +112,7 @@
                 </div>
             </div>
 
-            <!-- PANEL 3: KELOLA USER (100% DINAMIS) -->
+            <!-- PANEL 3: KELOLA USER (DINAMIS DENGAN HAPUS) -->
             <div id="panel-users" class="panel">
                 <div class="card">
                     <h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3>
@@ -152,7 +151,6 @@
         </div>
     </div>
 
-    <!-- LOGIKA TAB NAVIGATION -->
     <script>
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -168,16 +166,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteField, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, deleteField, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; // Ditambahkan deleteDoc
         
         const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
         
-        // App Utama untuk Login & Firestore
         const app = initializeApp(firebaseConfig); 
         const auth = getAuth(app); 
         const db = getFirestore(app);
 
-        // TRIK SECONDARY APP: Agar SuperAdmin tidak ter-logout saat bikin akun PIC baru
         const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
         const secondaryAuth = getAuth(secondaryApp);
 
@@ -189,7 +185,6 @@
         let originalPortoKeys = []; 
         let currentPortos = [{name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}];
 
-        // --- FUNGSI DINAMIS PORTOFOLIO ---
         window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
         window.hapusPorto = function(idx) { currentPortos.splice(idx, 1); renderPortoForm(); };
         window.updatePorto = function(idx, field, val) {
@@ -224,7 +219,6 @@
             });
         }
 
-        // --- AUTENTIKASI ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDocSnap = await getDoc(doc(db, "users", user.email));
@@ -307,7 +301,19 @@
             } catch (error) { console.error("Gagal:", error); alert("Gagal menyimpan."); }
         });
 
-        // --- MANAJEMEN USER (DINAMIS DARI UI) ---
+        // --- FUNGSI MENCABUT AKSES TIM (HAPUS) ---
+        window.cabutAksesUser = async function(emailPIC) {
+            if(confirm(`Tindakan ini akan menolak akses login untuk email ${emailPIC}.\n\nApakah Anda yakin ingin mencabut akses tim ini?`)) {
+                try {
+                    await deleteDoc(doc(db, "users", emailPIC));
+                    alert("Akses berhasil dicabut!");
+                } catch (error) {
+                    console.error(error);
+                    alert("Terjadi kesalahan saat menghapus akses.");
+                }
+            }
+        };
+
         document.getElementById('btn-daftar-pic').addEventListener('click', async () => {
             const btn = document.getElementById('btn-daftar-pic');
             const nama = document.getElementById('pic-nama').value;
@@ -321,25 +327,13 @@
             try {
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
                 
-                // 1. Daftarkan Kunci (Email & Pass) pakai Secondary App agar Admin tidak logout
                 await createUserWithEmailAndPassword(secondaryAuth, email, pass);
-                
-                // 2. Beri Hak Akses (Role) ke Database Firestore
-                await setDoc(doc(db, "users", email), {
-                    nama: nama,
-                    portofolio: role,
-                    role: role === 'all' ? 'superadmin' : 'pic'
-                });
-                
-                // 3. Logout Secondary App untuk keamanan
+                await setDoc(doc(db, "users", email), { nama: nama, portofolio: role, role: role === 'all' ? 'superadmin' : 'pic' });
                 await secondaryAuth.signOut();
 
-                alert(`Berhasil! Tim ${nama} sekarang bisa login menggunakan email: ${email}`);
-                document.getElementById('pic-nama').value = '';
-                document.getElementById('pic-email').value = '';
-                document.getElementById('pic-pass').value = '';
+                alert(`Berhasil! Tim ${nama} sekarang bisa login.`);
+                document.getElementById('pic-nama').value = ''; document.getElementById('pic-email').value = ''; document.getElementById('pic-pass').value = '';
                 btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
-
             } catch (error) {
                 console.error(error);
                 let pesanError = "Gagal mendaftar.";
@@ -349,15 +343,24 @@
             }
         });
 
-        // Listen Daftar User Real-time
+        // Listen Daftar User Real-time + TOMBOL HAPUS
         onSnapshot(collection(db, "users"), (snapshot) => {
             const listContainer = document.getElementById('list-tim');
             listContainer.innerHTML = '';
+            
+            // Dapatkan email akun yang sedang login (agar tidak bisa menghapus diri sendiri)
+            const emailAktif = auth.currentUser ? auth.currentUser.email : '';
+
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
                 const email = docSnap.id;
                 const badgeColor = data.role === 'superadmin' ? 'var(--primary)' : 'var(--accent)';
                 const roleText = data.role === 'superadmin' ? 'Super Admin' : `PIC ${data.portofolio}`;
+
+                let tombolHapus = '';
+                if(email !== emailAktif) {
+                    tombolHapus = `<button onclick="cabutAksesUser('${email}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:12px;" title="Cabut Akses"><i class="fas fa-trash"></i></button>`;
+                }
 
                 listContainer.innerHTML += `
                     <li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
@@ -365,7 +368,10 @@
                             <strong style="display:block; color: var(--text-main);">${data.nama}</strong>
                             <span style="font-size:0.75rem; color:var(--text-light);">${email}</span>
                         </div>
-                        <span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>
+                        <div style="display: flex; align-items: center;">
+                            <span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>
+                            ${tombolHapus}
+                        </div>
                     </li>
                 `;
             });
