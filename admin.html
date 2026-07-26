@@ -3,478 +3,566 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin - DMJ Executive Portal</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Executive Summary YTD - DMJ</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root { --primary: #0a1d56; --secondary: #1e3a8a; --accent: #f59e0b; --bg-body: #f1f5f9; --text-main: #334155; --text-light: #64748b; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        :root { --bg-body: #f3f4f6; --bg-panel: #ffffff; --text-main: #334155; --text-muted: #64748b; --c-primary: #0a1d56; --text-on-primary: #ffffff; --c-accent: #f59e0b; --text-on-accent: #0a1d56; --radius: 8px; --border-color: #cbd5e1; --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); --font-angka: Arial, Helvetica, sans-serif; }
+        body[data-theme="akselerasi"] { --bg-body: #e5e7eb; --bg-panel: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --c-primary: #dc2626; --text-on-primary: #ffffff; --c-accent: #111827; --text-on-accent: #ffffff; --radius: 4px; --border-color: #cbd5e1; --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
+        body[data-theme="gamifikasi"] { --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); --text-main: #134e4a; --text-muted: #0f766e; --c-primary: #047857; --text-on-primary: #ffffff; --c-accent: #0ea5e9; --text-on-accent: #ffffff; --radius: 20px; --border-color: rgba(255, 255, 255, 0.6); --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
+        body[data-theme="formula1"] { --bg-body: #0a0a0a; --bg-panel: #171717; --text-main: #f8fafc; --text-muted: #a1a1aa; --c-primary: #ef4444; --text-on-primary: #ffffff; --c-accent: #10b981; --text-on-accent: #0a0a0a; --radius: 2px; --border-color: #27272a; --panel-shadow: 0 0 10px rgba(0,0,0,0.8); --font-angka: 'Courier New', Courier, monospace; }
 
-        .sidebar { width: 280px; background-color: var(--primary); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; flex-shrink: 0;}
-        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-header img { width: 120px; margin-bottom: 10px; background: white; padding: 5px; border-radius: 8px;}
-        .sidebar-header h3 { font-size: 1.1rem; color: var(--accent); }
-
-        .user-info { margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.2); font-size: 0.9rem; text-align: center; }
-        .user-info span { display: block; color: var(--accent); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;}
-        .btn-logout { width: 100%; padding: 8px; margin-top: 10px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.3s; font-weight: bold; }
-        .btn-logout:hover { background: #b91c1c; }
-
-        .menu { flex: 1; padding: 10px 0; overflow-y: auto; }
-        .menu-item { padding: 15px 25px; display: flex; align-items: center; gap: 15px; color: #cbd5e1; text-decoration: none; transition: all 0.3s; cursor: pointer; border-left: 4px solid transparent;}
-        .menu-item:hover, .menu-item.active { background-color: var(--secondary); color: white; border-left: 4px solid var(--accent); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; transition: all 0.4s ease; }
         
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background-color: #f8fafc; }
-        .topbar { background: white; padding: 20px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5; }
-        .topbar h2 { color: var(--primary); font-size: 1.2rem; display: flex; align-items: center; gap: 10px;}
-        
-        /* Kalender Admin */
-        #input-tanggal-admin { border: 2px solid var(--primary); background: #f8fafc; color: var(--primary); font-size: 1.1rem; font-weight: bold; padding: 5px 10px; border-radius: 6px; outline: none; cursor: pointer;}
-        #input-tanggal-admin:focus { border-color: var(--accent); }
-
-        .content-area { padding: 30px; }
-        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .card-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; color: var(--primary); font-size: 1.2rem; }
-        
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-light); font-size: 0.9rem; }
-        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 1rem; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-        .form-group input:disabled, .form-group input[readonly] { background-color: #e2e8f0; cursor: not-allowed; color: #94a3b8; }
-
-        .btn-save { background: #10b981; color: white; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%;}
-        .btn-save:hover { background: #059669; }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;}
-        .btn-primary:hover { background: var(--secondary); }
-
-        .panel { display: none; animation: fadeIn 0.4s ease; }
-        .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0a1d56; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; color: white; }
+        #splash-screen img { width: 180px; margin-bottom: 20px; animation: pulse 1.5s infinite; }
+        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #f59e0b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-top: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        @media (max-width: 768px) {
-            body { display: block; overflow-y: auto; height: auto; }
-            .sidebar { width: 100%; height: auto; border-bottom: 2px solid var(--accent); }
-            .menu { display: flex; overflow-x: auto; white-space: nowrap; background-color: var(--secondary); }
-            .menu-item { border-bottom: 3px solid transparent; }
-            .topbar { flex-direction: column; gap: 10px; align-items: flex-start; }
-            .content-area, .card { padding: 15px; }
-        }
+        .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; display: flex; flex-direction: column; gap: 10px; }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45vw; min-width: 350px; opacity: 0.03; pointer-events: none; z-index: 40; }
+
+        body[data-theme="gamifikasi"] .sticky-header, body[data-theme="gamifikasi"] .bg-panel, body[data-theme="gamifikasi"] .insight-panel, body[data-theme="gamifikasi"] .top-bar { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: var(--header-shadow); border-bottom: 1px solid var(--border-color);}
+        .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.1); }
+
+        .c-primary { color: var(--c-primary); } .bg-primary { background-color: var(--c-primary); color: var(--text-on-primary); }
+        .c-accent { color: var(--c-accent); } .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); }
+        .bg-panel { background-color: var(--bg-panel); box-shadow: var(--panel-shadow); }
+        .border-primary { border: 2px solid var(--c-primary); } .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; }
+        .rounded { border-radius: var(--radius); } .rounded-full { border-radius: 50%; }
+        .flex { display: flex; } .flex-col { display: flex; flex-direction: column; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .text-center { text-align: center; } .font-bold { font-weight: bold; } 
+        
+        .font-extrabold { font-weight: 800; font-family: var(--font-angka); }
+        h3[id^="val-"] { font-family: var(--font-angka); }
+        body[data-theme="formula1"] h3[id^="val-"], body[data-theme="formula1"] #val-rata-harian, body[data-theme="formula1"] #f1-val-badge { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); letter-spacing: -1px; }
+
+        .text-xxs { font-size: 0.75rem; } .text-xs { font-size: 0.9rem; } .text-sm { font-size: 1.1rem; } .text-md { font-size: 1.3rem; } .text-lg { font-size: 1.6rem; } .text-xl { font-size: 2rem; }
+        
+        .grid-7 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 2px solid var(--c-primary); border-bottom: 1px solid var(--border-color); gap: 5px; padding: 10px 0;}
+        .grid-dynamic { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 15px;} 
+        .grid-trend { display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: 15px; }
+        @media (max-width: 1024px) { .grid-trend { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) { .grid-trend { grid-template-columns: 1fr; } .border-bottom-primary { flex-direction: column; gap: 15px; text-align: center; } .border-bottom-primary > div { width: 100% !important; justify-content: center !important; } }
+
+        .stat-box { padding: 10px; border-right: 1px solid var(--border-color); } .stat-box:last-child { border-right: none; }
+        .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); }
+        body[data-theme="gamifikasi"] .top-bar { background-color: rgba(255,255,255,0.3); }
+
+        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
+        .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
+        body[data-theme="formula1"] .b-1, body[data-theme="formula1"] .b-2, body[data-theme="formula1"] .b-3, body[data-theme="formula1"] .b-other { border-radius: 2px; }
+
+        .porto-legend { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
+        .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+
+        .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; z-index: 10; }
+        .insight-title { font-weight: 800; color: var(--c-primary); font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
+        .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-main); }
+        .insight-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; font-weight: bold; }
+        
+        .theme-select { padding: 6px 12px; border-radius: 6px; border: 2px solid var(--c-primary); font-weight: 800; font-size: 0.8rem; background-color: var(--bg-panel); color: var(--c-primary); cursor: pointer; outline: none; transition: all 0.3s;}
+        .theme-select:hover { background-color: var(--c-primary); color: var(--text-on-primary); }
+        .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
+        .f1-led { width: 14px; height: 28px; border-radius: 2px; background-color: #333; transition: all 0.5s ease; border: 1px solid #000; }
     </style>
 </head>
-<body>
-    <div id="loader"><div class="spinner"></div><h3 style="margin-top: 15px; color: #0a1d56;">Memeriksa Akses...</h3></div>
+<body data-theme="klasik">
 
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'">
-            <h3>EXECUTIVE PORTAL</h3>
-            <div class="user-info">
-                <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 3px;">Login sebagai:</div>
-                <span id="user-display-name">Memuat...</span>
-                <div id="user-role-badge" style="color: #cbd5e1; font-weight: normal; font-size: 0.8rem; margin-bottom: 10px;">Role: -</div>
-                <button class="btn-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+    <div id="splash-screen"><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><div class="spinner"></div><h2 style="font-size: 16px; font-weight: bold; margin-top: 10px; color: #f59e0b;">DMJ EXECUTIVE SUMMARY</h2></div>
+
+<div class="poster">
+    <img src="logo.png" class="watermark" alt="Watermark" onerror="this.style.display='none'">
+
+    <div class="sticky-header">
+        <div class="flex justify-between items-center top-bar">
+            <div class="flex items-center gap-2 c-primary font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
+            <div>
+                <input type="date" id="tv-date-picker" class="theme-select" style="margin-right: 10px;" title="Pilih Tanggal Dashboard">
+                <select id="theme-selector" class="theme-select">
+                    <option value="klasik">🎨 KLASIK (Corporate)</option>
+                    <option value="akselerasi">🏎️ SILVERSTONE (Sporty)</option>
+                    <option value="gamifikasi">🚀 MATTE MINT (Glass/Blur)</option>
+                    <option value="formula1">🏁 FORMULA 1 (Digital)</option>
+                </select>
             </div>
         </div>
-        <div class="menu">
-            <div class="menu-item active" data-target="panel-input"><i class="fas fa-edit"></i> Input Harian</div>
-            <div class="menu-item" id="menu-leaderboard" data-target="panel-leaderboard" style="display:none;"><i class="fas fa-trophy"></i> Kelola Dashboard</div>
-            <div class="menu-item" id="menu-log" data-target="panel-log" style="display:none;"><i class="fas fa-history"></i> Log Aktivitas</div>
-            <div class="menu-item" id="menu-users" data-target="panel-users" style="display:none;"><i class="fas fa-users"></i> Kelola User</div>
-            <div class="menu-item" data-target="panel-profil"><i class="fas fa-user-shield"></i> Keamanan Akun</div>
-        </div>
-    </div>
 
-    <div class="main-content">
-        <div class="topbar">
-            <h2><i class="fas fa-calendar-alt"></i> Data Tanggal: <input type="date" id="input-tanggal-admin"></h2>
-            <div id="status-simpan" style="color: #10b981; font-weight: bold; display: none;"><i class="fas fa-check-circle"></i> Tersimpan ke TV!</div>
-        </div>
-
-        <div class="content-area">
-            <!-- PANEL 1: INPUT HARIAN -->
-            <div id="panel-input" class="panel active">
-                <div class="card">
-                    <h3 class="card-header"><i class="fas fa-chart-line"></i> Form Input Real-time</h3>
-                    <form id="form-harian">
-                        <div id="area-eksekutif" style="display: none; background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e2e8f0; position: relative;">
-                            <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 8px 0 0 8px;"></div>
-                            <h4 style="margin-bottom: 15px; color: var(--accent);"><i class="fas fa-crown"></i> KONTROL KHUSUS PIMPINAN</h4>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Target Global YTD (Miliar)</label><input type="number" id="input-target" placeholder="Contoh: 1500" step="any"></div>
-                                <div class="form-group"><label>Captive Rate (%)</label><input type="number" id="input-captive" placeholder="Contoh: 45.5" step="any"></div>
-                                <div class="form-group"><label>Potensi PO + FDE (Miliar)</label><input type="number" id="input-pofde" placeholder="0" step="any"></div>
-                                <div class="form-group"><label>Pencapaian IA (Miliar)</label><input type="number" id="input-ia" placeholder="0" step="any"></div>
-                                <div class="form-group"><label>WALR (%)</label><input type="number" id="input-walr" placeholder="0" step="any"></div>
-                                <div class="form-group"><label>Custom Teks Periode (Opsional)</label><input type="text" id="input-periode-custom" placeholder="Contoh: JULI 2026"></div>
-                            </div>
-                        </div>
-
-                        <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM</h4>
-                        <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px;"></div>
-                        <button type="button" id="btn-add-porto" class="btn-primary" style="display: none; font-size: 0.85rem;" onclick="tambahPorto()"><i class="fas fa-plus"></i> Tambah Portofolio</button>
-
-                        <div style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-                            <button type="submit" class="btn-save"><i class="fas fa-satellite-dish"></i> UPDATE DASHBOARD</button>
-                        </div>
-                    </form>
+        <div class="flex justify-between items-center border-bottom-primary">
+            <div style="width: 25%;"><div class="logo-box"><img src="logo.png" alt="Logo" style="max-height: 55px; width: auto; display: block;" onerror="this.src='https://via.placeholder.com/150x60?text=LOGO'"></div></div>
+            <div style="width: 50%;" class="text-center">
+                <h2 class="text-xs font-bold c-primary" style="margin-bottom: 2px;">EXECUTIVE SUMMARY</h2>
+                <h1 class="font-extrabold c-primary text-xl" style="line-height: 1.1; letter-spacing: 0.5px;">PERFORMANCE BOOKING</h1>
+                <h3 class="text-sm font-bold c-primary" style="margin-bottom: 5px;">CABANG BANDA ACEH</h3>
+                <div class="bg-accent font-extrabold rounded" style="display: inline-block; padding: 4px 15px; font-size: 0.85rem;">
+                    <i class="far fa-calendar-alt"></i> <span id="val-periode">-</span>
                 </div>
             </div>
-
-            <!-- PANEL 2: BUILDER LEADERBOARD DINAMIS -->
-            <div id="panel-leaderboard" class="panel">
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;">
-                        <h3 style="color: var(--primary); font-size: 1.2rem;"><i class="fas fa-trophy"></i> Builder Dashboard Leaderboard</h3>
-                        <button class="btn-primary" onclick="tambahKategoriLeaderboard()"><i class="fas fa-plus"></i> Tambah Kategori / Dashboard Baru</button>
-                    </div>
-                    <form id="form-leaderboard">
-                        <div id="leaderboard-wrapper"></div>
-                        <div style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 20px;"><button type="submit" class="btn-save"><i class="fas fa-save"></i> SIMPAN & UPDATE DASHBOARD</button></div>
-                    </form>
+            <div style="width: 25%; display: flex; justify-content: flex-end;">
+                <div class="bg-primary flex items-center gap-2 rounded" style="padding: 10px 15px; box-shadow: var(--panel-shadow);">
+                    <i class="fas fa-bullseye text-xl"></i>
+                    <div style="line-height: 1.2;"><div class="font-bold text-xs">TARGET BERSAMA</div><div style="font-size: 0.75rem; font-weight: normal; color: var(--text-on-primary);">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
                 </div>
             </div>
-
-            <!-- PANEL 3: LOG AKTIVITAS -->
-            <div id="panel-log" class="panel">
-                <div class="card">
-                    <h3 class="card-header"><i class="fas fa-user-secret"></i> Log Aktivitas Tim (Pada Tanggal Ini)</h3>
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; height: 400px; overflow-y: auto;">
-                        <ul id="list-log" style="list-style: none; display: flex; flex-direction: column; gap: 15px;"></ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PANEL 4: KELOLA USER -->
-            <div id="panel-users" class="panel">
-                <div class="card">
-                    <h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3>
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 300px;">
-                            <h4 style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primary);">Buat Akun Tim Baru</h4>
-                            <div class="form-group"><label>Nama Lengkap PIC</label><input type="text" id="pic-nama" placeholder="Contoh: Ncar Team"></div>
-                            <div class="form-group"><label>Email Login</label><input type="email" id="pic-email" placeholder="Contoh: ncar@dmj.com"></div>
-                            <div class="form-group"><label>Password (Min. 6 Karakter)</label><input type="text" id="pic-pass" placeholder="Contoh: rahasia123"></div>
-                            <div class="form-group"><label>Hak Akses Portofolio</label><select id="pic-role"><option value="all">Super Admin (Akses Penuh)</option></select></div>
-                            <button class="btn-primary" id="btn-daftar-pic" style="width: 100%;"><i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password</button>
-                        </div>
-                        <div style="flex: 1; min-width: 300px; border-left: 1px solid #e2e8f0; padding-left: 20px;">
-                            <h4 style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primary);">Daftar Tim Terdaftar (Real-time)</h4>
-                            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.9rem; max-height: 400px; overflow-y: auto;">
-                                <ul id="list-tim" style="list-style: none; display: flex; flex-direction: column; gap: 15px;"><li>Memuat daftar...</li></ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PANEL 5: KEAMANAN AKUN -->
-            <div id="panel-profil" class="panel">
-                <div class="card">
-                    <h3 class="card-header"><i class="fas fa-user-shield"></i> Ganti Password Akun</h3>
-                    <div style="max-width: 400px;">
-                        <form id="form-ganti-password">
-                            <div class="form-group"><label>Password Baru (Min. 6 Karakter)</label><input type="password" id="new-pw" required></div>
-                            <div class="form-group"><label>Konfirmasi Password Baru</label><input type="password" id="confirm-pw" required></div>
-                            <button type="submit" class="btn-primary" style="width: 100%;"><i class="fas fa-key"></i> Simpan Password Baru</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
-    <!-- SCRIPT NAVIGASI TAB OTOMATIS -->
-    <script>
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                item.classList.add('active');
-                document.getElementById(item.getAttribute('data-target')).classList.add('active');
-            });
-        });
-    </script>
+    <div>
+        <div class="bg-primary font-bold text-xs text-center rounded" style="display: inline-block; padding: 4px 15px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">OVERVIEW CABANG</div>
+        <div class="grid-7 bg-panel rounded" style="border-top-left-radius: 0; border: 1px solid var(--border-color);">
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> BOOKING YTD</div><h3 id="val-booking-amount" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET YTD</div><h3 id="val-target-atas" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-line" style="color:#10b981;"></i> ACHIEV YTD</div><h3 id="val-achievement" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-users" style="color:#a855f7;"></i> CAPTIVE RATE</div><h3 id="val-captive" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-handshake" style="color:#60a5fa;"></i> PO + FDE</div><h3 id="val-pofde" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-file-invoice" style="color:#fb923c;"></i> IA</div><h3 id="val-ia" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
+            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-percent" style="color:#2563eb;"></i> WALR</div><h3 id="val-walr" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+        </div>
+    </div>
 
-    <!-- Firebase Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
+    <div id="dynamic-leaderboards" class="grid-dynamic">
+        <div class="border-primary rounded flex-col bg-panel">
+            <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">BOOKING BY PORTOFOLIO</div>
+            <div class="flex items-stretch" style="padding: 15px; height: 100%; min-height: 220px;">
+                <div style="width: 45%; position: relative;" id="porto-canvas-wrapper">
+                    <canvas id="portoChart"></canvas>
+                    <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
+                        <span style="font-size: 0.65rem; font-weight: bold; color: var(--text-muted);">TOTAL</span>
+                        <span id="val-booking-donut" class="font-extrabold c-primary text-sm">0,000 M</span>
+                    </div>
+                </div>
+                <div id="porto-legend-container" style="width: 55%; padding-left: 15px; display: flex; flex-direction: column; justify-content: center;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TREND SUMMARY & CLOSING BULANAN -->
+    <div class="bg-panel rounded" style="border: 2px solid var(--border-color); padding: 15px;">
+        <div class="flex items-center gap-2" style="margin-bottom: 15px;">
+            <div class="bg-primary rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 35px; height: 35px;">1</div>
+            <div>
+                <h2 id="trend-title" class="font-extrabold c-primary text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND & CLOSING BULANAN</h2>
+                <p class="font-bold text-xs" style="color: var(--text-muted); margin-top: 3px;">MONITORING TARGET TAHUNAN & BULAN BERJALAN</p>
+            </div>
+        </div>
         
-        const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp"); const secondaryAuth = getAuth(secondaryApp);
+        <div class="grid-trend">
+            <!-- POSISI YTD -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="border-primary rounded" style="background-color: var(--bg-body); opacity: 0.9;">
+                    <div class="bg-primary text-center font-bold text-xs rounded" style="padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">POSISI YTD TAHUNAN</div>
+                    <div style="padding: 10px; font-size: 0.9rem; font-weight: bold; display: flex; flex-direction: column; gap: 6px;">
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span id="val-target-tahun" style="font-weight: normal;">Target Tahun</span><span id="val-target-kiri">0,000 M</span></div>
+                        <div class="flex justify-between c-primary"><span style="font-weight: normal;">Realisasi Booking</span><span id="val-trend-realisasi">0,000 M</span></div>
+                        <div class="flex justify-between" style="color: #10b981;"><span style="font-weight: normal;">Achiev YTD</span><span id="val-trend-achiev">0,00%</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Target</span><span id="val-trend-sisa">0,000 M</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Hari Berjalan</span><span id="val-hari-berjalan">0 Hari</span></div>
+                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
+                    </div>
+                </div>
+                <div id="box-kesimpulan" class="flex items-center justify-center gap-2 rounded" style="padding: 10px; box-shadow: var(--panel-shadow);">
+                    <i id="icon-kesimpulan" class="fas fa-exclamation-triangle text-xl"></i>
+                    <div id="text-kesimpulan" class="font-extrabold text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>
+                </div>
+            </div>
 
-        // SETUP DATE PICKER
-        const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
-        if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
-        
-        let documentIdHarian = `${yyyy}-${mm}-${dd}`;
-        document.getElementById('input-tanggal-admin').value = documentIdHarian;
+            <!-- CLOSING BULANAN -->
+            <div>
+                <div class="rounded" style="border: 2px solid #3b82f6; background-color: rgba(59, 130, 246, 0.05); height: 100%; display: flex; flex-direction: column;">
+                    <div class="rounded" style="background-color: #3b82f6; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">CLOSING BULAN INI (<span id="label-nama-bulan">BULAN</span>)</div>
+                    <div class="text-center" style="padding: 12px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                        <div class="font-bold text-xxs" style="color: var(--text-muted);">Target Bulan Ini (<span id="label-rasio-bulan">N/12</span>):</div>
+                        <div id="val-target-bulan" class="font-extrabold text-sm c-primary" style="margin: 3px 0;">0,000 M</div>
+                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
+                        <div class="font-bold text-xxs" style="color: var(--text-muted);">Target Harian (Ideal Standar):</div>
+                        <div id="val-target-harian-ideal" class="font-extrabold text-sm" style="color: #3b82f6; margin: 3px 0;">0,000 M / hari</div>
+                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
+                        <div class="font-bold text-xxs" style="color: var(--text-muted);">Sisa Hari Kerja Bulan Ini:</div>
+                        <div id="val-sisa-hari-bulan" class="font-extrabold text-xs" style="color: #3b82f6; margin: 3px 0;">0 Hari</div>
+                        <hr style="border-color: rgba(59,130,246,0.2); margin: 6px 0;">
+                        <div class="font-bold text-xxs" style="color: var(--text-muted);">Kebutuhan Harian (Wajib Kejar):</div>
+                        <div id="val-keb-harian-bulan" class="font-extrabold text-md" style="color: #10b981; margin-top: 3px;">0,000 M / hari</div>
+                    </div>
+                </div>
+            </div>
 
-        let currentUserData = null;
-        let harianData = {}; 
-        let currentPortos = [];
-        let currentLeaderboards = {}; 
+            <!-- VISUALISASI TREND -->
+            <div style="position: relative; padding: 0 10px;" id="trend-visual-container">
+                <div id="trend-label" class="font-bold text-xs text-center" style="color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">TREND BOOKING YTD</div>
+                
+                <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
+                
+                <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
+                    <div style="position: relative; width: 100%; height: 40px; background: rgba(255,255,255,0.3); border-radius: 20px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5);">
+                        <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #0ea5e9); border-radius: 20px; transition: width 1.5s ease; box-shadow: 0 0 10px rgba(14,165,233,0.5);"></div>
+                        <div id="rocket-icon" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; transition: left 1.5s ease; z-index: 10;">
+                            <div style="font-size: 2.8rem; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));">🚀</div>
+                            <div id="rocket-val-badge" class="font-bold rounded" style="background-color: #0ea5e9; color: white; padding: 2px 8px; margin-top: -5px; font-size: 0.75rem; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">0,000 M</div>
+                        </div>
+                        <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.7;">🏁</div>
+                    </div>
+                    <div class="flex justify-between font-bold text-xs" style="margin-top: 25px; color: var(--text-main);"><span>START (0)</span><span id="rocket-target-text" style="color: #0ea5e9;">FINISH</span></div>
+                </div>
+                
+                <div id="f1-container" style="display: none; height: 180px; flex-direction: column; justify-content: center; align-items: center; background: #111; border-radius: 8px; border: 2px solid #3f3f46; box-shadow: inset 0 0 20px rgba(0,0,0,0.9);">
+                    <div class="font-bold text-xs" style="color: #52525b; margin-bottom: 15px; letter-spacing: 1px;">RPM TELEMETRY (ACHIEVEMENT)</div>
+                    <div id="f1-led-bar" style="display: flex; gap: 4px; padding: 5px; background: #000; border-radius: 4px; border: 1px solid #27272a;"></div>
+                    <div id="f1-val-badge" class="font-extrabold" style="margin-top: 15px; font-size: 1.6rem; color: #10b981; text-shadow: 0 0 10px rgba(16,185,129,0.5);">0,000 M</div>
+                    <div class="font-bold" style="font-size: 0.65rem; color: #a1a1aa; margin-top: 5px;" id="f1-target-text">TARGET: 0,000 M</div>
+                </div>
+            </div>
 
-        // === FUNGSI GANTI PASSWORD ===
-        document.getElementById('form-ganti-password').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const pw1 = document.getElementById('new-pw').value;
-            const pw2 = document.getElementById('confirm-pw').value;
-            if(pw1 !== pw2) { alert("Password tidak cocok!"); return; }
-            if(pw1.length < 6) { alert("Minimal 6 karakter"); return; }
-            try {
-                await updatePassword(auth.currentUser, pw1);
-                alert("Password berhasil diubah!");
-                document.getElementById('form-ganti-password').reset();
-            } catch(error) {
-                if(error.code === 'auth/requires-recent-login') { alert("Demi keamanan, silakan Keluar (Logout) dan Login kembali untuk mengganti password."); } 
-                else { alert("Gagal: " + error.message); }
-            }
+            <!-- SISA TARGET & KEBUTUHAN HARIAN -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="font-bold text-center text-xs c-primary rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 8px; opacity: 0.9;">BERAPA YANG HARUS DICAPAI?</div>
+                <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
+                    <div class="flex items-center gap-1 c-primary"><i class="fas fa-chart-pie"></i> Sisa Target</div><div id="val-kanan-sisa">0,000 M</div>
+                </div>
+                <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
+                    <div class="flex items-center gap-1 c-primary"><i class="far fa-calendar-alt"></i> Sisa Hari</div><div id="val-sisa-hari-kanan">0 Hari</div>
+                </div>
+                <div class="text-center rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 15px 10px; margin-top: auto;">
+                    <div class="font-bold text-xs" style="color: var(--text-muted);">Kebutuhan rata-rata / hari:</div><div id="val-keb-harian" class="font-extrabold text-md" style="color: #10b981; margin-top: 5px;">0,000 M</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMART INSIGHTS -->
+    <div class="insight-panel">
+        <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
+        <ul id="smart-insights-list" class="insight-list"><li>Memuat data analisis...</li></ul>
+    </div>
+</div>
+
+<div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
+    <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
+    <span>Versi 4.0 (Ultimate Realtime Fix) | Copyright &copy; SRISP x DMJ 2026</span>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
+    if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
+    let documentIdHarian = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('tv-date-picker').value = documentIdHarian;
+
+    let globalDataSnapshot = null;
+    let unsubHarian = null;
+
+    window.toM = function(val) { return (val / 1000).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M'; }
+    const colorPalette = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#0ea5e9', '#f43f5e', '#14b8a6', '#eab308', '#d946ef', '#64748b'];
+    
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('realtime-clock').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
+    }, 1000);
+
+    let portoChartObj = null; let trendChartObj = null; 
+
+    const savedTheme = localStorage.getItem('dmj_dashboard_theme') || 'klasik';
+    document.getElementById('theme-selector').value = savedTheme;
+    document.body.setAttribute('data-theme', savedTheme);
+    Chart.defaults.color = savedTheme === 'gamifikasi' ? '#0f766e' : (savedTheme === 'klasik' ? '#64748b' : '#94a3b8');
+
+    document.getElementById('theme-selector').addEventListener('change', (e) => {
+        const selectedTheme = e.target.value;
+        localStorage.setItem('dmj_dashboard_theme', selectedTheme);
+        document.body.setAttribute('data-theme', selectedTheme);
+        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (selectedTheme === 'klasik' ? '#64748b' : '#94a3b8');
+        if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
+    });
+
+    const speedometerNeedle = {
+        id: 'speedometerNeedle',
+        afterDraw(chart) {
+            const { ctx } = chart;
+            const dataTotal = chart.config.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const currentValue = chart.config.data.datasets[0].data[0];
+            let angle = Math.PI + (Math.PI * (currentValue / (dataTotal || 1)));
+            if (currentValue >= dataTotal && dataTotal > 0) angle = Math.PI * 2; 
+
+            const meta = chart.getDatasetMeta(0);
+            if(!meta.data.length) return;
+            const cx = meta.data[0].x; const cy = meta.data[0].y; const outerRadius = meta.data[0].outerRadius;
+
+            const primaryColor = getComputedStyle(document.body).getPropertyValue('--c-primary').trim();
+            const textMainColor = getComputedStyle(document.body).getPropertyValue('--text-main').trim();
+            const fontAngka = getComputedStyle(document.body).getPropertyValue('--font-angka').trim();
+
+            ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle);
+            ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(outerRadius - 15, 0); ctx.lineTo(0, 6);
+            ctx.fillStyle = primaryColor; ctx.fill();
+            
+            ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.fillStyle = primaryColor; ctx.fill();
+            ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.restore();
+
+            ctx.font = `900 1.5rem ${fontAngka}`; ctx.fillStyle = textMainColor; ctx.textAlign = 'center';
+            ctx.fillText(window.toM(currentValue), cx, cy + 30);
+            ctx.font = 'bold 0.8rem Arial'; ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim(); ctx.fillText('PENCAPAIAN YTD', cx, cy + 48);
+        }
+    };
+
+    function muatDataTV() {
+        if(unsubHarian) unsubHarian(); 
+        const splash = document.getElementById('splash-screen');
+        if (splash) { splash.style.opacity = '1'; }
+
+        unsubHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), (docSnap) => {
+            if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
+            globalDataSnapshot = docSnap.exists() ? docSnap.data() : {};
+            renderDashboard(globalDataSnapshot);
+        }, (error) => {
+            console.error("Error mengambil data TV:", error);
+            if (splash) splash.remove();
         });
+    }
 
-        // === FUNGSI LEADERBOARD BUILDER ===
-        window.tambahKategoriLeaderboard = function() {
-            let name = prompt("Masukkan nama Dashboard/Kategori baru\n(Contoh: TOP 5 MARKETING):");
-            if(name && name.trim() !== '') {
-                name = name.trim().toUpperCase();
-                if(!currentLeaderboards[name]) { currentLeaderboards[name] = []; renderLeaderboards(); } else { alert("Kategori tersebut sudah ada!"); }
-            }
-        };
-        window.hapusKategoriLeaderboard = function(kat) { if(confirm(`Hapus seluruh dashboard "${kat}"?`)) { delete currentLeaderboards[kat]; renderLeaderboards(); } };
-        window.tambahBarisLeaderboard = function(kat) { currentLeaderboards[kat].push({name: '', val: 0}); renderLeaderboards(); };
-        window.hapusBarisLeaderboard = function(kat, idx) { currentLeaderboards[kat].splice(idx, 1); renderLeaderboards(); };
-        window.updateBarisLeaderboard = function(kat, idx, field, val) {
-            if(field === 'name') currentLeaderboards[kat][idx].name = val.toUpperCase();
-            if(field === 'val') currentLeaderboards[kat][idx].val = Number(val);
-        };
+    document.getElementById('tv-date-picker').addEventListener('change', (e) => {
+        documentIdHarian = e.target.value;
+        muatDataTV();
+    });
 
-        function renderLeaderboards() {
-            const container = document.getElementById('leaderboard-wrapper'); container.innerHTML = '';
-            for(let kat in currentLeaderboards) {
-                let itemsHtml = '';
-                currentLeaderboards[kat].forEach((item, idx) => {
-                    itemsHtml += `<div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" value="${item.name}" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'name', this.value)" placeholder="Nama" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;"><input type="number" value="${item.val}" step="any" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" onchange="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" placeholder="Nilai (M)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;"><button type="button" onclick="hapusBarisLeaderboard('${kat}', ${idx})" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;" title="Hapus Baris"><i class="fas fa-trash"></i></button></div>`;
+    muatDataTV();
+
+    function renderDashboard(data) {
+        const theme = document.getElementById('theme-selector').value;
+
+        let dateObj = new Date(documentIdHarian); 
+        const thn = dateObj.getFullYear();
+        const bulanIndex = dateObj.getMonth() + 1; 
+        const blnNames = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
+        
+        let textPeriode = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()].slice(0,3)} ${thn}`;
+        if(data.periode_custom && data.periode_custom.trim() !== '') {
+            textPeriode = data.periode_custom.trim().toUpperCase();
+        }
+        document.getElementById('val-periode').innerText = textPeriode;
+
+        const dynamicContainer = document.getElementById('dynamic-leaderboards');
+        while (dynamicContainer.children.length > 1) { dynamicContainer.removeChild(dynamicContainer.lastChild); }
+
+        if(data.leaderboard_dinamis) {
+            for(let kat in data.leaderboard_dinamis) {
+                let catItems = data.leaderboard_dinamis[kat] || [];
+                catItems.sort((a,b) => b.val - a.val);
+                let maxVal = catItems.length > 0 ? catItems[0].val : 1; if(maxVal === 0) maxVal = 1;
+                
+                let listHTML = '';
+                catItems.slice(0, 5).forEach((item, index) => {
+                    let badgeClass = index === 0 ? 'b-1' : index === 1 ? 'b-2' : index === 2 ? 'b-3' : 'b-other';
+                    let barWidth = (item.val / maxVal) * 100;
+                    let barColor = theme === 'formula1' ? '#ef4444' : '#10b981'; 
+                    listHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                        <div class="flex items-center" style="width: 35%; font-size: 0.8rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"><span class="badge-num ${badgeClass}">${index+1}</span> ${item.name}</div>
+                        <div class="flex items-center" style="width: 65%; justify-content: flex-end;">
+                            <div style="width: 50%; margin-right: 10px; background-color: var(--border-color); height: 6px; border-radius: var(--radius); overflow: hidden;"><div style="width: ${barWidth}%; background-color: ${barColor}; height: 100%;"></div></div>
+                            <div class="c-primary font-bold font-extrabold" style="width: 45%; text-align: right; font-size: 0.85rem;">${window.toM(item.val)}</div></div></div>`;
                 });
-                container.innerHTML += `<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-bottom:20px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;"><h4 style="color:var(--primary);"><i class="fas fa-trophy c-accent"></i> ${kat}</h4><button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hapus Kategori</button></div><div id="items-${kat}">${itemsHtml}</div><button type="button" onclick="tambahBarisLeaderboard('${kat}')" style="background:var(--secondary); color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-top:10px;"><i class="fas fa-plus"></i> Tambah Baris Peringkat</button></div>`;
+                if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Belum ada data</div>';
+                const box = document.createElement('div'); box.className = 'border-primary rounded flex-col bg-panel';
+                box.innerHTML = `<div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"><i class="fas fa-trophy c-accent"></i> ${kat}</div><div style="padding: 15px; display: flex; flex-direction: column; justify-content: center; height: 100%;">${listHTML}</div>`;
+                dynamicContainer.appendChild(box);
             }
         }
 
-        document.getElementById('form-leaderboard').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                let cleanLeaderboard = {};
-                for(let kat in currentLeaderboards) { let cleanedItems = currentLeaderboards[kat].filter(item => item.name.trim() !== ''); cleanLeaderboard[kat] = cleanedItems; }
-                const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second: '2-digit'}) + ' WIB';
-                const logMsg = { waktu: timeStr, user: currentUserData.nama, aksi: "Mengupdate Data Leaderboard" };
+        let totalBooking = 0; let portoData = [];
+        if (data.portofolio_dinamis) {
+            for (const [name, val] of Object.entries(data.portofolio_dinamis)) { totalBooking += (val || 0); portoData.push({ name, val: val || 0 }); }
+        }
+        portoData.sort((a,b) => b.val - a.val);
 
-                await setDoc(doc(db, "laporan_harian", documentIdHarian), { leaderboard_dinamis: cleanLeaderboard, logs_aktivitas: arrayUnion(logMsg) }, { merge: true });
-                alert("Data Leaderboard berhasil di-update ke TV!");
-            } catch (error) { alert("Gagal menyimpan data leaderboard."); }
+        const TARGET = data.target || 0;
+        const ACHIEV = TARGET > 0 ? ((totalBooking / TARGET) * 100).toFixed(2) : "0.00";
+        
+        document.getElementById('val-booking-amount').innerText = window.toM(totalBooking);
+        document.getElementById('val-target-atas').innerText = window.toM(TARGET);
+        document.getElementById('val-achievement').innerText = ACHIEV + "%";
+        document.getElementById('val-captive').innerText = (data.captive || 0).toFixed(2) + "%";
+        document.getElementById('val-walr').innerText = (data.walr || 0).toFixed(2) + "%";
+        document.getElementById('val-pofde').innerText = window.toM(data.pofde || 0);
+        document.getElementById('val-ia').innerText = window.toM(data.ia || 0);
+        document.getElementById('val-booking-donut').innerText = window.toM(totalBooking);
+
+        let legendHTML = ''; let chartLabels = []; let chartValues = []; let chartColors = [];
+        portoData.forEach((item, index) => {
+            const color = colorPalette[index % colorPalette.length];
+            chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
+            if (index < 8) legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:${color}"></span> ${item.name}</div> <span>${window.toM(item.val)}</span></div>`;
         });
+        if (portoData.length > 8) {
+            let sisaVal = portoData.slice(8).reduce((sum, curr) => sum + curr.val, 0);
+            legendHTML += `<div class="porto-legend"><div class="flex items-center"><span class="color-dot" style="background-color:#ccc"></span> Lainnya (${portoData.length - 8})</div> <span>${window.toM(sisaVal)}</span></div>`;
+        }
+        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted);">Belum ada data portofolio.</div>';
 
-        // === FUNGSI PORTOFOLIO UTAMA ===
-        window.updateRoleDropdown = function() {
-            const roleSelect = document.getElementById('pic-role'); if(!roleSelect) return;
-            const selectedRole = roleSelect.value; roleSelect.innerHTML = '';
-            currentPortos.forEach(p => { const namaPorto = p.name.trim().toUpperCase(); if(namaPorto !== '') roleSelect.innerHTML += `<option value="${namaPorto}">PIC ${namaPorto}</option>`; });
-            roleSelect.innerHTML += `<option value="all">Super Admin (Akses Penuh)</option>`;
-            if(Array.from(roleSelect.options).some(opt => opt.value === selectedRole)) roleSelect.value = selectedRole;
-        };
-
-        window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
-        window.hapusPorto = function(idx) { if(confirm("Hapus portofolio ini dari daftar?")) { currentPortos.splice(idx, 1); renderPortoForm(); } };
-        window.updatePorto = function(idx, field, val) {
-            if(field === 'name') { currentPortos[idx].name = val.toUpperCase(); updateRoleDropdown(); }
-            if(field === 'value') currentPortos[idx].value = val;
-        };
-
-        function renderPortoForm() {
-            const wrapper = document.getElementById('porto-wrapper'); wrapper.innerHTML = '';
-            const isAdmin = currentUserData && (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all');
-            document.getElementById('btn-add-porto').style.display = isAdmin ? 'inline-block' : 'none';
-            const statusUp = harianData.status_update || {};
-
-            currentPortos.forEach((p, idx) => {
-                if (!isAdmin && currentUserData.portofolio !== p.name) return; 
-                let badgeHTML = `<div style="font-size:0.75rem; color:#dc2626; margin-top:5px;"><i class="fas fa-times-circle"></i> Belum update hari ini</div>`;
-                if(statusUp[p.name]) badgeHTML = `<div style="font-size:0.75rem; color:#10b981; margin-top:5px;"><i class="fas fa-check-circle"></i> Update: ${statusUp[p.name].waktu} oleh ${statusUp[p.name].user}</div>`;
-
-                const div = document.createElement('div');
-                div.style.cssText = 'display:flex; flex-wrap: wrap; gap:10px; align-items:center; background:#f8fafc; padding:15px; border:1px solid #e2e8f0; border-radius:8px;';
-                div.innerHTML = `
-                    <div style="flex: 1; min-width: 150px;">
-                        <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Nama Portofolio</label>
-                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold;">
-                    </div>
-                    <div style="flex: 1; min-width: 150px;">
-                        <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Pencapaian (Miliar)</label>
-                        <input type="number" value="${p.value}" step="any" placeholder="0" onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
-                        ${badgeHTML}
-                    </div>
-                    ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;" title="Exit/Hapus Portofolio"><i class="fas fa-times"></i></button></div>` : ''}
-                `;
-                wrapper.appendChild(div);
-            });
-            updateRoleDropdown();
+        if(portoChartObj) portoChartObj.destroy();
+        const ctxPorto = document.getElementById('portoChart').getContext('2d');
+        const centerText = document.getElementById('porto-center-text');
+        
+        if (theme === 'klasik') { 
+            centerText.style.display = 'flex'; 
+            portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: false } } } }); 
+        } else if (theme === 'akselerasi' || theme === 'formula1') { 
+            centerText.style.display = 'none'; 
+            portoChartObj = new Chart(ctxPorto, { type: 'bar', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, options: { indexAxis: 'y', maintainAspectRatio: false, responsive: true, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: {size: 10, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } }, plugins: { legend: { display: false } } } }); 
+        } else if (theme === 'gamifikasi') { 
+            centerText.style.display = 'none'; 
+            portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + 'AA'), borderColor: 'rgba(255,255,255,0.5)' }] }, options: { maintainAspectRatio: false, responsive: true, scales: { r: { grid: {color: 'rgba(15,118,110,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } }); 
         }
 
-        function renderLogs(logs) {
-            const container = document.getElementById('list-log');
-            if(!logs || logs.length === 0) { container.innerHTML = '<li style="text-align:center; color:#94a3b8; font-style:italic;">Belum ada aktivitas di tanggal ini.</li>'; return; }
-            container.innerHTML = '';
-            [...logs].reverse().forEach(log => {
-                container.innerHTML += `<li style="border-bottom:1px solid #cbd5e1; padding-bottom:8px;"><div style="font-size:0.75rem; color:#64748b;"><i class="far fa-clock"></i> ${log.waktu}</div><div style="font-weight:bold; color:var(--primary);">${log.user} <span style="font-weight:normal; color:#64748b;">${log.aksi}</span></div></li>`;
-            });
+        const startOfYear = new Date(thn, 0, 1); const endOfYear = new Date(thn, 11, 31);
+        const diffTime = Math.abs(dateObj - startOfYear);
+        const hariBerjalan = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const totalDaysInYear = Math.ceil(Math.abs(endOfYear - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
+        const sisaHari = Math.max(0, totalDaysInYear - hariBerjalan);
+
+        document.getElementById('val-target-tahun').innerText = `Target Tahun ${thn}`;
+        document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
+        document.getElementById('val-sisa-hari').innerText = `${sisaHari} Hari`;
+        document.getElementById('val-sisa-hari-kanan').innerText = `${sisaHari} Hari`;
+
+        const sisaTarget = Math.max(0, TARGET - totalBooking);
+        const rataHarian = hariBerjalan > 0 ? (totalBooking / hariBerjalan) : 0; 
+        const proyeksiAkhirTahun = rataHarian * totalDaysInYear;
+        const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
+        const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
+
+        const targetBulanan = TARGET / 12;
+        const totalHariBulanIni = new Date(thn, dateObj.getMonth() + 1, 0).getDate();
+        const targetHarianIdeal = targetBulanan / totalHariBulanIni;
+        const hariBerjalanBulanIni = dateObj.getDate();
+        const sisaHariBulanIni = Math.max(0, totalHariBulanIni - hariBerjalanBulanIni);
+        const kebutuhanHarianBulan = sisaHariBulanIni > 0 ? (targetBulanan / totalHariBulanIni) : 0;
+
+        document.getElementById('label-nama-bulan').innerText = blnNames[dateObj.getMonth()];
+        document.getElementById('label-rasio-bulan').innerText = `${bulanIndex}/12`;
+
+        document.getElementById('val-target-bulan').innerText = window.toM(targetBulanan);
+        document.getElementById('val-target-harian-ideal').innerText = window.toM(targetHarianIdeal) + " / hari";
+        document.getElementById('val-sisa-hari-bulan').innerText = `${sisaHariBulanIni} Hari (dari ${totalHariBulanIni} hari)`;
+        document.getElementById('val-keb-harian-bulan').innerText = window.toM(kebutuhanHarianBulan) + " / hari";
+
+        document.getElementById('val-target-kiri').innerText = window.toM(TARGET);
+        document.getElementById('val-trend-realisasi').innerText = window.toM(totalBooking);
+        document.getElementById('val-trend-achiev').innerText = ACHIEV + "%";
+        document.getElementById('val-trend-sisa').innerText = window.toM(sisaTarget);
+        document.getElementById('val-kanan-sisa').innerText = window.toM(sisaTarget);
+        document.getElementById('val-rata-harian').innerText = window.toM(rataHarian) + " / hari";
+        document.getElementById('val-proyeksi').innerText = window.toM(proyeksiAkhirTahun) + " (" + persentaseProyeksi + "%)";
+        document.getElementById('val-keb-harian').innerText = window.toM(kebutuhanHarian) + " / hari";
+
+        const boxKesimpulan = document.getElementById('box-kesimpulan');
+        const iconKesimpulan = document.getElementById('icon-kesimpulan');
+        const textKesimpulan = document.getElementById('text-kesimpulan');
+
+        if(proyeksiAkhirTahun >= TARGET && TARGET > 0) {
+            boxKesimpulan.style.backgroundColor = "rgba(16, 185, 129, 0.1)"; boxKesimpulan.style.border = "2px solid #10b981";
+            iconKesimpulan.className = "fas fa-check-circle text-xl"; iconKesimpulan.style.color = "#10b981";
+            textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TAHUNAN AKAN TERCAPAI.</span>';
+            textKesimpulan.style.color = "#10b981";
+        } else {
+            boxKesimpulan.style.backgroundColor = "rgba(220, 38, 38, 0.1)"; boxKesimpulan.style.border = "2px solid #dc2626";
+            iconKesimpulan.className = "fas fa-exclamation-triangle text-xl"; iconKesimpulan.style.color = "#dc2626";
+            textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span>';
+            textKesimpulan.style.color = "#dc2626";
         }
 
-        // === AUTENTIKASI & LOAD DATA (DENGAN MESIN WAKTU) ===
-        let unsubscribeHarian = null;
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userDocSnap = await getDoc(doc(db, "users", user.email));
-                if (userDocSnap.exists()) {
-                    currentUserData = userDocSnap.data();
-                    terapkanHakAkses(currentUserData);
-                    muatDataHarian(); // Mulai load data untuk tanggal aktif
-                } else { alert("Akses Ditolak."); keluar(true); }
-            } else { window.location.href = 'login.html'; }
-        });
-
-        function terapkanHakAkses(userData) {
-            document.getElementById('user-display-name').innerText = userData.nama;
-            document.getElementById('user-role-badge').innerText = `Akses: ${userData.portofolio.toUpperCase()}`;
-            if (userData.role === 'superadmin' || userData.portofolio === 'all') {
-                document.getElementById('area-eksekutif').style.display = 'block';
-                document.getElementById('menu-leaderboard').style.display = 'flex';
-                document.getElementById('menu-users').style.display = 'flex';
-                document.getElementById('menu-log').style.display = 'flex'; 
-            }
-        }
-
-        function muatDataHarian() {
-            document.getElementById('loader').style.display = 'flex';
-            if(unsubscribeHarian) unsubscribeHarian(); // Hentikan memantau tanggal sebelumnya
+        // SMART INSIGHTS
+        let insights = [];
+        if (portoData.length > 0 && totalBooking > 0) { 
+            let topP = portoData[0]; 
+            insights.push(`<li><span style="font-size:1.2rem;">🔥</span> <div>Portofolio Paling Berpengaruh: <strong class="c-primary">${topP.name}</strong> mendominasi dengan kontribusi <strong class="c-primary">${window.toM(topP.val)}</strong> (${((topP.val / totalBooking) * 100).toFixed(1)}%).</div></li>`); 
             
-            unsubscribeHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), (docSnap) => {
-                if(docSnap.exists()) { harianData = docSnap.data(); } else { harianData = {}; }
-                
-                document.getElementById('input-target').value = harianData.target || '';
-                document.getElementById('input-captive').value = harianData.captive || '';
-                document.getElementById('input-pofde').value = harianData.pofde || '';
-                document.getElementById('input-ia').value = harianData.ia || '';
-                document.getElementById('input-walr').value = harianData.walr || '';
-                document.getElementById('input-periode-custom').value = harianData.periode_custom || '';
-                
-                if(harianData.portofolio_dinamis && Object.keys(harianData.portofolio_dinamis).length > 0) {
-                    currentPortos = [];
-                    for (const [key, val] of Object.entries(harianData.portofolio_dinamis)) currentPortos.push({name: key, value: val});
-                } else {
-                    currentPortos = [{name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}];
-                }
-                
-                currentLeaderboards = harianData.leaderboard_dinamis || {};
-                
-                renderPortoForm();
-                renderLeaderboards();
-                renderLogs(harianData.logs_aktivitas || []);
-                document.getElementById('loader').style.display = 'none';
-            });
+            let botP = portoData[portoData.length - 1]; 
+            insights.push(`<li><span style="font-size:1.2rem;">🚨</span> <div>Portofolio Butuh Perhatian: <strong style="color:#dc2626">${botP.name}</strong> dengan pencapaian terendah sebesar <strong style="color:#dc2626">${window.toM(botP.val)}</strong>.</div></li>`); 
+        } else {
+            insights.push(`<li><span style="font-size:1.2rem;">ℹ️</span> <div>Belum ada data portofolio pada tanggal ini.</div></li>`);
         }
+        
+        if (proyeksiAkhirTahun >= TARGET && TARGET > 0) {
+            insights.push(`<li><span style="font-size:1.2rem;">🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata harian cabang.</div></li>`);
+        } else if (TARGET > 0) {
+            insights.push(`<li><span style="font-size:1.2rem;">⚠️</span> <div>Butuh akselerasi! Kejar rata-rata harian cabang menjadi <strong style="color:#dc2626">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
+        }
+        
+        if((data.pofde || 0) > 0) {
+            insights.push(`<li><span style="font-size:1.2rem;">💰</span> <div>Terdapat potensi sebesar <strong class="c-accent">${window.toM(data.pofde)}</strong> (PO+FDE) yang siap dikawal menjadi realisasi bulan ini.</div></li>`);
+        }
+        
+        document.getElementById('smart-insights-list').innerHTML = insights.join('');
 
-        // KETIKA TANGGAL KALENDER DIUBAH (REVISI DATA LAMA)
-        document.getElementById('input-tanggal-admin').addEventListener('change', (e) => {
-            documentIdHarian = e.target.value;
-            muatDataHarian();
-        });
+        // TREND CHART
+        if(trendChartObj) trendChartObj.destroy();
+        const ctxTrend = document.getElementById('trendChart').getContext('2d');
+        const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
+        const rocketContainer = document.getElementById('rocket-container');
+        const f1Container = document.getElementById('f1-container');
+        const trendLabel = document.getElementById('trend-label');
 
-        document.getElementById('form-harian').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const dataUpdate = {};
-            const tgt = document.getElementById('input-target'); const cpt = document.getElementById('input-captive');
-            const pof = document.getElementById('input-pofde'); const ia = document.getElementById('input-ia'); 
-            const wlr = document.getElementById('input-walr'); const per = document.getElementById('input-periode-custom');
+        let pct = TARGET > 0 ? (totalBooking / TARGET) * 100 : 0;
 
-            if(!tgt.disabled && tgt.value) dataUpdate.target = Number(tgt.value);
-            if(!cpt.disabled && cpt.value) dataUpdate.captive = Number(cpt.value);
-            if(!pof.disabled && pof.value) dataUpdate.pofde = Number(pof.value);
-            if(!ia.disabled && ia.value) dataUpdate.ia = Number(ia.value);
-            if(!wlr.disabled && wlr.value) dataUpdate.walr = Number(wlr.value);
-            if(!per.disabled) dataUpdate.periode_custom = per.value;
-
-            const portoDinamis = {};
-            currentPortos.forEach(p => { if(p.name.trim() !== '') portoDinamis[p.name.trim().toUpperCase()] = p.value ? Number(p.value) : 0; });
+        if (theme === 'klasik') {
+            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none';
+            trendLabel.innerText = "TREND BOOKING YTD (AKUMULATIF)";
             
-            const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second: '2-digit'}) + ' WIB';
-            let statusObj = harianData.status_update || {};
-            currentPortos.forEach(p => {
-                if(p.name.trim() !== '') {
-                    if ((currentUserData.role === 'pic' && currentUserData.portofolio === p.name) || currentUserData.role === 'superadmin') {
-                        statusObj[p.name] = { waktu: timeStr, user: currentUserData.nama };
-                    }
-                }
-            });
-            const logMsg = { waktu: timeStr, user: currentUserData.nama, aksi: "Mengupdate Data Harian" };
-
-            dataUpdate.portofolio_dinamis = portoDinamis;
-            dataUpdate.status_update = statusObj;
-            dataUpdate.logs_aktivitas = arrayUnion(logMsg);
-
-            try {
-                await setDoc(doc(db, "laporan_harian", documentIdHarian), dataUpdate, { merge: true });
-                const status = document.getElementById('status-simpan');
-                status.style.display = 'block'; setTimeout(() => { status.style.display = 'none'; }, 3000);
-            } catch (error) { alert("Gagal menyimpan."); }
-        });
-
-        // === KELOLA USER ===
-        window.cabutAksesUser = async function(emailPIC) {
-            if(confirm(`Tolak akses login untuk email ${emailPIC}. Lanjutkan?`)) {
-                try { await deleteDoc(doc(db, "users", emailPIC)); alert("Akses dicabut!"); } catch (error) { alert("Error"); }
+            let xLabels = []; let realisasiData = []; let proyeksiData = [];
+            for(let i=1; i<=12; i++) {
+                xLabels.push(blnNames[i-1].slice(0,3));
+                let accDays = Math.ceil((new Date(thn, i, 0) - startOfYear) / (1000*60*60*24));
+                if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
+                else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
             }
-        };
+            trendChartObj = new Chart(ctxTrend, { type: 'line', data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: {color: 'rgba(150,150,150,0.1)'}, max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { grid: {display: false}, ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } });
+        } 
+        else if (theme === 'akselerasi') {
+            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none';
+            trendLabel.innerText = "SPEEDOMETER PENCAPAIAN TARGET";
+            
+            let sisaB = Math.max(0, TARGET - totalBooking);
+            let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#fbbf24' : '#dc2626'; 
+            const bgColorTrack = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
 
-        document.getElementById('btn-daftar-pic').addEventListener('click', async () => {
-            const btn = document.getElementById('btn-daftar-pic');
-            const nama = document.getElementById('pic-nama').value; const email = document.getElementById('pic-email').value;
-            const pass = document.getElementById('pic-pass').value; const role = document.getElementById('pic-role').value;
-            if(!nama || !email || !pass) return; if(pass.length < 6) return;
-            try {
-                btn.innerHTML = 'Memproses...';
-                await createUserWithEmailAndPassword(secondaryAuth, email, pass);
-                await setDoc(doc(db, "users", email), { nama: nama, portofolio: role, role: role === 'all' ? 'superadmin' : 'pic' });
-                await secondaryAuth.signOut(); alert("Berhasil!");
-                document.getElementById('pic-nama').value = ''; document.getElementById('pic-email').value = ''; document.getElementById('pic-pass').value = '';
-                btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
-            } catch (error) { alert(error.message); btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim'; }
-        });
-
-        onSnapshot(collection(db, "users"), (snapshot) => {
-            const listContainer = document.getElementById('list-tim'); listContainer.innerHTML = '';
-            const emailAktif = auth.currentUser ? auth.currentUser.email : '';
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data(); const email = docSnap.id;
-                const badgeColor = data.role === 'superadmin' ? 'var(--primary)' : 'var(--accent)';
-                const roleText = data.role === 'superadmin' ? 'Super Admin' : `PIC ${data.portofolio}`;
-                let tombolHapus = email !== emailAktif ? `<button onclick="cabutAksesUser('${email}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:12px;" title="Cabut Akses"><i class="fas fa-trash"></i></button>` : '';
-                listContainer.innerHTML += `<li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;"><div><strong style="display:block; color: var(--text-main);">${data.nama}</strong><span style="font-size:0.75rem; color:var(--text-light);">${email}</span></div><div style="display: flex; align-items: center;"><span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>${tombolHapus}</div></li>`;
-            });
-        });
-
-        function keluar(force = false) { 
-            if (force || confirm("Apakah Anda yakin ingin keluar dari Panel Admin?")) {
-                signOut(auth).then(() => { window.location.href = 'login.html'; }); 
-            }
+            trendChartObj = new Chart(ctxTrend, { type: 'doughnut', data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, bgColorTrack], borderWidth: 0 }] }, options: { rotation: 270, circumference: 180, cutout: '75%', responsive: true, maintainAspectRatio: false, layout: { padding: { bottom: 50 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } }, plugins: [speedometerNeedle] });
+        } 
+        else if (theme === 'gamifikasi') {
+            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'flex'; f1Container.style.display = 'none';
+            trendLabel.innerText = "AKSELERASI ROKET PENCAPAIAN TAHUNAN";
+            if(pct > 100) pct = 100;
+            document.getElementById('rocket-target-text').innerText = `FINISH (${window.toM(TARGET)})`;
+            document.getElementById('rocket-val-badge').innerText = window.toM(totalBooking); 
+            setTimeout(() => { document.getElementById('rocket-track').style.width = pct + '%'; document.getElementById('rocket-icon').style.left = pct + '%'; }, 100);
         }
-        document.getElementById('btn-logout').addEventListener('click', () => keluar(false));
-    </script>
+        else if (theme === 'formula1') {
+            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'none'; f1Container.style.display = 'flex';
+            trendLabel.innerText = "F1 TELEMETRY SYSTEM";
+            document.getElementById('f1-val-badge').innerText = window.toM(totalBooking);
+            document.getElementById('f1-target-text').innerText = `TARGET: ${window.toM(TARGET)}`;
+
+            let totalLeds = 15; let activeLeds = Math.round((pct / 100) * totalLeds);
+            if (pct > 0 && activeLeds === 0) activeLeds = 1; if (activeLeds > totalLeds) activeLeds = totalLeds;
+
+            let ledHtml = '';
+            for(let i=0; i<totalLeds; i++) {
+                let bg = '#333'; let glow = 'none';
+                if(i < activeLeds) {
+                    if(i < 5) { bg = '#10b981'; glow = '0 0 8px #10b981'; } else if(i < 10) { bg = '#eab308'; glow = '0 0 8px #eab308'; } else if(i < 13) { bg = '#ef4444'; glow = '0 0 8px #ef4444'; } else { bg = '#3b82f6'; glow = '0 0 10px #3b82f6'; } 
+                }
+                ledHtml += `<div class="f1-led" style="background-color: ${bg}; box-shadow: ${glow};"></div>`;
+            }
+            document.getElementById('f1-led-bar').innerHTML = ledHtml;
+        }
+    }
+</script>
 </body>
 </html>
