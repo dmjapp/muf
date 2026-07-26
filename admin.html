@@ -24,7 +24,6 @@
         .menu-item { padding: 15px 25px; display: flex; align-items: center; gap: 15px; color: #cbd5e1; text-decoration: none; transition: all 0.3s; cursor: pointer; border-left: 4px solid transparent;}
         .menu-item:hover, .menu-item.active { background-color: var(--secondary); color: white; border-left: 4px solid var(--accent); }
         
-        /* FIX TOMBOL HILANG: padding-bottom diperbesar agar scroll tembus sampai bawah tombol */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
         
         .topbar { background: white; padding: 20px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5; }
@@ -53,10 +52,19 @@
         .panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        /* OVERLAY LOADER & NOTIFIKASI */
+        #loader, #sync-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #sync-loader { display: none; background: rgba(10, 29, 86, 0.9); color: white; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .spinner-light { border-top: 4px solid var(--accent); }
 
+        /* TOAST NOTIFIKASI */
+        #toast-notif { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; font-weight: bold; color: white; z-index: 10000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; }
+        .toast-success { background-color: #10b981; }
+        .toast-error { background-color: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* KOTAK INFO SELISIH */
         .info-box { padding: 12px 15px; border-radius: 6px; margin-top: 15px; font-weight: bold; font-size: 0.9rem; transition: all 0.3s ease; }
         .status-idle { background: #f3f4f6; color: #64748b; border: 1px solid #e2e8f0; }
         .status-warning { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
@@ -70,12 +78,15 @@
             .menu-item { border-bottom: 3px solid transparent; }
             .topbar { flex-direction: column; gap: 10px; align-items: flex-start; position: relative; }
             .content-area, .card { padding: 15px; }
-            .main-content { padding-bottom: 80px; } /* Ekstra padding untuk mobile */
+            .main-content { padding-bottom: 80px; } 
         }
     </style>
 </head>
 <body>
     <div id="loader"><div class="spinner"></div><h3 style="margin-top: 15px; color: #0a1d56;">Memeriksa Akses...</h3></div>
+    <div id="sync-loader"><div class="spinner spinner-light"></div><h3 style="margin-top: 15px; color: #f8fafc;" id="sync-text">Menyimpan & Sinkronisasi Berantai...</h3><p style="color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">Mohon jangan tutup halaman ini.</p></div>
+    
+    <div id="toast-notif"><i class="fas fa-check-circle"></i> Pesan Notifikasi</div>
 
     <div class="sidebar">
         <div class="sidebar-header">
@@ -100,15 +111,16 @@
     <div class="main-content">
         <div class="topbar">
             <h2><i class="fas fa-calendar-alt"></i> Data Tanggal: <input type="date" id="input-tanggal-admin"></h2>
-            <div id="status-simpan" style="color: #10b981; font-weight: bold; display: none;"><i class="fas fa-check-circle"></i> Data Berhasil Diupdate!</div>
         </div>
 
         <div class="content-area">
             <!-- PANEL 1: INPUT HARIAN -->
             <div id="panel-input" class="panel active">
                 <div class="card">
-                    <h3 class="card-header"><i class="fas fa-chart-line"></i> Form Update Real-time (Akumulatif)</h3>
+                    <h3 class="card-header"><i class="fas fa-chart-line"></i> Form Update Pencapaian (MTD Bulanan)</h3>
                     <form id="form-harian">
+                        <div id="carry-over-alert" style="display: none; background: #fffbeb; color: #b45309; padding: 12px; border: 1px solid #fcd34d; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 0.9rem; text-align: center;"></div>
+
                         <div id="area-eksekutif" style="display: none; background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e2e8f0; position: relative;">
                             <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 8px 0 0 8px;"></div>
                             <h4 style="margin-bottom: 15px; color: var(--accent);"><i class="fas fa-crown"></i> KONTROL KHUSUS PIMPINAN</h4>
@@ -152,7 +164,7 @@
             <!-- PANEL 3: LOG AKTIVITAS -->
             <div id="panel-log" class="panel">
                 <div class="card">
-                    <h3 class="card-header"><i class="fas fa-user-secret"></i> Log Aktivitas Tim (Pada Tanggal Ini)</h3>
+                    <h3 class="card-header"><i class="fas fa-user-secret"></i> Log Aktivitas Tim (Sistem Robot & Manual)</h3>
                     <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; height: 400px; overflow-y: auto;">
                         <ul id="list-log" style="list-style: none; display: flex; flex-direction: column; gap: 15px;"></ul>
                     </div>
@@ -215,7 +227,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, onSnapshot, arrayUnion, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, onSnapshot, arrayUnion, query, where, orderBy, limit, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
         
         const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
@@ -232,12 +244,17 @@
         let harianData = {}; 
         let currentPortos = [];
         let currentLeaderboards = {}; 
-        
-        // Simpan data asli untuk validasi Anti-Turun (mencegah input lebih kecil dari kemarin)
-        let prevDayData = {};
 
         // Fungsi Helper Format Miliar (misal 0.1 M)
         const formatM = (angka) => (angka).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M';
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast-notif');
+            toast.innerHTML = type === 'success' ? `<i class="fas fa-check-circle"></i> ${msg}` : `<i class="fas fa-exclamation-triangle"></i> ${msg}`;
+            toast.className = type === 'success' ? 'toast-success' : 'toast-error';
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 4000);
+        }
 
         // === FUNGSI GANTI PASSWORD ===
         document.getElementById('form-ganti-password').addEventListener('submit', async (e) => {
@@ -248,7 +265,7 @@
             if(pw1.length < 6) { alert("Minimal 6 karakter"); return; }
             try {
                 await updatePassword(auth.currentUser, pw1);
-                alert("Password berhasil diupdate!");
+                showToast("Password berhasil diupdate!");
                 document.getElementById('form-ganti-password').reset();
             } catch(error) {
                 if(error.code === 'auth/requires-recent-login') { alert("Demi keamanan, silakan Keluar (Logout) dan Login kembali untuk mengganti password."); } 
@@ -256,14 +273,10 @@
             }
         });
 
-        // === FUNGSI LOGIKA SELISIH ===
+        // === FUNGSI LOGIKA SELISIH (BALANCE) ===
         window.cekSelisih = function(kat) {
             let totalCMO = 0;
-            if(currentLeaderboards[kat]) {
-                currentLeaderboards[kat].forEach(item => {
-                    totalCMO += Number(item.val) || 0;
-                });
-            }
+            if(currentLeaderboards[kat]) { currentLeaderboards[kat].forEach(item => { totalCMO += Number(item.val) || 0; }); }
 
             let totalPorto = 0;
             let matchedPortoName = "";
@@ -274,8 +287,7 @@
             } else {
                 currentPortos.forEach(p => {
                     if(p.name && p.name.trim() !== '' && kat.toUpperCase().includes(p.name.toUpperCase())) {
-                        totalPorto = Number(p.value) || 0;
-                        matchedPortoName = p.name;
+                        totalPorto = Number(p.value) || 0; matchedPortoName = p.name;
                     }
                 });
             }
@@ -283,29 +295,20 @@
             const indicatorEl = document.getElementById(`indicator-${kat}`);
             if(!indicatorEl) return;
 
-            if(!matchedPortoName) {
-                indicatorEl.style.display = 'none'; 
-                return;
-            }
-            
+            if(!matchedPortoName) { indicatorEl.style.display = 'none'; return; }
             indicatorEl.style.display = 'block';
 
             if (totalPorto === 0 && totalCMO === 0) {
-                indicatorEl.className = 'info-box status-idle';
-                indicatorEl.innerHTML = 'Menunggu input rincian data...';
+                indicatorEl.className = 'info-box status-idle'; indicatorEl.innerHTML = 'Menunggu input rincian data...';
             } else {
                 let selisih = totalPorto - totalCMO;
-                selisih = Math.round(selisih * 1000000) / 1000000; // Pembulatan bug javascript desimal
-
+                selisih = Math.round(selisih * 1000000) / 1000000; 
                 if (selisih === 0) {
-                    indicatorEl.className = 'info-box status-success';
-                    indicatorEl.innerHTML = `✅ Alokasi Balance (Total: ${formatM(totalPorto)})`;
+                    indicatorEl.className = 'info-box status-success'; indicatorEl.innerHTML = `✅ Alokasi Balance (Total: ${formatM(totalPorto)})`;
                 } else if (selisih > 0) {
-                    indicatorEl.className = 'info-box status-warning';
-                    indicatorEl.innerHTML = `⚠️ Selisih <strong>${formatM(selisih)}</strong> belum dialokasikan ke rincian di bawah. (Target ${matchedPortoName}: ${formatM(totalPorto)})`;
+                    indicatorEl.className = 'info-box status-warning'; indicatorEl.innerHTML = `⚠️ Selisih <strong>${formatM(selisih)}</strong> belum dialokasikan ke CMO. (Target ${matchedPortoName}: ${formatM(totalPorto)})`;
                 } else {
-                    indicatorEl.className = 'info-box status-danger';
-                    indicatorEl.innerHTML = `❌ Over-alokasi! Total rincian melebihi Portofolio sebesar <strong>${formatM(Math.abs(selisih))}</strong>.`;
+                    indicatorEl.className = 'info-box status-danger'; indicatorEl.innerHTML = `❌ Over-alokasi! Total rincian melebihi Portofolio sebesar <strong>${formatM(Math.abs(selisih))}</strong>.`;
                 }
             }
         };
@@ -324,21 +327,14 @@
         
         window.updateBarisLeaderboard = function(kat, idx, field, val) {
             if(field === 'name') currentLeaderboards[kat][idx].name = val.toUpperCase();
-            if(field === 'val') {
-                currentLeaderboards[kat][idx].val = Number(val);
-                cekSelisih(kat); 
-            }
+            if(field === 'val') { currentLeaderboards[kat][idx].val = Number(val); cekSelisih(kat); }
         };
 
         function renderLeaderboards() {
             const container = document.getElementById('leaderboard-wrapper'); container.innerHTML = '';
-            
             for(let kat in currentLeaderboards) {
-                // FILTER: Hanya tampilkan kategori yang mengandung nama portofolio PIC
                 if (currentUserData.role !== 'superadmin' && currentUserData.portofolio !== 'all') {
-                    if (!kat.toUpperCase().includes(currentUserData.portofolio.toUpperCase())) {
-                        continue; 
-                    }
+                    if (!kat.toUpperCase().includes(currentUserData.portofolio.toUpperCase())) continue; 
                 }
 
                 let itemsHtml = '';
@@ -346,28 +342,20 @@
                     itemsHtml += `<div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" value="${item.name}" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'name', this.value)" placeholder="Nama" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;"><input type="number" value="${item.val}" step="any" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" onchange="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" placeholder="Nilai (M)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;"><button type="button" onclick="hapusBarisLeaderboard('${kat}', ${idx})" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;" title="Hapus Baris"><i class="fas fa-trash"></i></button></div>`;
                 });
                 
-                // Hanya superadmin yang boleh menghapus kategori utama
                 let btnHapusKat = (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all')
-                    ? `<button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hapus Kategori</button>`
-                    : ``;
+                    ? `<button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hapus Kategori</button>` : ``;
 
                 container.innerHTML += `
                     <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-bottom:20px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;">
-                            <h4 style="color:var(--primary);"><i class="fas fa-trophy c-accent"></i> ${kat}</h4>
-                            ${btnHapusKat}
+                            <h4 style="color:var(--primary);"><i class="fas fa-trophy c-accent"></i> ${kat}</h4>${btnHapusKat}
                         </div>
                         <div id="items-${kat}">${itemsHtml}</div>
                         <div id="indicator-${kat}" class="info-box status-idle" style="display: none;">Menghitung alokasi...</div>
                         <button type="button" onclick="tambahBarisLeaderboard('${kat}')" style="background:var(--secondary); color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-top:10px;"><i class="fas fa-plus"></i> Tambah Rincian Data</button>
                     </div>`;
             }
-
-            setTimeout(() => {
-                for(let kat in currentLeaderboards) { 
-                    if (document.getElementById(`indicator-${kat}`)) cekSelisih(kat); 
-                }
-            }, 100);
+            setTimeout(() => { for(let kat in currentLeaderboards) { if (document.getElementById(`indicator-${kat}`)) cekSelisih(kat); } }, 100);
         }
 
         document.getElementById('form-leaderboard').addEventListener('submit', async (e) => {
@@ -375,19 +363,10 @@
             try {
                 let cleanLeaderboard = {};
                 for(let kat in currentLeaderboards) { let cleanedItems = currentLeaderboards[kat].filter(item => item.name.trim() !== ''); cleanLeaderboard[kat] = cleanedItems; }
-                const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second: '2-digit'}) + ' WIB';
-                const logMsg = { waktu: timeStr, user: currentUserData.nama, aksi: "Mengupdate Data Rincian (CMO)" };
-
-                await setDoc(doc(db, "laporan_harian", documentIdHarian), { leaderboard_dinamis: cleanLeaderboard, logs_aktivitas: arrayUnion(logMsg) }, { merge: true });
-                tampilkanPesanSukses();
-            } catch (error) { alert("Gagal mengupdate rincian data."); }
+                await setDoc(doc(db, "laporan_harian", documentIdHarian), { leaderboard_dinamis: cleanLeaderboard }, { merge: true });
+                showToast("Rincian Data (CMO) Berhasil Diupdate!");
+            } catch (error) { showToast("Gagal mengupdate rincian data.", "error"); }
         });
-
-        function tampilkanPesanSukses() {
-            const status = document.getElementById('status-simpan');
-            status.style.display = 'block'; 
-            setTimeout(() => { status.style.display = 'none'; }, 3000);
-        }
 
         // === FUNGSI PORTOFOLIO UTAMA ===
         window.updateRoleDropdown = function() {
@@ -398,40 +377,31 @@
             if(Array.from(roleSelect.options).some(opt => opt.value === selectedRole)) roleSelect.value = selectedRole;
         };
 
-        window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
+        window.tambahPorto = function() { currentPortos.push({name: '', value: 0}); renderPortoForm(); };
         window.hapusPorto = function(idx) { if(confirm("Hapus portofolio ini dari daftar?")) { currentPortos.splice(idx, 1); renderPortoForm(); } };
         
         window.updatePorto = function(idx, field, val) {
             if(field === 'name') { currentPortos[idx].name = val.toUpperCase(); updateRoleDropdown(); }
-            if(field === 'value') {
-                currentPortos[idx].value = val;
-                for(let kat in currentLeaderboards) { if(document.getElementById(`indicator-${kat}`)) cekSelisih(kat); }
-            }
+            if(field === 'value') { currentPortos[idx].value = val; for(let kat in currentLeaderboards) { if(document.getElementById(`indicator-${kat}`)) cekSelisih(kat); } }
         };
 
         function renderPortoForm() {
             const wrapper = document.getElementById('porto-wrapper'); wrapper.innerHTML = '';
             const isAdmin = currentUserData && (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all');
             document.getElementById('btn-add-porto').style.display = isAdmin ? 'inline-block' : 'none';
-            const statusUp = harianData.status_update || {};
 
             currentPortos.forEach((p, idx) => {
                 if (!isAdmin && currentUserData.portofolio !== p.name) return; 
-                let badgeHTML = `<div style="font-size:0.75rem; color:#dc2626; margin-top:5px;"><i class="fas fa-times-circle"></i> Belum diupdate (Nilai bawaan)</div>`;
-                
-                if(statusUp[p.name]) badgeHTML = `<div style="font-size:0.75rem; color:#10b981; margin-top:5px;"><i class="fas fa-check-circle"></i> Terakhir Diupdate: ${statusUp[p.name].waktu} oleh Admin</div>`;
-
                 const div = document.createElement('div');
                 div.style.cssText = 'display:flex; flex-wrap: wrap; gap:10px; align-items:center; background:#f8fafc; padding:15px; border:1px solid #e2e8f0; border-radius:8px;';
                 div.innerHTML = `
                     <div style="flex: 1; min-width: 150px;">
                         <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Nama Portofolio</label>
-                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold;">
+                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold; ${isAdmin ? '' : 'background-color:#e2e8f0;'}">
                     </div>
                     <div style="flex: 1; min-width: 150px;">
-                        <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Total Pencapaian Akumulasi (Miliar)</label>
+                        <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Pencapaian Bulan Ini (Miliar)</label>
                         <input type="number" value="${p.value}" step="any" placeholder="0" onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
-                        ${badgeHTML}
                     </div>
                     ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;" title="Hapus Portofolio"><i class="fas fa-times"></i></button></div>` : ''}
                 `;
@@ -440,50 +410,7 @@
             updateRoleDropdown();
         }
 
-        function renderLogs(logs) {
-            const container = document.getElementById('list-log');
-            if(!logs || logs.length === 0) { container.innerHTML = '<li style="text-align:center; color:#94a3b8; font-style:italic;">Belum ada riwayat update di tanggal ini.</li>'; return; }
-            container.innerHTML = '';
-            [...logs].reverse().forEach(log => {
-                container.innerHTML += `<li style="border-bottom:1px solid #cbd5e1; padding-bottom:8px;"><div style="font-size:0.75rem; color:#64748b;"><i class="far fa-clock"></i> ${log.waktu}</div><div style="font-weight:bold; color:var(--primary);">${log.user} <span style="font-weight:normal; color:#64748b;">${log.aksi}</span></div></li>`;
-            });
-        }
-
-        // === AUTENTIKASI & LOAD DATA ===
-        let unsubscribeHarian = null;
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userDocSnap = await getDoc(doc(db, "users", user.email));
-                if (userDocSnap.exists()) {
-                    currentUserData = userDocSnap.data();
-                    terapkanHakAkses(currentUserData);
-                    muatDataHarian(); 
-                } else { alert("Akses Ditolak."); keluar(true); }
-            } else { window.location.href = 'login.html'; }
-        });
-
-        function terapkanHakAkses(userData) {
-            document.getElementById('user-display-name').innerText = userData.nama;
-            document.getElementById('user-role-badge').innerText = `Akses: ${userData.portofolio.toUpperCase()}`;
-            
-            document.getElementById('menu-leaderboard').style.display = 'flex';
-
-            if (userData.role === 'superadmin' || userData.portofolio === 'all') {
-                document.getElementById('area-eksekutif').style.display = 'block';
-                document.getElementById('menu-users').style.display = 'flex';
-                document.getElementById('menu-log').style.display = 'flex'; 
-                document.getElementById('btn-tambah-kategori').style.display = 'inline-block';
-            } else {
-                document.getElementById('area-eksekutif').style.display = 'none';
-                document.getElementById('menu-users').style.display = 'none';
-                document.getElementById('menu-log').style.display = 'none'; 
-                document.getElementById('btn-tambah-kategori').style.display = 'none'; 
-            }
-        }
-
-        // FUNGSI UNTUK MERENDER SELURUH UI DARI DATA
-        function terapkanDataKeForm() {
+        function terapkanDataKeForm(isCarryOver = false, isNewMonth = false) {
             document.getElementById('input-target').value = harianData.target || '';
             document.getElementById('input-captive').value = harianData.captive || '';
             document.getElementById('input-pofde').value = harianData.pofde || '';
@@ -491,153 +418,148 @@
             document.getElementById('input-walr').value = harianData.walr || '';
             document.getElementById('input-periode-custom').value = harianData.periode_custom || '';
             
+            // Portofolio Dinamis
             if(harianData.portofolio_dinamis && Object.keys(harianData.portofolio_dinamis).length > 0) {
                 currentPortos = [];
-                for (const [key, val] of Object.entries(harianData.portofolio_dinamis)) currentPortos.push({name: key, value: val});
+                for (const [key, val] of Object.entries(harianData.portofolio_dinamis)) {
+                    currentPortos.push({name: key, value: isNewMonth ? 0 : val});
+                }
             } else {
-                currentPortos = [{name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}];
+                currentPortos = [{name: 'NCAR', value: 0}, {name: 'CCAR', value: 0}, {name: 'NMCY', value: 0}, {name: 'USECAR', value: 0}];
             }
             
+            // Leaderboard Dinamis
             currentLeaderboards = harianData.leaderboard_dinamis || {};
+            if(isNewMonth) { for(let k in currentLeaderboards) currentLeaderboards[k].forEach(item => item.val = 0); }
             
+            const alertBox = document.getElementById('carry-over-alert');
+            if(isNewMonth) {
+                alertBox.style.display = 'block'; alertBox.innerHTML = '<i class="fas fa-calendar-check"></i> Bulan Baru Terdeteksi. Form reset ke 0 untuk akumulasi bulan baru.';
+            } else if(isCarryOver) {
+                alertBox.style.display = 'block'; alertBox.innerHTML = '<i class="fas fa-info-circle"></i> Menampilkan data terakhir. Silakan update angka penambahan hari ini.';
+            } else { alertBox.style.display = 'none'; }
+
             renderPortoForm();
             renderLeaderboards();
-            renderLogs(harianData.logs_aktivitas || []);
         }
 
-        function muatDataHarian() {
+        // --- MUAT DATA & LOGIKA CARRY-OVER / BULAN BARU ---
+        let unsubscribeHarian = null;
+        async function muatDataHarian() {
             document.getElementById('loader').style.display = 'flex';
-            if(unsubscribeHarian) unsubscribeHarian(); 
             
-            unsubscribeHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), async (docSnap) => {
-                if(docSnap.exists()) { 
-                    harianData = docSnap.data(); 
-                    // Cari data hari sebelumnya murni untuk validasi Anti-Turun
-                    let qPrev = query(collection(db, "laporan_harian"), where("__name__", "<", documentIdHarian), orderBy("__name__", "desc"), limit(1));
-                    let prevSnap = await getDocs(qPrev);
-                    if(!prevSnap.empty) prevDayData = prevSnap.docs[0].data(); else prevDayData = {};
-
-                    terapkanDataKeForm();
-                    document.getElementById('loader').style.display = 'none';
-                } else { 
-                    // DATA HARI INI KOSONG -> JALANKAN LOGIKA CARRY-OVER (WARISAN)
-                    const q = query(collection(db, "laporan_harian"), where("__name__", "<", documentIdHarian), orderBy("__name__", "desc"), limit(1));
-                    const querySnapshot = await getDocs(q);
+            const docSnap = await getDoc(doc(db, "laporan_harian", documentIdHarian));
+            if(docSnap.exists()) {
+                harianData = docSnap.data();
+                terapkanDataKeForm(false, false);
+            } else {
+                const q = query(collection(db, "laporan_harian"), where("__name__", "<", documentIdHarian), orderBy("__name__", "desc"), limit(1));
+                const prevSnap = await getDocs(q);
+                
+                if (!prevSnap.empty) {
+                    harianData = prevSnap.docs[0].data();
+                    const prevDate = prevSnap.docs[0].id;
+                    const currentMonth = documentIdHarian.substring(0, 7); 
+                    const prevMonth = prevDate.substring(0, 7);
                     
-                    if (!querySnapshot.empty) {
-                        harianData = querySnapshot.docs[0].data();
-                        prevDayData = JSON.parse(JSON.stringify(harianData)); // Clone data kemarin untuk validasi
-                        
-                        // Bersihkan log dan status update karena ini hari baru
-                        harianData.logs_aktivitas = [];
-                        harianData.status_update = {};
-                        
-                        terapkanDataKeForm();
-                        document.getElementById('loader').style.display = 'none';
-                        
-                        // Buat elemen peringatan halus di form
-                        let peringatan = document.getElementById('carry-over-alert');
-                        if(!peringatan) {
-                            peringatan = document.createElement('div');
-                            peringatan.id = 'carry-over-alert';
-                            peringatan.style.cssText = "background: #fffbeb; color: #b45309; padding: 12px; border: 1px solid #fcd34d; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 0.9rem; text-align: center;";
-                            peringatan.innerHTML = `<i class="fas fa-info-circle"></i> Menampilkan data terakhir. Silakan update angka penambahan (closing) hari ini.`;
-                            document.getElementById('form-harian').prepend(peringatan);
-                        }
-                    } else {
-                        // Benar-benar kosong (awal bulan/sistem baru)
-                        harianData = {};
-                        prevDayData = {};
-                        terapkanDataKeForm();
-                        document.getElementById('loader').style.display = 'none';
-                    }
+                    if (currentMonth !== prevMonth) terapkanDataKeForm(false, true); // Reset 0
+                    else terapkanDataKeForm(true, false); // Carry over
+                } else {
+                    harianData = {}; terapkanDataKeForm(false, true);
                 }
-            });
+            }
+            muatLogBulanan();
+            document.getElementById('loader').style.display = 'none';
         }
 
         document.getElementById('input-tanggal-admin').addEventListener('change', (e) => {
-            documentIdHarian = e.target.value;
-            let peringatan = document.getElementById('carry-over-alert');
-            if(peringatan) peringatan.remove();
-            muatDataHarian();
+            documentIdHarian = e.target.value; muatDataHarian();
         });
 
-        // KETIKA TOMBOL UPDATE DITEKAN
+        // --- LOGIKA ROBOT GAIB (BATCHED WRITES CASCADING) ---
         document.getElementById('form-harian').addEventListener('submit', async (e) => {
             e.preventDefault();
+            document.getElementById('sync-loader').style.display = 'flex';
             
-            // 1. VALIDASI ANTI-TURUN
-            if (currentUserData.role !== 'superadmin' && currentUserData.portofolio !== 'all') {
-                let isValid = true;
-                let namaSalah = "";
-                
-                const prevPortoDinamis = prevDayData.portofolio_dinamis || {};
+            try {
+                const docRef = doc(db, "laporan_harian", documentIdHarian);
+                const docSnap = await getDoc(docRef);
+                const dataLama = docSnap.exists() ? docSnap.data().portofolio_dinamis || {} : {};
 
-                currentPortos.forEach(p => {
-                    if (p.name === currentUserData.portofolio) {
-                        const nilaiBaru = Number(p.value) || 0;
-                        const nilaiLama = Number(prevPortoDinamis[p.name]) || 0;
-                        
-                        if (nilaiBaru < nilaiLama) {
-                            isValid = false;
-                            namaSalah = p.name;
-                        }
-                    }
+                let deltaPorto = {}; let isAdaSelisih = false;
+                const portoDinamisBaru = {};
+                
+                currentPortos.forEach(p => { 
+                    const nilaiBaru = Number(p.value) || 0;
+                    const nilaiLama = Number(dataLama[p.name]) || 0;
+                    const selisih = nilaiBaru - nilaiLama;
+                    
+                    portoDinamisBaru[p.name] = nilaiBaru;
+                    if(selisih !== 0) { deltaPorto[p.name] = selisih; isAdaSelisih = true; }
                 });
 
-                if (!isValid) {
-                    alert(`UPDATE GAGAL!\nAngka pencapaian ${namaSalah} tidak boleh lebih kecil dari akumulasi sebelumnya.\n(Hanya Super Admin yang bisa mengoreksi jika terjadi salah input di tanggal sebelumnya)`);
-                    return; // Hentikan proses simpan
+                const batch = writeBatch(db);
+                
+                // Update Hari Ini
+                const updateData = { portofolio_dinamis: portoDinamisBaru };
+                const tgt = document.getElementById('input-target'); const cpt = document.getElementById('input-captive');
+                const pof = document.getElementById('input-pofde'); const ia = document.getElementById('input-ia'); 
+                const wlr = document.getElementById('input-walr'); const per = document.getElementById('input-periode-custom');
+
+                if(!tgt.disabled && tgt.value) updateData.target = Number(tgt.value);
+                if(!cpt.disabled && cpt.value) updateData.captive = Number(cpt.value);
+                if(!pof.disabled && pof.value) updateData.pofde = Number(pof.value);
+                if(!ia.disabled && ia.value) updateData.ia = Number(ia.value);
+                if(!wlr.disabled && wlr.value) updateData.walr = Number(wlr.value);
+                if(!per.disabled) updateData.periode_custom = per.value;
+
+                // Jangan hapus leaderboard saat save portofolio carry-over
+                if(!docSnap.exists() && currentLeaderboards) updateData.leaderboard_dinamis = currentLeaderboards;
+
+                batch.set(docRef, updateData, { merge: true });
+
+                let aksiLog = "Mengupdate Data Pencapaian MTD";
+
+                // ROBOT GAIB (Cascading)
+                if (isAdaSelisih && docSnap.exists()) {
+                    aksiLog = "Revisi Data & Sinkronisasi Berantai (Cascading)";
+                    document.getElementById('sync-text').innerText = "Robot Gaib sedang mensinkronisasi data berantai...";
+
+                    const currentMonthPrefix = documentIdHarian.substring(0, 7); 
+                    const qForward = query(collection(db, "laporan_harian"), where("__name__", ">", documentIdHarian), where("__name__", "<=", `${currentMonthPrefix}-31`));
+                    
+                    const forwardDocs = await getDocs(qForward);
+                    forwardDocs.forEach(d => {
+                        const dat = d.data().portofolio_dinamis || {};
+                        const datBaru = {};
+                        for (let k in deltaPorto) { datBaru[k] = (Number(dat[k]) || 0) + deltaPorto[k]; }
+                        batch.set(doc(db, "laporan_harian", d.id), { portofolio_dinamis: datBaru }, { merge: true });
+                    });
                 }
+
+                // Log Bulanan Global
+                const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + ' WIB';
+                const logEntry = { waktu: `${documentIdHarian} ${timeStr}`, user: currentUserData.nama, aksi: aksiLog };
+                const logRef = doc(db, "logs_bulanan", documentIdHarian.substring(0, 7));
+                batch.set(logRef, { logs: arrayUnion(logEntry) }, { merge: true });
+
+                await batch.commit();
+
+                document.getElementById('sync-loader').style.display = 'none';
+                showToast("Update & Sinkronisasi Berhasil!", "success");
+                muatDataHarian();
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('sync-loader').style.display = 'none';
+                showToast("Gagal! Periksa koneksi internet Anda.", "error");
             }
-
-            // 2. PROSES UPDATE DATA JIKA VALID
-            const dataUpdate = {};
-            const tgt = document.getElementById('input-target'); const cpt = document.getElementById('input-captive');
-            const pof = document.getElementById('input-pofde'); const ia = document.getElementById('input-ia'); 
-            const wlr = document.getElementById('input-walr'); const per = document.getElementById('input-periode-custom');
-
-            if(!tgt.disabled && tgt.value) dataUpdate.target = Number(tgt.value);
-            if(!cpt.disabled && cpt.value) dataUpdate.captive = Number(cpt.value);
-            if(!pof.disabled && pof.value) dataUpdate.pofde = Number(pof.value);
-            if(!ia.disabled && ia.value) dataUpdate.ia = Number(ia.value);
-            if(!wlr.disabled && wlr.value) dataUpdate.walr = Number(wlr.value);
-            if(!per.disabled) dataUpdate.periode_custom = per.value;
-
-            // Jika sistem sedang dalam status carry-over (baru pertama kali disave hari ini), pastikan data rincian juga ikut tersimpan (tidak terhapus)
-            if(!harianData.status_update || Object.keys(harianData.status_update).length === 0) {
-                if(currentLeaderboards) dataUpdate.leaderboard_dinamis = currentLeaderboards;
-            }
-
-            const portoDinamis = {};
-            currentPortos.forEach(p => { if(p.name.trim() !== '') portoDinamis[p.name.trim().toUpperCase()] = p.value ? Number(p.value) : 0; });
-            
-            const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second: '2-digit'}) + ' WIB';
-            let statusObj = harianData.status_update || {};
-            currentPortos.forEach(p => {
-                if(p.name.trim() !== '') {
-                    if ((currentUserData.role === 'pic' && currentUserData.portofolio === p.name) || currentUserData.role === 'superadmin') {
-                        statusObj[p.name] = { waktu: timeStr, user: currentUserData.nama };
-                    }
-                }
-            });
-            const logMsg = { waktu: timeStr, user: currentUserData.nama, aksi: "Mengupdate Data Pencapaian Akumulasi" };
-
-            dataUpdate.portofolio_dinamis = portoDinamis;
-            dataUpdate.status_update = statusObj;
-            dataUpdate.logs_aktivitas = arrayUnion(logMsg);
-
-            try {
-                await setDoc(doc(db, "laporan_harian", documentIdHarian), dataUpdate, { merge: true });
-                let peringatan = document.getElementById('carry-over-alert'); if(peringatan) peringatan.remove();
-                tampilkanPesanSukses();
-            } catch (error) { alert("Gagal mengupdate."); }
         });
 
-        // === KELOLA USER ===
+        // --- KELOLA USER & AUTH ---
         window.cabutAksesUser = async function(emailPIC) {
             if(confirm(`Tolak akses login untuk email ${emailPIC}. Lanjutkan?`)) {
-                try { await deleteDoc(doc(db, "users", emailPIC)); alert("Akses dicabut!"); } catch (error) { alert("Error"); }
+                try { await deleteDoc(doc(db, "users", emailPIC)); showToast("Akses dicabut!"); } catch (error) { showToast("Gagal hapus user.", "error"); }
             }
         };
 
@@ -650,7 +572,7 @@
                 btn.innerHTML = 'Memproses...';
                 await createUserWithEmailAndPassword(secondaryAuth, email, pass);
                 await setDoc(doc(db, "users", email), { nama: nama, portofolio: role, role: role === 'all' ? 'superadmin' : 'pic' });
-                await secondaryAuth.signOut(); alert("Berhasil!");
+                await secondaryAuth.signOut(); showToast("User Berhasil Didaftarkan!");
                 document.getElementById('pic-nama').value = ''; document.getElementById('pic-email').value = ''; document.getElementById('pic-pass').value = '';
                 btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
             } catch (error) { alert(error.message); btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim'; }
@@ -668,12 +590,38 @@
             });
         });
 
-        function keluar(force = false) { 
-            if (force || confirm("Apakah Anda yakin ingin keluar dari Panel Admin?")) {
-                signOut(auth).then(() => { window.location.href = 'login.html'; }); 
-            }
+        async function muatLogBulanan() {
+            const currentMonthPrefix = documentIdHarian.substring(0, 7);
+            const docSnap = await getDoc(doc(db, "logs_bulanan", currentMonthPrefix));
+            const container = document.getElementById('list-log');
+            if(docSnap.exists() && docSnap.data().logs) {
+                container.innerHTML = '';
+                [...docSnap.data().logs].reverse().slice(0, 20).forEach(log => {
+                    let colorAksi = log.aksi.includes('Berantai') ? 'color: var(--accent); font-weight:bold;' : 'color: #64748b;';
+                    container.innerHTML += `<li style="border-bottom:1px solid #cbd5e1; padding-bottom:8px;"><div style="font-size:0.75rem; color:#64748b;"><i class="far fa-clock"></i> ${log.waktu}</div><div style="font-weight:bold; color:var(--primary);">${log.user} <span style="${colorAksi}">${log.aksi}</span></div></li>`;
+                });
+            } else { container.innerHTML = '<li style="text-align:center; color:#94a3b8;">Belum ada aktivitas di bulan ini.</li>'; }
         }
-        document.getElementById('btn-logout').addEventListener('click', () => keluar(false));
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocSnap = await getDoc(doc(db, "users", user.email));
+                if (userDocSnap.exists()) {
+                    currentUserData = userDocSnap.data();
+                    document.getElementById('user-display-name').innerText = currentUserData.nama;
+                    document.getElementById('user-role-badge').innerText = `Akses: ${currentUserData.portofolio.toUpperCase()}`;
+                    if (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all') {
+                        document.getElementById('area-eksekutif').style.display = 'block';
+                        document.getElementById('menu-users').style.display = 'flex';
+                        document.getElementById('menu-log').style.display = 'flex';
+                        document.getElementById('btn-tambah-kategori').style.display = 'inline-block';
+                    }
+                    muatDataHarian(); 
+                } else { signOut(auth).then(()=> window.location.href = 'login.html'); }
+            } else { window.location.href = 'login.html'; }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => { if(confirm("Keluar dari Panel?")) signOut(auth); });
     </script>
 </body>
 </html>
