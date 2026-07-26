@@ -64,7 +64,7 @@
         .porto-layout { display: flex; align-items: stretch; padding: 15px; min-height: 250px; }
         .porto-chart-box { width: 35%; position: relative; border-right: 1px dashed var(--border-color); padding-right: 15px; }
         .porto-legend-box { width: 25%; padding: 0 15px; display: flex; flex-direction: column; justify-content: center; border-right: 1px dashed var(--border-color); }
-        .porto-detail-box { width: 40%; padding-left: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; overflow-y: auto; max-height: 350px; }
+        .porto-detail-box { width: 40%; padding-left: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; overflow-y: auto; max-height: 400px; }
 
         .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; z-index: 10; }
         .insight-title { font-weight: 800; color: var(--c-primary); font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
@@ -148,7 +148,7 @@
         </div>
     </div>
 
-    <!-- AREA DISTRIBUSI & LEADERBOARD BERDERET KE BAWAH -->
+    <!-- AREA DISTRIBUSI & LEADERBOARD LENGKAP BERDERET -->
     <div class="border-primary rounded flex-col bg-panel" style="margin-bottom: 15px;">
         <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">DATA DISTRIBUSI & RINCIAN PORTOFOLIO (KLIK UNTUK FILTER)</div>
         
@@ -167,7 +167,7 @@
             </div>
             
             <div id="dynamic-leaderboards" class="porto-detail-box">
-                <!-- Leaderboards Berderet -->
+                <!-- Leaderboards Berderet Keseluruhan -->
             </div>
         </div>
     </div>
@@ -277,7 +277,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.7 (Nautical & Full Leaderboard Fix) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.8 (Master Full Complete Edition) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -315,7 +315,7 @@
         const selectedTheme = e.target.value;
         localStorage.setItem('dmj_dashboard_theme', selectedTheme);
         document.body.setAttribute('data-theme', selectedTheme);
-        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (selectedTheme === 'klasik' ? '#64748b' : '#94a3b8');
+        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (savedTheme === 'klasik' ? '#64748b' : '#94a3b8');
         if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
     });
 
@@ -426,10 +426,12 @@
             dynamicContainer.innerHTML = ''; 
             let keysToRender = [];
             
+            const semuaKategori = Object.keys(window.dataLeaderboardLengkap);
+
             if (kategoriFilter === 'ALL') {
-                keysToRender = Object.keys(window.dataLeaderboardLengkap);
+                keysToRender = semuaKategori;
             } else {
-                keysToRender = Object.keys(window.dataLeaderboardLengkap).filter(k => k.toUpperCase().includes(kategoriFilter.toUpperCase()));
+                keysToRender = semuaKategori.filter(k => k.toUpperCase().includes(kategoriFilter.toUpperCase()));
             }
 
             if(keysToRender.length === 0) {
@@ -475,13 +477,7 @@
                     </div>`;
                 }
                 
-                let iconClass = "fas fa-trophy";
-                if (theme === 'kapal') {
-                    iconClass = "fas fa-anchor";
-                } else {
-                    if (kat.includes("NCAR") || kat.includes("MCAR") || kat.includes("CCAR")) iconClass = "fas fa-car-side";
-                    else if (kat.includes("UCAR") || kat.includes("UMCY")) iconClass = "fas fa-car";
-                }
+                let iconClass = theme === 'kapal' ? "fas fa-anchor" : "fas fa-trophy";
 
                 const box = document.createElement('div'); 
                 box.style.cssText = "background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);";
