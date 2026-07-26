@@ -169,7 +169,7 @@
                 </div>
             </div>
 
-            <!-- CLOSING BULANAN (DENGAN RASIO BULAN BERJALAN / N/12) -->
+            <!-- CLOSING BULANAN -->
             <div>
                 <div class="rounded" style="border: 2px solid #3b82f6; background-color: rgba(59, 130, 246, 0.05); height: 100%; display: flex; flex-direction: column;">
                     <div class="rounded" style="background-color: #3b82f6; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">CLOSING BULAN INI (<span id="label-nama-bulan">BULAN</span>)</div>
@@ -240,7 +240,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.6 (Monthly Ratio Fixed) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.7 (All Elements Restored) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -337,7 +337,7 @@
 
         let dateObj = new Date(documentIdHarian); 
         const thn = dateObj.getFullYear();
-        const bulanIndex = dateObj.getMonth() + 1; // 1 s.d 12
+        const bulanIndex = dateObj.getMonth() + 1; 
         const blnNames = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
         
         let textPeriode = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()].slice(0,3)} ${thn}`;
@@ -435,7 +435,7 @@
         const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
         const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
 
-        // KALKULASI TARGET BULANAN BERDASARKAN BULAN BERJALAN (N/12)
+        // KALKULASI TARGET & KEBUTUHAN HARIAN BULAN INI
         const targetBulanan = TARGET / 12;
         const totalHariBulanIni = new Date(thn, dateObj.getMonth() + 1, 0).getDate();
         const targetHarianIdeal = targetBulanan / totalHariBulanIni;
@@ -443,7 +443,6 @@
         const sisaHariBulanIni = Math.max(0, totalHariBulanIni - hariBerjalanBulanIni);
         const kebutuhanHarianBulan = sisaHariBulanIni > 0 ? (targetBulanan / totalHariBulanIni) : 0;
 
-        // Update Label UI Sesuai Bulan Kalender
         document.getElementById('label-nama-bulan').innerText = blnNames[dateObj.getMonth()];
         document.getElementById('label-rasio-bulan').innerText = `${bulanIndex}/12`;
 
