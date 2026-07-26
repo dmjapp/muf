@@ -11,8 +11,6 @@
         :root { --bg-body: #f3f4f6; --bg-panel: #ffffff; --text-main: #334155; --text-muted: #64748b; --c-primary: #0a1d56; --text-on-primary: #ffffff; --c-accent: #f59e0b; --text-on-accent: #0a1d56; --radius: 8px; --border-color: #cbd5e1; --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); --font-angka: Arial, Helvetica, sans-serif; }
         body[data-theme="akselerasi"] { --bg-body: #e5e7eb; --bg-panel: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --c-primary: #dc2626; --text-on-primary: #ffffff; --c-accent: #111827; --text-on-accent: #ffffff; --radius: 4px; --border-color: #cbd5e1; --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
         body[data-theme="gamifikasi"] { --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); --text-main: #134e4a; --text-muted: #0f766e; --c-primary: #047857; --text-on-primary: #ffffff; --c-accent: #0ea5e9; --text-on-accent: #ffffff; --radius: 20px; --border-color: rgba(255, 255, 255, 0.6); --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
-        
-        /* TEMA FORMULA 1 - Warna Baja Terang */
         body[data-theme="formula1"] { --bg-body: #b0c4de; --bg-panel: #ffffff; --text-main: #171717; --text-muted: #52525b; --c-primary: #ef4444; --text-on-primary: #ffffff; --c-accent: #10b981; --text-on-accent: #0a0a0a; --radius: 2px; --border-color: #94a3b8; --panel-shadow: 0 0 10px rgba(0,0,0,0.15); --font-angka: 'Courier New', Courier, monospace; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -55,14 +53,12 @@
         .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
         body[data-theme="formula1"] .b-1, body[data-theme="formula1"] .b-2, body[data-theme="formula1"] .b-3, body[data-theme="formula1"] .b-other { border-radius: 2px; }
 
-        /* KELAS CSS EFEK KLIK LEGEND PORTOFOLIO */
         .porto-legend-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; }
         .porto-legend-item:hover { background-color: rgba(100, 116, 139, 0.1); border-color: var(--border-color); transform: translateX(5px); }
         .porto-legend-item.active { background-color: var(--c-primary); color: var(--text-on-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .porto-legend-item.active .color-dot { border: 2px solid white; }
         .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
 
-        /* KELAS BARU UNTUK LAYOUT PORTOFOLIO & LEADERBOARD AGAR RESPONSIF */
         .porto-layout { display: flex; align-items: stretch; padding: 15px; min-height: 250px; }
         .porto-chart-box { width: 35%; position: relative; border-right: 1px dashed var(--border-color); padding-right: 15px; }
         .porto-legend-box { width: 25%; padding: 0 15px; display: flex; flex-direction: column; justify-content: center; border-right: 1px dashed var(--border-color); }
@@ -78,7 +74,9 @@
         .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
         .f1-led { width: 14px; height: 28px; border-radius: 2px; background-color: #333; transition: all 0.5s ease; border: 1px solid #000; }
 
-        /* MEDIA QUERY UNTUK LAYAR KECIL (MOBILE/POTRAIT) */
+        /* BANNER UNALLOCATED */
+        .unallocated-banner { font-size:0.75rem; color:#d97706; background:rgba(254, 243, 199, 0.6); padding:8px; border-radius:6px; text-align:center; border: 1px dashed #fcd34d; margin-top: 5px; font-weight: bold; }
+
         @media (max-width: 1024px) { 
             .grid-trend { grid-template-columns: 1fr 1fr; } 
         }
@@ -86,8 +84,6 @@
             .grid-trend { grid-template-columns: 1fr; } 
             .border-bottom-primary { flex-direction: column; gap: 15px; text-align: center; } 
             .border-bottom-primary > div { width: 100% !important; justify-content: center !important; } 
-            
-            /* Ini yang memperbaiki area Portofolio bertumpuk */
             .porto-layout { flex-direction: column; height: auto; padding: 10px; }
             .porto-chart-box, .porto-legend-box, .porto-detail-box { width: 100%; padding: 10px 0; border-right: none; }
             .porto-chart-box { height: 220px; border-bottom: 1px dashed var(--border-color); }
@@ -151,13 +147,10 @@
         </div>
     </div>
 
-    <!-- UPDATE LAYOUT HTML -->
     <div class="border-primary rounded flex-col bg-panel" style="margin-bottom: 15px;">
         <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">DATA DISTRIBUSI & RINCIAN PORTOFOLIO (KLIK UNTUK FILTER)</div>
         
-        <!-- Wrapper ini sekarang menggunakan class 'porto-layout' yang merespons layar HP -->
         <div class="porto-layout">
-            
             <div class="porto-chart-box" id="porto-canvas-wrapper">
                 <canvas id="portoChart"></canvas>
                 <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
@@ -174,7 +167,6 @@
             <div id="dynamic-leaderboards" class="porto-detail-box">
                 <!-- Kotak akan digambar otomatis oleh Javascript -->
             </div>
-            
         </div>
     </div>
 
@@ -264,7 +256,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.3 (Responsive Edition) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.4 (Allocation Status UI) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -370,6 +362,7 @@
         document.getElementById('val-periode').innerText = textPeriode;
 
         window.dataLeaderboardLengkap = data.leaderboard_dinamis || {};
+        const portoDinamis = data.portofolio_dinamis || {};
         const dynamicContainer = document.getElementById('dynamic-leaderboards');
         
         window.gambarKotakLeaderboard = function(kategoriFilter) {
@@ -392,6 +385,24 @@
 
             keysToRender.forEach(kat => {
                 let catItems = window.dataLeaderboardLengkap[kat] || [];
+                
+                // 1. HITUNG TOTAL CMO & SELISIH
+                let totalCMO = catItems.reduce((sum, item) => sum + Number(item.val || 0), 0);
+                
+                let targetPortoVal = 0;
+                if (kat.toUpperCase().includes('ALL')) {
+                    targetPortoVal = Object.values(portoDinamis).reduce((sum, val) => sum + Number(val || 0), 0);
+                } else {
+                    for (const [pName, pVal] of Object.entries(portoDinamis)) {
+                        if (kat.toUpperCase().includes(pName.toUpperCase())) {
+                            targetPortoVal = Number(pVal) || 0; break;
+                        }
+                    }
+                }
+
+                let selisih = targetPortoVal - totalCMO;
+                selisih = Math.round(selisih * 1000000) / 1000000; // Fix Javascript decimal bug
+
                 catItems.sort((a,b) => b.val - a.val);
                 let maxVal = catItems.length > 0 ? catItems[0].val : 1; if(maxVal === 0) maxVal = 1;
                 
@@ -407,7 +418,18 @@
                             <div class="c-primary font-bold font-extrabold" style="width: 45%; text-align: right; font-size: 0.85rem;">${window.toM(item.val)}</div></div></div>`;
                 });
                 
-                if(listHTML === '') listHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Data kosong</div>';
+                // 2. TAMBAHKAN BANNER UNALLOCATED
+                if(listHTML === '') {
+                    if (selisih > 0) {
+                        listHTML = `<div class="unallocated-banner"><i class="fas fa-exclamation-triangle"></i> Sebesar ${window.toM(selisih)} belum dialokasikan ke rincian data.</div>`;
+                    } else {
+                        listHTML = '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Data kosong</div>';
+                    }
+                } else {
+                    if (selisih > 0) {
+                        listHTML += `<div class="unallocated-banner"><i class="fas fa-info-circle"></i> Sisa sebesar ${window.toM(selisih)} belum dialokasikan.</div>`;
+                    }
+                }
                 
                 let iconClass = "fas fa-trophy";
                 if (kat.includes("NCAR") || kat.includes("MCAR") || kat.includes("CCAR")) iconClass = "fas fa-car-side";
