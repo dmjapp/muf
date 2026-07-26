@@ -126,7 +126,6 @@
     <div id="dynamic-leaderboards" class="grid-dynamic">
         <div class="border-primary rounded flex-col bg-panel">
             <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">BOOKING BY PORTOFOLIO</div>
-            <!-- Perbaikan UI: min-height elastis agar label ChartJS selalu sejajar presisi -->
             <div class="flex items-stretch" style="padding: 15px; height: 100%; min-height: 220px;">
                 <div style="width: 45%; position: relative;" id="porto-canvas-wrapper">
                     <canvas id="portoChart"></canvas>
@@ -140,19 +139,21 @@
         </div>
     </div>
 
+    <!-- TREND SUMMARY & CLOSING BULANAN -->
     <div class="bg-panel rounded" style="border: 2px solid var(--border-color); padding: 15px;">
         <div class="flex items-center gap-2" style="margin-bottom: 15px;">
             <div class="bg-primary rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 35px; height: 35px;">1</div>
             <div>
-                <h2 id="trend-title" class="font-extrabold c-primary text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND (YEAR-TO-DATE)</h2>
-                <p class="font-bold text-xs" style="color: var(--text-muted); margin-top: 3px;">APAKAH TARGET TAHUNAN BISA TERCAPAI?</p>
+                <h2 id="trend-title" class="font-extrabold c-primary text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND & CLOSING BULANAN</h2>
+                <p class="font-bold text-xs" style="color: var(--text-muted); margin-top: 3px;">MONITORING TARGET TAHUNAN & BULAN BERJALAN</p>
             </div>
         </div>
         
         <div class="grid-trend">
+            <!-- POSISI YTD -->
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <div class="border-primary rounded" style="background-color: var(--bg-body); opacity: 0.9;">
-                    <div class="bg-primary text-center font-bold text-xs rounded" style="padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">POSISI SAAT INI</div>
+                    <div class="bg-primary text-center font-bold text-xs rounded" style="padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">POSISI YTD TAHUNAN</div>
                     <div style="padding: 10px; font-size: 0.9rem; font-weight: bold; display: flex; flex-direction: column; gap: 6px;">
                         <div class="flex justify-between" style="color: var(--text-muted);"><span id="val-target-tahun" style="font-weight: normal;">Target Tahun</span><span id="val-target-kiri">0,000 M</span></div>
                         <div class="flex justify-between c-primary"><span style="font-weight: normal;">Realisasi Booking</span><span id="val-trend-realisasi">0,000 M</span></div>
@@ -168,19 +169,24 @@
                 </div>
             </div>
 
+            <!-- CLOSING BULANAN (BARU) -->
             <div>
-                <div class="rounded" style="border: 2px solid #10b981; background-color: rgba(16, 185, 129, 0.05); height: 100%; display: flex; flex-direction: column;">
-                    <div class="rounded" style="background-color: #10b981; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">TREND HARIAN SAAT INI</div>
+                <div class="rounded" style="border: 2px solid #3b82f6; background-color: rgba(59, 130, 246, 0.05); height: 100%; display: flex; flex-direction: column;">
+                    <div class="rounded" style="background-color: #3b82f6; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">CLOSING BULAN INI</div>
                     <div class="text-center" style="padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-                        <div class="font-bold text-xs" style="color: var(--text-muted);">Rata-rata booking per hari:</div>
-                        <div id="val-rata-harian" class="font-extrabold text-md" style="margin: 8px 0;">0,000 M / hari</div>
-                        <hr style="border-color: rgba(16,185,129,0.2); margin: 10px 0;">
-                        <div class="font-bold text-xs" style="color: var(--text-muted);">Proyeksi Akhir Tahun:</div>
-                        <div id="val-proyeksi" class="font-extrabold text-sm" style="color: #10b981; margin: 8px 0;">0,000 M (0,0%)</div>
+                        <div class="font-bold text-xs" style="color: var(--text-muted);">Estimasi Target Bulanan (1/12):</div>
+                        <div id="val-target-bulan" class="font-extrabold text-sm c-primary" style="margin: 5px 0;">0,000 M</div>
+                        <hr style="border-color: rgba(59,130,246,0.2); margin: 8px 0;">
+                        <div class="font-bold text-xs" style="color: var(--text-muted);">Sisa Hari Kerja Bulan Ini:</div>
+                        <div id="val-sisa-hari-bulan" class="font-extrabold text-sm" style="color: #3b82f6; margin: 5px 0;">0 Hari</div>
+                        <hr style="border-color: rgba(59,130,246,0.2); margin: 8px 0;">
+                        <div class="font-bold text-xs" style="color: var(--text-muted);">Kebutuhan Harian Bulan Ini:</div>
+                        <div id="val-keb-harian-bulan" class="font-extrabold text-md" style="color: #10b981; margin-top: 5px;">0,000 M / hari</div>
                     </div>
                 </div>
             </div>
 
+            <!-- VISUALISASI TREND -->
             <div style="position: relative; padding: 0 10px;" id="trend-visual-container">
                 <div id="trend-label" class="font-bold text-xs text-center" style="color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">TREND BOOKING YTD</div>
                 <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
@@ -203,6 +209,7 @@
                 </div>
             </div>
 
+            <!-- SISA TARGET & KEBUTUHAN HARIAN -->
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <div class="font-bold text-center text-xs c-primary rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 8px; opacity: 0.9;">BERAPA YANG HARUS DICAPAI?</div>
                 <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
@@ -226,7 +233,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.2 (Smart Insight + Alignment Fix) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 3.3 (Closing Bulanan Added) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -397,18 +404,7 @@
             portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: false } } } }); 
         } else if (theme === 'akselerasi' || theme === 'formula1') { 
             centerText.style.display = 'none'; 
-            portoChartObj = new Chart(ctxPorto, { 
-                type: 'bar', 
-                data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, 
-                options: { 
-                    indexAxis: 'y', maintainAspectRatio: false, responsive: true, 
-                    scales: { 
-                        x: { display: false }, 
-                        y: { grid: { display: false }, ticks: { font: {size: 10, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } 
-                    }, 
-                    plugins: { legend: { display: false } } 
-                } 
-            }); 
+            portoChartObj = new Chart(ctxPorto, { type: 'bar', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, options: { indexAxis: 'y', maintainAspectRatio: false, responsive: true, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: {size: 10, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } }, plugins: { legend: { display: false } } } }); 
         } else if (theme === 'gamifikasi') { 
             centerText.style.display = 'none'; 
             portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + 'AA'), borderColor: 'rgba(255,255,255,0.5)' }] }, options: { maintainAspectRatio: false, responsive: true, scales: { r: { grid: {color: 'rgba(15,118,110,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } }); 
@@ -430,6 +426,19 @@
         const proyeksiAkhirTahun = rataHarian * totalDaysInYear;
         const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
         const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
+
+        // --- KALKULASI CLOSING BULANAN ---
+        const targetBulanan = TARGET / 12;
+        const totalHariBulanIni = new Date(thn, dateObj.getMonth() + 1, 0).getDate();
+        const hariBerjalanBulanIni = dateObj.getDate();
+        const sisaHariBulanIni = Math.max(0, totalHariBulanIni - hariBerjalanBulanIni);
+        
+        // Estimasi pencapaian bulan ini (Proporsional sederhana dari target bulanan)
+        const kebutuhanHarianBulan = sisaHariBulanIni > 0 ? (targetBulanan / totalHariBulanIni) : 0;
+
+        document.getElementById('val-target-bulan').innerText = window.toM(targetBulanan);
+        document.getElementById('val-sisa-hari-bulan').innerText = `${sisaHariBulanIni} Hari (dari ${totalHariBulanIni} hari)`;
+        document.getElementById('val-keb-harian-bulan').innerText = window.toM(kebutuhanHarianBulan) + " / hari";
 
         document.getElementById('val-target-kiri').innerText = window.toM(TARGET);
         document.getElementById('val-trend-realisasi').innerText = window.toM(totalBooking);
