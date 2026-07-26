@@ -31,9 +31,9 @@
             --bg-panel: #f8fafc;
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --c-primary: #dc2626; /* Merah Balap */
+            --c-primary: #dc2626; 
             --text-on-primary: #ffffff;
-            --c-accent: #111827; /* Hitam Carbon */
+            --c-accent: #111827; 
             --text-on-accent: #ffffff;
             --radius: 4px;
             --border-color: #cbd5e1;
@@ -44,13 +44,13 @@
 
         /* TEMA ROKET (MATTE MINT GLASSMORPHISM) */
         body[data-theme="gamifikasi"] {
-            --bg-body: #ccfbf1; /* Hijau Mint Lembut */
-            --bg-panel: rgba(255, 255, 255, 0.45); /* Kaca Putih Buram (Transparan Matte) */
-            --text-main: #134e4a; /* Hijau Tua Gelap (Teal) */
+            --bg-body: #ccfbf1; 
+            --bg-panel: rgba(255, 255, 255, 0.45); 
+            --text-main: #134e4a; 
             --text-muted: #0f766e;
-            --c-primary: #047857; /* Emerald Green */
+            --c-primary: #047857; 
             --text-on-primary: #ffffff;
-            --c-accent: #0ea5e9; /* Sky Blue */
+            --c-accent: #0ea5e9; 
             --text-on-accent: #ffffff;
             --radius: 20px;
             --border-color: rgba(255, 255, 255, 0.6);
@@ -61,19 +61,19 @@
 
         /* TEMA FORMULA 1 (DIGITAL TELEMETRY) */
         body[data-theme="formula1"] {
-            --bg-body: #0a0a0a; /* Hitam Carbon */
-            --bg-panel: #171717; /* Hitam Abu */
+            --bg-body: #0a0a0a; 
+            --bg-panel: #171717; 
             --text-main: #f8fafc;
             --text-muted: #a1a1aa;
-            --c-primary: #ef4444; /* F1 Red */
+            --c-primary: #ef4444; 
             --text-on-primary: #ffffff;
-            --c-accent: #10b981; /* Neon Green */
+            --c-accent: #10b981; 
             --text-on-accent: #0a0a0a;
-            --radius: 2px; /* Sangat Tajam */
+            --radius: 2px; 
             --border-color: #27272a;
             --panel-shadow: 0 0 10px rgba(0,0,0,0.8);
             --header-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
-            --font-angka: 'Courier New', Courier, monospace; /* Font Digital/Monospace */
+            --font-angka: 'Courier New', Courier, monospace; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -89,7 +89,7 @@
         .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; position: relative; display: flex; flex-direction: column; gap: 10px; }
         .watermark { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 45vw; min-width: 350px; opacity: 0.03 !important; pointer-events: none !important; z-index: 40 !important; }
 
-        /* BLUR KACA KHUSUS TEMA MINT (GAMIFIKASI) */
+        /* BLUR KACA KHUSUS TEMA MINT */
         body[data-theme="gamifikasi"] .sticky-header, 
         body[data-theme="gamifikasi"] .bg-panel, 
         body[data-theme="gamifikasi"] .insight-panel,
@@ -107,7 +107,6 @@
         .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); transition: background-color 0.4s ease;}
         
         .bg-panel { background-color: var(--bg-panel); box-shadow: var(--panel-shadow); transition: all 0.4s ease; }
-        
         .border-primary { border: 2px solid var(--c-primary); transition: border-color 0.4s ease;} 
         .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; transition: border-color 0.4s ease;}
         
@@ -346,7 +345,7 @@
 
 <div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
     <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 1.5 (Dual Radar Admin) | Copyright &copy; SRISP x DMJ 2026</span>
+    <span>Versi 2.0 (Dual Radar Admin) | Copyright &copy; SRISP x DMJ 2026</span>
 </div>
 
 <script type="module">
@@ -441,6 +440,11 @@
         // Menimpa nilai dengan inputan dari Admin Panel jika data harian tersedia
         if(harianData.target !== undefined) mergedData.umum.target_amount = harianData.target;
         if(harianData.captive !== undefined) mergedData.umum.captive = harianData.captive;
+        
+        // --- TANGKAP INPUTAN BARU (POFDE, IA, WALR) ---
+        if(harianData.pofde !== undefined) mergedData.umum.pofde = harianData.pofde;
+        if(harianData.ia !== undefined) mergedData.umum.ia = harianData.ia;
+        if(harianData.walr !== undefined) mergedData.umum.walr = harianData.walr;
         
         // Cek jika ada inputan portofolio di admin panel
         if(harianData.NCAR !== undefined || harianData.CCAR !== undefined || harianData.NMCY !== undefined || harianData.USECAR !== undefined) {
