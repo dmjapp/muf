@@ -56,6 +56,13 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* KELAS CSS BARU UNTUK INDIKATOR SELISIH */
+        .info-box { padding: 12px 15px; border-radius: 6px; margin-top: 15px; font-weight: bold; font-size: 0.9rem; transition: all 0.3s ease; }
+        .status-idle { background: #f3f4f6; color: #64748b; border: 1px solid #e2e8f0; }
+        .status-warning { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+        .status-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+        .status-success { background: #d1fae5; color: #059669; border: 1px solid #6ee7b7; }
+
         @media (max-width: 768px) {
             body { display: block; overflow-y: auto; height: auto; }
             .sidebar { width: 100%; height: auto; border-bottom: 2px solid var(--accent); }
@@ -223,6 +230,9 @@
         let currentPortos = [];
         let currentLeaderboards = {}; 
 
+        // Fungsi Helper Format Miliar (misal 0.1 M)
+        const formatM = (angka) => (angka).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M';
+
         // === FUNGSI GANTI PASSWORD ===
         document.getElementById('form-ganti-password').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -240,9 +250,68 @@
             }
         });
 
+        // === FUNGSI LOGIKA SELISIH (BARU) ===
+        window.cekSelisih = function(kat) {
+            // Hitung total input dari seluruh CMO di kategori (kat) ini
+            let totalCMO = 0;
+            if(currentLeaderboards[kat]) {
+                currentLeaderboards[kat].forEach(item => {
+                    totalCMO += Number(item.val) || 0;
+                });
+            }
+
+            // Cari total portofolio yang cocok di Panel 1
+            let totalPorto = 0;
+            let matchedPortoName = "";
+
+            if (kat.toUpperCase().includes('ALL')) {
+                matchedPortoName = "ALL PORTO";
+                currentPortos.forEach(p => { totalPorto += Number(p.value) || 0; });
+            } else {
+                currentPortos.forEach(p => {
+                    if(p.name && p.name.trim() !== '' && kat.toUpperCase().includes(p.name.toUpperCase())) {
+                        totalPorto = Number(p.value) || 0;
+                        matchedPortoName = p.name;
+                    }
+                });
+            }
+
+            // Update UI Indikator
+            const indicatorEl = document.getElementById(`indicator-${kat}`);
+            if(!indicatorEl) return;
+
+            if(!matchedPortoName) {
+                indicatorEl.style.display = 'none'; // Sembunyikan jika tidak ada portofolio cocok
+                return;
+            }
+            
+            indicatorEl.style.display = 'block';
+
+            if (totalPorto === 0 && totalCMO === 0) {
+                indicatorEl.className = 'info-box status-idle';
+                indicatorEl.innerHTML = 'Menunggu input data CMO...';
+            } else {
+                const selisih = totalPorto - totalCMO;
+                
+                // Gunakan Math.round dengan presisi tinggi untuk menghindari bug decimal Javascript
+                const selisihFix = Math.round(selisih * 1000000) / 1000000; 
+
+                if (selisihFix === 0) {
+                    indicatorEl.className = 'info-box status-success';
+                    indicatorEl.innerHTML = `✅ Alokasi Balance (Total: ${formatM(totalPorto)})`;
+                } else if (selisihFix > 0) {
+                    indicatorEl.className = 'info-box status-warning';
+                    indicatorEl.innerHTML = `⚠️ Selisih <strong>${formatM(selisihFix)}</strong> belum dialokasikan ke CMO. (Target ${matchedPortoName}: ${formatM(totalPorto)})`;
+                } else {
+                    indicatorEl.className = 'info-box status-danger';
+                    indicatorEl.innerHTML = `❌ Over-alokasi! Total CMO melebihi Portofolio sebesar <strong>${formatM(Math.abs(selisihFix))}</strong>.`;
+                }
+            }
+        };
+
         // === FUNGSI LEADERBOARD BUILDER ===
         window.tambahKategoriLeaderboard = function() {
-            let name = prompt("Masukkan nama Dashboard/Kategori baru\n(Contoh: TOP 5 MARKETING):");
+            let name = prompt("Masukkan nama Dashboard/Kategori baru\n(Contoh: TOP 5 MKT - NCAR):");
             if(name && name.trim() !== '') {
                 name = name.trim().toUpperCase();
                 if(!currentLeaderboards[name]) { currentLeaderboards[name] = []; renderLeaderboards(); } else { alert("Kategori tersebut sudah ada!"); }
@@ -251,9 +320,13 @@
         window.hapusKategoriLeaderboard = function(kat) { if(confirm(`Hapus seluruh dashboard "${kat}"?`)) { delete currentLeaderboards[kat]; renderLeaderboards(); } };
         window.tambahBarisLeaderboard = function(kat) { currentLeaderboards[kat].push({name: '', val: 0}); renderLeaderboards(); };
         window.hapusBarisLeaderboard = function(kat, idx) { currentLeaderboards[kat].splice(idx, 1); renderLeaderboards(); };
+        
         window.updateBarisLeaderboard = function(kat, idx, field, val) {
             if(field === 'name') currentLeaderboards[kat][idx].name = val.toUpperCase();
-            if(field === 'val') currentLeaderboards[kat][idx].val = Number(val);
+            if(field === 'val') {
+                currentLeaderboards[kat][idx].val = Number(val);
+                cekSelisih(kat); // Panggil fungsi cek saat ngetik nominal CMO
+            }
         };
 
         function renderLeaderboards() {
@@ -263,8 +336,27 @@
                 currentLeaderboards[kat].forEach((item, idx) => {
                     itemsHtml += `<div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" value="${item.name}" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'name', this.value)" placeholder="Nama" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;"><input type="number" value="${item.val}" step="any" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" onchange="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" placeholder="Nilai (M)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;"><button type="button" onclick="hapusBarisLeaderboard('${kat}', ${idx})" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;" title="Hapus Baris"><i class="fas fa-trash"></i></button></div>`;
                 });
-                container.innerHTML += `<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-bottom:20px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;"><h4 style="color:var(--primary);"><i class="fas fa-trophy c-accent"></i> ${kat}</h4><button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hapus Kategori</button></div><div id="items-${kat}">${itemsHtml}</div><button type="button" onclick="tambahBarisLeaderboard('${kat}')" style="background:var(--secondary); color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-top:10px;"><i class="fas fa-plus"></i> Tambah Baris Peringkat</button></div>`;
+                
+                // Tambahkan elemen Indikator Selisih di bawah baris input CMO
+                container.innerHTML += `
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-bottom:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;">
+                            <h4 style="color:var(--primary);"><i class="fas fa-trophy c-accent"></i> ${kat}</h4>
+                            <button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hapus Kategori</button>
+                        </div>
+                        <div id="items-${kat}">${itemsHtml}</div>
+                        
+                        <!-- Box Indikator -->
+                        <div id="indicator-${kat}" class="info-box status-idle" style="display: none;">Menghitung alokasi...</div>
+                        
+                        <button type="button" onclick="tambahBarisLeaderboard('${kat}')" style="background:var(--secondary); color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-top:10px;"><i class="fas fa-plus"></i> Tambah Baris CMO</button>
+                    </div>`;
             }
+
+            // Jalankan cek selisih pertama kali setelah render selesai
+            setTimeout(() => {
+                for(let kat in currentLeaderboards) { cekSelisih(kat); }
+            }, 100);
         }
 
         document.getElementById('form-leaderboard').addEventListener('submit', async (e) => {
@@ -291,9 +383,14 @@
 
         window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
         window.hapusPorto = function(idx) { if(confirm("Hapus portofolio ini dari daftar?")) { currentPortos.splice(idx, 1); renderPortoForm(); } };
+        
         window.updatePorto = function(idx, field, val) {
             if(field === 'name') { currentPortos[idx].name = val.toUpperCase(); updateRoleDropdown(); }
-            if(field === 'value') currentPortos[idx].value = val;
+            if(field === 'value') {
+                currentPortos[idx].value = val;
+                // Saat Portofolio di-update, trigger cek selisih di form Leaderboard
+                for(let kat in currentLeaderboards) { cekSelisih(kat); }
+            }
         };
 
         function renderPortoForm() {
@@ -335,7 +432,7 @@
             });
         }
 
-        // === AUTENTIKASI & LOAD DATA (DENGAN MESIN WAKTU) ===
+        // === AUTENTIKASI & LOAD DATA ===
         let unsubscribeHarian = null;
 
         onAuthStateChanged(auth, async (user) => {
@@ -344,7 +441,7 @@
                 if (userDocSnap.exists()) {
                     currentUserData = userDocSnap.data();
                     terapkanHakAkses(currentUserData);
-                    muatDataHarian(); // Mulai load data untuk tanggal aktif
+                    muatDataHarian(); 
                 } else { alert("Akses Ditolak."); keluar(true); }
             } else { window.location.href = 'login.html'; }
         });
@@ -362,7 +459,7 @@
 
         function muatDataHarian() {
             document.getElementById('loader').style.display = 'flex';
-            if(unsubscribeHarian) unsubscribeHarian(); // Hentikan memantau tanggal sebelumnya
+            if(unsubscribeHarian) unsubscribeHarian(); 
             
             unsubscribeHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), (docSnap) => {
                 if(docSnap.exists()) { harianData = docSnap.data(); } else { harianData = {}; }
@@ -390,7 +487,6 @@
             });
         }
 
-        // KETIKA TANGGAL KALENDER DIUBAH (REVISI DATA LAMA)
         document.getElementById('input-tanggal-admin').addEventListener('change', (e) => {
             documentIdHarian = e.target.value;
             muatDataHarian();
