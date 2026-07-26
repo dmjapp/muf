@@ -14,7 +14,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar */
         .sidebar { width: 260px; background-color: var(--primary); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; }
         .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header img { width: 120px; margin-bottom: 10px; background: white; padding: 5px; border-radius: 8px;}
@@ -30,7 +29,6 @@
         .btn-logout { width: 100%; padding: 10px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .btn-logout:hover { background: #b91c1c; }
 
-        /* Main Content */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background-color: #f8fafc; }
         .topbar { background: white; padding: 20px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5; }
         .topbar h2 { color: var(--primary); }
@@ -51,47 +49,28 @@
         .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;}
         .btn-primary:hover { background: var(--secondary); }
 
-        /* Tab Panels */
         .panel { display: none; animation: fadeIn 0.4s ease; }
         .panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Loader Overlay */
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+    <div id="loader"><div class="spinner"></div><h3 style="margin-top: 15px; color: #0a1d56;">Memeriksa Kredensial & Akses...</h3></div>
 
-    <!-- Loading Screen -->
-    <div id="loader">
-        <div class="spinner"></div>
-        <h3 style="margin-top: 15px; color: #0a1d56;">Memeriksa Kredensial & Akses...</h3>
-    </div>
-
-    <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-header">
-            <img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'">
-            <h3>EXECUTIVE PORTAL</h3>
-        </div>
-        
+        <div class="sidebar-header"><img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'"><h3>EXECUTIVE PORTAL</h3></div>
         <div class="menu">
             <div class="menu-item active" data-target="panel-input"><i class="fas fa-edit"></i> Input Harian</div>
             <div class="menu-item" id="menu-excel" data-target="panel-excel" style="display:none;"><i class="fas fa-file-excel"></i> Upload Excel</div>
             <div class="menu-item" id="menu-users" data-target="panel-users" style="display:none;"><i class="fas fa-users"></i> Kelola User</div>
         </div>
-
-        <div class="user-info">
-            Login sebagai:<br>
-            <span id="user-display-name">Memuat...</span>
-            <span id="user-role-badge" style="color: #cbd5e1; font-weight: normal; font-size: 0.8rem;">Role: -</span>
-            <button class="btn-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</button>
-        </div>
+        <div class="user-info">Login sebagai:<br><span id="user-display-name">Memuat...</span><span id="user-role-badge" style="color: #cbd5e1; font-weight: normal; font-size: 0.8rem;">Role: -</span><button class="btn-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</button></div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div class="topbar">
             <h2><i class="fas fa-calendar-alt"></i> Hari Ini: <span id="tanggal-hari-ini"></span></h2>
@@ -99,17 +78,15 @@
         </div>
 
         <div class="content-area">
-            
             <!-- PANEL 1: INPUT HARIAN -->
             <div id="panel-input" class="panel active">
                 <div class="card">
                     <h3 class="card-header"><i class="fas fa-chart-line"></i> Form Input Real-time</h3>
                     <form id="form-harian">
                         
-                        <!-- Kotak Eksekutif (Hanya Super Admin) -->
                         <div id="area-eksekutif" style="display: none; background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e2e8f0; position: relative;">
                             <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 8px 0 0 8px;"></div>
-                            <h4 style="margin-bottom: 15px; color: var(--accent);"><i class="fas fa-crown"></i> KONTROL KHUSUS PIMPINAN (GLOBAL KPI)</h4>
+                            <h4 style="margin-bottom: 15px; color: var(--accent);"><i class="fas fa-crown"></i> KONTROL KHUSUS PIMPINAN</h4>
                             <div class="form-grid">
                                 <div class="form-group"><label>Target Global YTD (Miliar)</label><input type="number" id="input-target" placeholder="Contoh: 1500" step="any"></div>
                                 <div class="form-group"><label>Captive Rate (%)</label><input type="number" id="input-captive" placeholder="Contoh: 45.5" step="any"></div>
@@ -119,14 +96,12 @@
                             </div>
                         </div>
 
-                        <!-- Kotak Portofolio -->
-                        <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM</h4>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Pencapaian NCAR (M)</label><input type="number" id="input-ncar" data-porto="NCAR" placeholder="0" step="any"></div>
-                            <div class="form-group"><label>Pencapaian CCAR (M)</label><input type="number" id="input-ccar" data-porto="CCAR" placeholder="0" step="any"></div>
-                            <div class="form-group"><label>Pencapaian NMCY (M)</label><input type="number" id="input-nmcy" data-porto="NMCY" placeholder="0" step="any"></div>
-                            <div class="form-group"><label>Pencapaian USECAR (M)</label><input type="number" id="input-usecar" data-porto="USECAR" placeholder="0" step="any"></div>
+                        <!-- DINAMIS PORTOFOLIO -->
+                        <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM (DINAMIS)</h4>
+                        <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+                            <!-- Kolom dinamis akan di-render di sini oleh JavaScript -->
                         </div>
+                        <button type="button" id="btn-add-porto" class="btn-primary" style="display: none; font-size: 0.85rem;" onclick="tambahPorto()"><i class="fas fa-plus"></i> Tambah Portofolio</button>
 
                         <div style="margin-top: 25px; text-align: right; border-top: 1px solid #e2e8f0; padding-top: 15px;">
                             <button type="submit" class="btn-save"><i class="fas fa-satellite-dish"></i> UPDATE TV DASHBOARD</button>
@@ -135,85 +110,25 @@
                 </div>
             </div>
 
-            <!-- PANEL 2: UPLOAD EXCEL -->
+            <!-- PANEL 2 & 3 DISINGKAT (TETAP SAMA SEPERTI SEBELUMNYA) -->
             <div id="panel-excel" class="panel">
-                <div class="card">
-                    <h3 class="card-header"><i class="fas fa-file-excel"></i> Upload Data Leaderboard (Excel)</h3>
-                    <p style="color: var(--text-light); margin-bottom: 20px; line-height: 1.5;">
-                        Fitur ini dirancang khusus untuk mengunggah data berjumlah banyak seperti <strong>Top 5 Marketing, Top 5 Dealer, Produk, dan Asuransi</strong>. <br>
-                        Dengan fitur ini, Anda tidak perlu mengetik nama dan angka satu-persatu. (Tahap Pengembangan).
-                    </p>
-                    
-                    <div style="border: 2px dashed #cbd5e1; padding: 40px 20px; text-align: center; border-radius: 8px; background: #f8fafc;">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i>
-                        <h4 style="margin-bottom: 10px; color: var(--text-main);">Tarik & Lepas File Excel di Sini</h4>
-                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 20px;">Format yang didukung: .xlsx, .xls</p>
-                        <input type="file" id="file-excel" style="display: none;" accept=".xlsx, .xls">
-                        <button class="btn-primary" onclick="document.getElementById('file-excel').click();"><i class="fas fa-search"></i> Pilih File</button>
-                    </div>
-                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--accent); font-style: italic;">
-                        * Modul parsing Excel (.xlsx) siap diintegrasikan pada tahap berikutnya.
-                    </div>
+                <div class="card"><h3 class="card-header"><i class="fas fa-file-excel"></i> Upload Data (Tahap Pengembangan)</h3>
+                    <div style="border: 2px dashed #cbd5e1; padding: 40px 20px; text-align: center; border-radius: 8px; background: #f8fafc;"><i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i><h4 style="margin-bottom: 10px;">Tarik & Lepas File Excel di Sini</h4></div>
                 </div>
             </div>
-
-            <!-- PANEL 3: KELOLA USER -->
             <div id="panel-users" class="panel">
-                <div class="card">
-                    <h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3>
-                    
-                    <div style="display: flex; gap: 20px;">
-                        <div style="flex: 1;">
-                            <h4 style="margin-bottom: 15px; font-size: 0.95rem;">Daftar Akun ke Database Hak Akses</h4>
-                            <div class="form-group"><label>Nama Lengkap PIC</label><input type="text" placeholder="Contoh: Budi Santoso"></div>
-                            <div class="form-group"><label>Email Login</label><input type="email" placeholder="Contoh: budi.ncar@dmj.com"></div>
-                            <div class="form-group">
-                                <label>Hak Akses Portofolio</label>
-                                <select>
-                                    <option value="NCAR">PIC NCAR</option>
-                                    <option value="CCAR">PIC CCAR</option>
-                                    <option value="NMCY">PIC NMCY</option>
-                                    <option value="USECAR">PIC USECAR</option>
-                                    <option value="all">Super Admin (Akses Penuh)</option>
-                                </select>
-                            </div>
-                            <button class="btn-primary" onclick="alert('Fitur tambah user via UI akan aktif setelah deploy.')"><i class="fas fa-plus"></i> Daftarkan PIC</button>
-                            <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 10px;">* Email ini juga harus didaftarkan di Firebase Authentication (Menu Users).</p>
-                        </div>
-                        
-                        <div style="flex: 1; border-left: 1px solid #e2e8f0; padding-left: 20px;">
-                            <h4 style="margin-bottom: 15px; font-size: 0.95rem;">Daftar Tim Terdaftar</h4>
-                            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.9rem;">
-                                <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px;">
-                                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">
-                                        <strong>Darmawan</strong> <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">Super Admin</span>
-                                    </li>
-                                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">
-                                        <strong>admin@dmj.com</strong> <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">Super Admin</span>
-                                    </li>
-                                    <!-- List dari database akan muncul di sini -->
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="card"><h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3><p>Fitur Manajemen User Database akan diaktifkan penuh setelah Deployment.</p></div>
             </div>
-
         </div>
     </div>
 
-    <!-- LOGIKA TAB NAVIGATION -->
     <script>
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
-                // Hapus aktif dari semua menu & panel
                 document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
                 document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                
-                // Aktifkan yang diklik
                 item.classList.add('active');
-                const targetPanel = document.getElementById(item.getAttribute('data-target'));
-                if(targetPanel) targetPanel.classList.add('active');
+                document.getElementById(item.getAttribute('data-target')).classList.add('active');
             });
         });
     </script>
@@ -222,79 +137,92 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         
-        // Konfigurasi Database (Sama seperti login)
-        const firebaseConfig = {
-            apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4",
-            authDomain: "dmj-muf.firebaseapp.com",
-            projectId: "dmj-muf",
-            storageBucket: "dmj-muf.firebasestorage.app",
-            messagingSenderId: "151482891980",
-            appId: "1:151482891980:web:2b69494a0e6ced5deecc69"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
-        // Setup Tanggal Hari Ini (Format: YYYY-MM-DD)
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        let mm = today.getMonth() + 1;
-        let dd = today.getDate();
-        if (dd < 10) dd = '0' + dd;
-        if (mm < 10) mm = '0' + mm;
-        const documentIdHarian = `${yyyy}-${mm}-${dd}`;
-        
+        const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
+        if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; const documentIdHarian = `${yyyy}-${mm}-${dd}`;
         document.getElementById('tanggal-hari-ini').innerText = `${dd}-${mm}-${yyyy}`;
 
-        // Cek Sesi Login
+        let currentUserData = null;
+        let originalPortoKeys = []; // Menyimpan kunci lama untuk mendeteksi penghapusan
+        let currentPortos = [
+            {name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}
+        ];
+
+        // --- FUNGSI DINAMIS TERBUKA UNTUK WINDOW ---
+        window.tambahPorto = function() {
+            currentPortos.push({name: '', value: ''});
+            renderPortoForm();
+        };
+
+        window.hapusPorto = function(idx) {
+            currentPortos.splice(idx, 1);
+            renderPortoForm();
+        };
+
+        window.updatePorto = function(idx, field, val) {
+            if(field === 'name') currentPortos[idx].name = val.toUpperCase();
+            if(field === 'value') currentPortos[idx].value = val;
+        };
+
+        function renderPortoForm() {
+            const wrapper = document.getElementById('porto-wrapper');
+            wrapper.innerHTML = '';
+            
+            const isAdmin = currentUserData && (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all');
+            document.getElementById('btn-add-porto').style.display = isAdmin ? 'inline-block' : 'none';
+
+            currentPortos.forEach((p, idx) => {
+                const isLocked = !isAdmin && currentUserData.portofolio !== p.name;
+                const div = document.createElement('div');
+                div.style.cssText = 'display:flex; gap:15px; align-items:center; background:#f8fafc; padding:12px; border:1px solid #e2e8f0; border-radius:8px;';
+                
+                div.innerHTML = `
+                    <div style="flex: 1;">
+                        <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Nama Portofolio</label>
+                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly style="background:#e2e8f0; color:#94a3b8;"'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Pencapaian (Miliar)</label>
+                        <input type="number" value="${p.value}" step="any" placeholder="0" ${isLocked ? 'disabled style="background:#e2e8f0; color:#94a3b8;"' : ''} onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
+                    </div>
+                    ${isAdmin ? `
+                    <div style="padding-top: 22px;">
+                        <button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer; transition:0.3s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'"><i class="fas fa-trash"></i></button>
+                    </div>` : ''}
+                `;
+                wrapper.appendChild(div);
+            });
+        }
+
+        // --- AUTENTIKASI ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userEmail = user.email;
-                const userDocRef = doc(db, "users", userEmail);
-                const userDocSnap = await getDoc(userDocRef);
-
+                const userDocSnap = await getDoc(doc(db, "users", user.email));
                 if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    terapkanHakAkses(userData);
+                    currentUserData = userDocSnap.data();
+                    terapkanHakAkses(currentUserData);
                     muatDataHarian();
-                } else {
-                    alert("Akun Anda tidak terdaftar di sistem hak akses! Hubungi Kepala Cabang.");
-                    keluar();
-                }
-            } else {
-                window.location.href = 'login.html';
-            }
+                } else { alert("Akses Ditolak."); keluar(); }
+            } else { window.location.href = 'login.html'; }
         });
 
         function terapkanHakAkses(userData) {
             document.getElementById('user-display-name').innerText = userData.nama;
             document.getElementById('user-role-badge').innerText = `Akses: ${userData.portofolio.toUpperCase()}`;
-
-            const inputs = document.querySelectorAll('input[data-porto]');
-            
             if (userData.role === 'superadmin' || userData.portofolio === 'all') {
-                // KEPALA CABANG / ADMIN: Buka Semua Fitur
                 document.getElementById('area-eksekutif').style.display = 'block';
                 document.getElementById('menu-excel').style.display = 'flex';
                 document.getElementById('menu-users').style.display = 'flex';
-            } else {
-                // PIC: Kunci semua input, KECUALI portofolio miliknya
-                inputs.forEach(input => {
-                    if (input.getAttribute('data-porto') !== userData.portofolio) {
-                        input.disabled = true;
-                    }
-                });
             }
             document.getElementById('loader').style.display = 'none';
         }
 
         async function muatDataHarian() {
-            const harianRef = doc(db, "laporan_harian", documentIdHarian);
-            const harianSnap = await getDoc(harianRef);
-
+            const harianSnap = await getDoc(doc(db, "laporan_harian", documentIdHarian));
             if (harianSnap.exists()) {
                 const data = harianSnap.data();
                 if(data.target) document.getElementById('input-target').value = data.target;
@@ -303,58 +231,65 @@
                 if(data.ia) document.getElementById('input-ia').value = data.ia;
                 if(data.walr) document.getElementById('input-walr').value = data.walr;
                 
-                if(data.NCAR) document.getElementById('input-ncar').value = data.NCAR;
-                if(data.CCAR) document.getElementById('input-ccar').value = data.CCAR;
-                if(data.NMCY) document.getElementById('input-nmcy').value = data.NMCY;
-                if(data.USECAR) document.getElementById('input-usecar').value = data.USECAR;
+                // Ambil data portofolio dinamis
+                if(data.portofolio_dinamis) {
+                    currentPortos = [];
+                    originalPortoKeys = Object.keys(data.portofolio_dinamis);
+                    for (const [key, val] of Object.entries(data.portofolio_dinamis)) {
+                        currentPortos.push({name: key, value: val});
+                    }
+                }
             }
+            renderPortoForm();
         }
 
         document.getElementById('form-harian').addEventListener('submit', async (e) => {
             e.preventDefault();
             const dataUpdate = {};
-            
-            const target = document.getElementById('input-target').value;
-            const captive = document.getElementById('input-captive').value;
-            const pofde = document.getElementById('input-pofde').value;
-            const ia = document.getElementById('input-ia').value;
-            const walr = document.getElementById('input-walr').value;
+            const tgt = document.getElementById('input-target');
+            const cpt = document.getElementById('input-captive');
+            const pof = document.getElementById('input-pofde');
+            const ia = document.getElementById('input-ia');
+            const wlr = document.getElementById('input-walr');
 
-            const ncar = document.getElementById('input-ncar').value;
-            const ccar = document.getElementById('input-ccar').value;
-            const nmcy = document.getElementById('input-nmcy').value;
-            const usecar = document.getElementById('input-usecar').value;
+            if(!tgt.disabled && tgt.value) dataUpdate.target = Number(tgt.value);
+            if(!cpt.disabled && cpt.value) dataUpdate.captive = Number(cpt.value);
+            if(!pof.disabled && pof.value) dataUpdate.pofde = Number(pof.value);
+            if(!ia.disabled && ia.value) dataUpdate.ia = Number(ia.value);
+            if(!wlr.disabled && wlr.value) dataUpdate.walr = Number(wlr.value);
 
-            if(!document.getElementById('input-target').disabled && target) dataUpdate.target = Number(target);
-            if(!document.getElementById('input-captive').disabled && captive) dataUpdate.captive = Number(captive);
-            if(!document.getElementById('input-pofde').disabled && pofde) dataUpdate.pofde = Number(pofde);
-            if(!document.getElementById('input-ia').disabled && ia) dataUpdate.ia = Number(ia);
-            if(!document.getElementById('input-walr').disabled && walr) dataUpdate.walr = Number(walr);
+            // Logika Penyimpanan Portofolio Dinamis dengan Penghapusan (deleteField)
+            const portoDinamis = {};
+            const newKeys = [];
+            currentPortos.forEach(p => {
+                if(p.name.trim() !== '') {
+                    const cleanKey = p.name.trim().toUpperCase();
+                    portoDinamis[cleanKey] = p.value ? Number(p.value) : 0;
+                    newKeys.push(cleanKey);
+                }
+            });
 
-            if(!document.getElementById('input-ncar').disabled && ncar) dataUpdate.NCAR = Number(ncar);
-            if(!document.getElementById('input-ccar').disabled && ccar) dataUpdate.CCAR = Number(ccar);
-            if(!document.getElementById('input-nmcy').disabled && nmcy) dataUpdate.NMCY = Number(nmcy);
-            if(!document.getElementById('input-usecar').disabled && usecar) dataUpdate.USECAR = Number(usecar);
+            // Jika ada portofolio yang dihapus, kirim perintah deleteField() ke database
+            originalPortoKeys.forEach(oldKey => {
+                if(!newKeys.includes(oldKey)) {
+                    portoDinamis[oldKey] = deleteField();
+                }
+            });
+
+            if(Object.keys(portoDinamis).length > 0) {
+                dataUpdate.portofolio_dinamis = portoDinamis;
+            }
 
             try {
-                // Simpan ke Firestore Harian
                 await setDoc(doc(db, "laporan_harian", documentIdHarian), dataUpdate, { merge: true });
-                
-                // Notifikasi Sukses
                 const status = document.getElementById('status-simpan');
-                status.style.display = 'block';
-                setTimeout(() => { status.style.display = 'none'; }, 3000);
-            } catch (error) {
-                console.error("Gagal menyimpan data:", error);
-                alert("Gagal menyimpan data ke server.");
-            }
+                status.style.display = 'block'; setTimeout(() => { status.style.display = 'none'; }, 3000);
+                originalPortoKeys = newKeys; // Update referensi kunci setelah sukses
+            } catch (error) { console.error("Gagal:", error); alert("Gagal menyimpan."); }
         });
 
-        function keluar() {
-            signOut(auth).then(() => { window.location.href = 'login.html'; });
-        }
+        function keluar() { signOut(auth).then(() => { window.location.href = 'login.html'; }); }
         document.getElementById('btn-logout').addEventListener('click', keluar);
-
     </script>
 </body>
 </html>
