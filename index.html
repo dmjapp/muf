@@ -167,13 +167,12 @@
             </div>
             
             <div class="porto-legend-box">
-                <!-- UPDATE: Teks Filter & Wadah Scroll -->
                 <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 8px; text-transform: uppercase;">Filter Portofolio:</div>
                 <div id="porto-legend-container" style="display: flex; flex-direction: column; overflow-y: visible; max-height: none;"></div>
             </div>
             
             <div class="porto-detail-box">
-                <!-- UPDATE: Wadah untuk Animasi MVP Portofolio -->
+                <!-- Wadah untuk Animasi MVP Portofolio -->
                 <div id="top-performer-box"></div>
                 
                 <div id="dynamic-leaderboards">
@@ -495,7 +494,6 @@
                 box.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; font-weight: 800; font-size: 0.8rem; color: var(--c-primary); border-bottom: 2px solid var(--c-primary); margin-bottom: 10px; padding-bottom: 4px;">
                         <span><i class="${iconClass} c-accent" style="margin-right: 5px;"></i> ${kat}</span>
-                        <!-- UPDATE: Teks Target diubah menjadi Pencapaian -->
                         <span style="font-size: 0.7rem; background: var(--c-primary); color: white; padding: 2px 6px; border-radius: 4px;">Pencapaian: ${window.toM(targetPortoUtama)}</span>
                     </div>
                     <div>${listHTML || '<div style="font-size:0.75rem; color:var(--text-muted); text-align:center; font-style:italic;">Data kosong</div>'}</div>
@@ -551,14 +549,14 @@
             window.gambarKotakLeaderboard(portoName);
         };
         
-        // UPDATE: Logika untuk Kartu Animasi MVP
+        // Logika untuk Kartu Animasi MVP
         let topPerformerHTML = '';
         if (portoData.length > 0 && portoData[0].val > 0) {
             let topP = portoData[0];
             topPerformerHTML = `
                 <div style="background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid #334155; border-radius: var(--radius); padding: 12px 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); color: white;">
-                    <div style="width: 55px; height: 55px; border-radius: 50%; background: #000; overflow: hidden; flex-shrink: 0; display: flex; justify-content: center; align-items: center; border: 2px solid var(--c-accent); box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);">
-                        <img src="1000588273.gif" alt="Dancing Robot" style="width: 140%; height: auto; mix-blend-mode: screen; transform: translateY(-5px);">
+                    <div style="width: 65px; height: 65px; border-radius: 12px; background: #000; flex-shrink: 0; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(245, 158, 11, 0.5); box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);">
+                        <img src="1000588273.gif" alt="Dancing Robot" style="width: 100%; height: 100%; object-fit: contain; mix-blend-mode: screen;">
                     </div>
                     <div style="flex-grow: 1;">
                         <div style="font-size: 0.7rem; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;"><i class="fas fa-crown" style="color: #fbbf24;"></i> MVP Portofolio</div>
@@ -569,7 +567,6 @@
             `;
         }
         document.getElementById('top-performer-box').innerHTML = topPerformerHTML;
-        // --- Akhir Logika MVP ---
 
         window.gambarKotakLeaderboard('ALL');
 
