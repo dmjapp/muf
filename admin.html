@@ -80,7 +80,7 @@
         <div class="sidebar-header">
             <img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'">
             <h3>EXECUTIVE PORTAL</h3>
-            <div style="font-size: 0.7rem; color: #94a3b8; margin-top: -4px; margin-bottom: 6px; letter-spacing: 0.5px;">v2.2 &middot; carry-over</div>
+            <div style="font-size: 0.7rem; color: #94a3b8; margin-top: -4px; margin-bottom: 6px; letter-spacing: 0.5px;">v2.3 &middot; carry-over</div>
             <div class="user-info">
                 <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 3px;">Login sebagai:</div>
                 <span id="user-display-name">Memuat...</span>
@@ -466,17 +466,33 @@
             }
         }
 
-        // === CARRY-OVER ADMIN: ambil dokumen tanggal terakhir sebelum tanggal aktif ===
+        // === CARRY-OVER ADMIN: telusuri mundur maksimal 14 hari, pakai getDoc langsung ===
         let cachePrev = { tanggal: null, data: null };
+        let pesanCarryOver = '';
 
         async function ambilDataSebelumnya(tanggal) {
             if (cachePrev.tanggal === tanggal) return cachePrev.data;
             let hasil = null;
+            pesanCarryOver = '';
             try {
-                const q = query(collection(db, "laporan_harian"), where("__name__", "<", tanggal), orderBy("__name__", "desc"), limit(1));
-                const snap = await getDocs(q);
-                if (!snap.empty) hasil = { id: snap.docs[0].id, data: snap.docs[0].data() };
-            } catch (err) { console.warn("Carry-over admin gagal:", err); }
+                const d = new Date(tanggal + 'T00:00:00');
+                for (let i = 0; i < 14; i++) {
+                    d.setDate(d.getDate() - 1);
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const idCari = `${y}-${m}-${day}`;
+                    const snap = await getDoc(doc(db, "laporan_harian", idCari));
+                    if (snap.exists()) {
+                        const isi = snap.data();
+                        const jml = Object.keys(isi.portofolio_dinamis || {}).length;
+                        if (jml > 0) { hasil = { id: idCari, data: isi, jumlah: jml }; break; }
+                    }
+                }
+                if (!hasil) pesanCarryOver = 'Tidak ada dokumen berisi portofolio dalam 14 hari terakhir.';
+            } catch (err) {
+                pesanCarryOver = 'Gagal membaca data sebelumnya: ' + err.message;
+            }
             cachePrev = { tanggal: tanggal, data: hasil };
             return hasil;
         }
@@ -527,17 +543,16 @@
                 currentLeaderboards = JSON.parse(JSON.stringify(lbPrev));
                 for (const kat in lbHariIni) currentLeaderboards[kat] = lbHariIni[kat];
 
-                // Banner pemberitahuan: tampil bila ada data yang benar-benar diwarisi
+                // Banner status carry-over: selalu tampil supaya kondisinya terbaca
                 const banner = document.getElementById('alert-carryover-admin');
-                const adaNamaDiwarisi = Object.keys(portoPrev).some(nama => !Object.keys(portoHariIni).includes(nama));
-                const adaNilaiDiwarisi = semuaNama.some(nama => Number(portoHariIni[nama] || 0) === 0 && Number(portoPrev[nama] || 0) > 0);
-                console.log('[carry-over] tanggal aktif:', documentIdHarian, '| sumber:', prev ? prev.id : 'tidak ada', '| porto hari ini:', Object.keys(portoHariIni).length, '| porto sumber:', Object.keys(portoPrev).length, '| total tampil:', semuaNama.length);
-                if (adaWarisan && (adaNamaDiwarisi || adaNilaiDiwarisi)) {
-                    banner.innerHTML = `<i class="fas fa-info-circle"></i> Sebagian form diisi otomatis dari data tanggal <strong>${prev.id}</strong>. Perbarui angka yang berubah, lalu tekan Update Dashboard.`;
-                    banner.style.display = 'block';
+                if (adaWarisan) {
+                    banner.style.background = '#fef08a'; banner.style.color = '#854d0e';
+                    banner.innerHTML = `<i class="fas fa-info-circle"></i> Sumber warisan: <strong>${prev.id}</strong> (${prev.jumlah} portofolio). Total tampil sekarang: <strong>${semuaNama.length}</strong>. Perbarui angka yang berubah, lalu tekan Update Dashboard.`;
                 } else {
-                    banner.style.display = 'none';
+                    banner.style.background = '#fee2e2'; banner.style.color = '#991b1b';
+                    banner.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Carry-over tidak aktif. ${pesanCarryOver || 'Penyebab tidak diketahui.'}`;
                 }
+                banner.style.display = 'block';
 
                 renderPortoForm();
                 renderLeaderboards();
