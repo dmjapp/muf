@@ -3,716 +3,632 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Summary YTD - DMJ</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Panel Admin - DMJ Executive Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --bg-body: #f3f4f6; --bg-panel: #ffffff; --text-main: #334155; --text-muted: #64748b; --c-primary: #0a1d56; --text-on-primary: #ffffff; --c-accent: #f59e0b; --text-on-accent: #0a1d56; --radius: 8px; --border-color: #cbd5e1; --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); --font-angka: Arial, Helvetica, sans-serif; }
-        body[data-theme="akselerasi"] { --bg-body: #e5e7eb; --bg-panel: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --c-primary: #dc2626; --text-on-primary: #ffffff; --c-accent: #111827; --text-on-accent: #ffffff; --radius: 4px; --border-color: #cbd5e1; --panel-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.8); --header-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
-        body[data-theme="gamifikasi"] { --bg-body: #ccfbf1; --bg-panel: rgba(255, 255, 255, 0.45); --text-main: #134e4a; --text-muted: #0f766e; --c-primary: #047857; --text-on-primary: #ffffff; --c-accent: #0ea5e9; --text-on-accent: #ffffff; --radius: 20px; --border-color: rgba(255, 255, 255, 0.6); --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
-        body[data-theme="formula1"] { --bg-body: #b0c4de; --bg-panel: #ffffff; --text-main: #171717; --text-muted: #52525b; --c-primary: #ef4444; --text-on-primary: #ffffff; --c-accent: #10b981; --text-on-accent: #0a0a0a; --radius: 2px; --border-color: #94a3b8; --panel-shadow: 0 0 10px rgba(0,0,0,0.15); --font-angka: 'Courier New', Courier, monospace; }
-        
-        /* TEMA KAPAL LAUT (NAUTICAL) */
-        body[data-theme="kapal"] { --bg-body: #e0f2fe; --bg-panel: rgba(255, 255, 255, 0.95); --text-main: #0f172a; --text-muted: #0369a1; --c-primary: #0284c7; --text-on-primary: #ffffff; --c-accent: #fbbf24; --text-on-accent: #0f172a; --radius: 12px; --border-color: #7dd3fc; --panel-shadow: 0 10px 25px rgba(2, 132, 199, 0.15); --font-angka: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #0a1d56; --secondary: #1e3a8a; --accent: #f59e0b; --bg-body: #f1f5f9; --text-main: #334155; --text-light: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; min-height: 100vh; background-color: var(--bg-body); color: var(--text-main); font-family: Arial, Helvetica, sans-serif; overflow-x: hidden; transition: all 0.4s ease; }
+        .sidebar { width: 280px; background-color: var(--primary); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; flex-shrink: 0;}
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header img { width: 120px; margin-bottom: 10px; background: white; padding: 5px; border-radius: 8px;}
+        .sidebar-header h3 { font-size: 1.1rem; color: var(--accent); }
+
+        .user-info { margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.2); font-size: 0.9rem; text-align: center; }
+        .user-info span { display: block; color: var(--accent); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;}
+        .btn-logout { width: 100%; padding: 8px; margin-top: 10px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .btn-logout:hover { background: #b91c1c; }
+
+        .menu { flex: 1; padding: 10px 0; overflow-y: auto; }
+        .menu-item { padding: 15px 25px; display: flex; align-items: center; gap: 15px; color: #cbd5e1; text-decoration: none; transition: all 0.3s; cursor: pointer; border-left: 4px solid transparent;}
+        .menu-item:hover, .menu-item.active { background-color: var(--secondary); color: white; border-left: 4px solid var(--accent); }
         
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0a1d56; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; color: white; }
-        #splash-screen img { width: 180px; margin-bottom: 20px; animation: pulse 1.5s infinite; }
-        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #f59e0b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-top: 15px; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background-color: #f8fafc; }
+        .topbar { background: white; padding: 20px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5; }
+        .topbar h2 { color: var(--primary); font-size: 1.2rem; display: flex; align-items: center; gap: 10px;}
+        
+        /* Kalender Admin */
+        #input-tanggal-admin { border: 2px solid var(--primary); background: #f8fafc; color: var(--primary); font-size: 1.1rem; font-weight: bold; padding: 5px 10px; border-radius: 6px; outline: none; cursor: pointer;}
+        #input-tanggal-admin:focus { border-color: var(--accent); }
+
+        .content-area { padding: 30px; }
+        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; color: var(--primary); font-size: 1.2rem; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-light); font-size: 0.9rem; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 1rem; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+        .form-group input:disabled, .form-group input[readonly] { background-color: #e2e8f0; cursor: not-allowed; color: #94a3b8; }
+
+        .btn-save { background: #10b981; color: white; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%;}
+        .btn-save:hover { background: #059669; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;}
+        .btn-primary:hover { background: var(--secondary); }
+
+        .panel { display: none; animation: fadeIn 0.4s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes moveWaves { 0% { background-position: 0 0; } 100% { background-position: 42px 0; } }
 
-        .poster { width: 100%; min-height: 100vh; padding: 10px 15px 60px 15px; display: flex; flex-direction: column; gap: 10px; }
-        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45vw; min-width: 350px; opacity: 0.03; pointer-events: none; z-index: 40; }
+        /* KELAS CSS UNTUK INDIKATOR SELISIH */
+        .info-box { padding: 12px 15px; border-radius: 6px; margin-top: 15px; font-weight: bold; font-size: 0.9rem; transition: all 0.3s ease; }
+        .status-idle { background: #f3f4f6; color: #64748b; border: 1px solid #e2e8f0; }
+        .status-warning { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+        .status-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+        .status-success { background: #d1fae5; color: #059669; border: 1px solid #6ee7b7; }
 
-        .sticky-header { position: sticky; top: 0; background-color: var(--bg-panel); z-index: 50; margin: -10px -15px 10px -15px; padding: 10px 15px 0 15px; box-shadow: var(--header-shadow); border-bottom: 1px solid var(--border-color);}
-        .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.1); }
-
-        .c-primary { color: var(--c-primary); } .bg-primary { background-color: var(--c-primary); color: var(--text-on-primary); }
-        .c-accent { color: var(--c-accent); } .bg-accent { background-color: var(--c-accent); color: var(--text-on-accent); }
-        .bg-panel { background-color: var(--bg-panel); box-shadow: var(--panel-shadow); }
-        .border-primary { border: 2px solid var(--c-primary); } .border-bottom-primary { border-bottom: 3px solid var(--c-primary); padding-bottom: 10px; margin-bottom: 5px; }
-        .rounded { border-radius: var(--radius); } .rounded-full { border-radius: 50%; }
-        .flex { display: flex; } .flex-col { display: flex; flex-direction: column; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .gap-1 { gap: 5px; } .gap-2 { gap: 10px; } .text-center { text-align: center; } .font-bold { font-weight: bold; } 
-        
-        .font-extrabold { font-weight: 800; font-family: var(--font-angka); }
-        h3[id^="val-"] { font-family: var(--font-angka); }
-        body[data-theme="formula1"] h3[id^="val-"], body[data-theme="formula1"] #val-rata-harian, body[data-theme="formula1"] #f1-val-badge { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); letter-spacing: -1px; }
-
-        .text-xxs { font-size: 0.75rem; } .text-xs { font-size: 0.9rem; } .text-sm { font-size: 1.1rem; } .text-md { font-size: 1.3rem; } .text-lg { font-size: 1.6rem; } .text-xl { font-size: 2rem; }
-        
-        .grid-7 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 2px solid var(--c-primary); border-bottom: 1px solid var(--border-color); gap: 5px; padding: 10px 0;}
-        .grid-trend { display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: 15px; }
-        
-        .stat-box { padding: 10px; border-right: 1px solid var(--border-color); } .stat-box:last-child { border-right: none; }
-        .top-bar { background-color: var(--bg-body); padding: 8px 15px; border-radius: var(--radius); margin-bottom: 10px; border: 1px solid var(--border-color); }
-
-        .badge-num { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 6px; flex-shrink: 0;}
-        .b-1 { background-color: #f59e0b; } .b-2 { background-color: #9ca3af; } .b-3 { background-color: #f97316; } .b-other { background-color: #2563eb; }
-        body[data-theme="formula1"] .b-1, body[data-theme="formula1"] .b-2, body[data-theme="formula1"] .b-3, body[data-theme="formula1"] .b-other { border-radius: 2px; }
-
-        .porto-legend-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; }
-        .porto-legend-item:hover { background-color: rgba(100, 116, 139, 0.1); border-color: var(--border-color); transform: translateX(5px); }
-        .porto-legend-item.active { background-color: var(--c-primary); color: var(--text-on-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .porto-legend-item.active .color-dot { border: 2px solid white; }
-        .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
-
-        .porto-layout { display: flex; align-items: stretch; padding: 15px; min-height: 250px; }
-        .porto-chart-box { width: 35%; position: relative; border-right: 1px dashed var(--border-color); padding-right: 15px; }
-        .porto-legend-box { width: 25%; padding: 0 15px; display: flex; flex-direction: column; justify-content: center; border-right: 1px dashed var(--border-color); }
-        .porto-detail-box { width: 40%; padding-left: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; overflow-y: auto; max-height: 400px; }
-
-        .insight-panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-top: 5px; z-index: 10; }
-        .insight-title { font-weight: 800; color: var(--c-primary); font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
-        .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-main); }
-        .insight-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; font-weight: bold; }
-        
-        .theme-select { padding: 6px 12px; border-radius: 6px; border: 2px solid var(--c-primary); font-weight: 800; font-size: 0.8rem; background-color: var(--bg-panel); color: var(--c-primary); cursor: pointer; outline: none; transition: all 0.3s;}
-        .theme-select:hover { background-color: var(--c-primary); color: var(--text-on-primary); }
-        .logo-box { background-color: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; }
-        .f1-led { width: 14px; height: 28px; border-radius: 2px; background-color: #333; transition: all 0.5s ease; border: 1px solid #000; }
-
-        #alert-carryover { display: none; background-color: #fef08a; color: #854d0e; text-align: center; padding: 6px 15px; font-size: 0.85rem; font-weight: bold; width: 100%; border-bottom: 1px solid #fde047;}
-
-        @media (max-width: 1024px) { .grid-trend { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 768px) { 
-            .grid-trend { grid-template-columns: 1fr; } 
-            .border-bottom-primary { flex-direction: column; gap: 15px; text-align: center; } 
-            .border-bottom-primary > div { width: 100% !important; justify-content: center !important; } 
-            .porto-layout { flex-direction: column; height: auto; padding: 10px; }
-            .porto-chart-box, .porto-legend-box, .porto-detail-box { width: 100%; padding: 10px 0; border-right: none; }
-            .porto-chart-box { height: 220px; border-bottom: 1px dashed var(--border-color); }
-            .porto-legend-box { border-bottom: 1px dashed var(--border-color); padding-bottom: 15px; }
-            .porto-detail-box { max-height: 400px; padding-left: 0; padding-top: 15px; }
-            .stat-box { border-right: none; border-bottom: 1px solid var(--border-color); }
-            .stat-box:last-child { border-bottom: none; }
+        @media (max-width: 768px) {
+            body { display: block; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; border-bottom: 2px solid var(--accent); }
+            .menu { display: flex; overflow-x: auto; white-space: nowrap; background-color: var(--secondary); }
+            .menu-item { border-bottom: 3px solid transparent; }
+            .topbar { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .content-area, .card { padding: 15px; }
         }
     </style>
 </head>
-<body data-theme="klasik">
+<body>
+    <div id="loader"><div class="spinner"></div><h3 style="margin-top: 15px; color: #0a1d56;">Memeriksa Akses...</h3></div>
 
-    <div id="alert-carryover"></div>
-    <div id="splash-screen"><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><div class="spinner"></div><h2 style="font-size: 16px; font-weight: bold; margin-top: 10px; color: #f59e0b;">DMJ EXECUTIVE SUMMARY</h2></div>
-
-<div class="poster">
-    <img src="logo.png" class="watermark" alt="Watermark" onerror="this.style.display='none'">
-
-    <div class="sticky-header">
-        <div class="flex justify-between items-center top-bar">
-            <div class="flex items-center gap-2 c-primary font-bold text-xs"><i class="far fa-clock text-lg"></i><span id="realtime-clock">Memuat Jam...</span></div>
-            <div>
-                <input type="date" id="tv-date-picker" class="theme-select" style="margin-right: 10px;" title="Pilih Tanggal Dashboard">
-                <select id="theme-selector" class="theme-select">
-                    <option value="klasik">🎨 KLASIK (Corporate)</option>
-                    <option value="akselerasi">🏎️ SILVERSTONE (Sporty)</option>
-                    <option value="gamifikasi">🚀 MATTE MINT (Glass/Blur)</option>
-                    <option value="formula1">🏁 FORMULA 1 (Digital)</option>
-                    <option value="kapal">⚓ KAPAL (Nautical)</option>
-                </select>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'">
+            <h3>EXECUTIVE PORTAL</h3>
+            <div style="font-size: 0.7rem; color: #94a3b8; margin-top: -4px; margin-bottom: 6px; letter-spacing: 0.5px;">v2.2 &middot; carry-over</div>
+            <div class="user-info">
+                <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 3px;">Login sebagai:</div>
+                <span id="user-display-name">Memuat...</span>
+                <div id="user-role-badge" style="color: #cbd5e1; font-weight: normal; font-size: 0.8rem; margin-bottom: 10px;">Role: -</div>
+                <button class="btn-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</button>
             </div>
         </div>
-
-        <div class="flex justify-between items-center border-bottom-primary">
-            <div style="width: 25%;"><div class="logo-box"><img src="logo.png" alt="Logo" style="max-height: 55px; width: auto; display: block;" onerror="this.src='https://via.placeholder.com/150x60?text=LOGO'"></div></div>
-            <div style="width: 50%;" class="text-center">
-                <h2 class="text-xs font-bold c-primary" style="margin-bottom: 2px;">EXECUTIVE SUMMARY</h2>
-                <h1 class="font-extrabold c-primary text-xl" style="line-height: 1.1; letter-spacing: 0.5px;">PERFORMANCE BOOKING</h1>
-                <h3 class="text-sm font-bold c-primary" style="margin-bottom: 5px;">CABANG BANDA ACEH</h3>
-                <div class="bg-accent font-extrabold rounded" style="display: inline-block; padding: 4px 15px; font-size: 0.85rem;">
-                    <i class="far fa-calendar-alt"></i> <span id="val-periode">-</span>
-                </div>
-            </div>
-            <div style="width: 25%; display: flex; justify-content: flex-end;">
-                <div class="bg-primary flex items-center gap-2 rounded" style="padding: 10px 15px; box-shadow: var(--panel-shadow);">
-                    <i class="fas fa-bullseye text-xl"></i>
-                    <div style="line-height: 1.2;"><div class="font-bold text-xs">TARGET BERSAMA</div><div style="font-size: 0.75rem; font-weight: normal; color: var(--text-on-primary);">GROWTH BERKUALITAS<br>PROFIT MAKSIMAL</div></div>
-                </div>
-            </div>
+        <div class="menu">
+            <div class="menu-item active" data-target="panel-input"><i class="fas fa-edit"></i> Input Harian</div>
+            <!-- MENU KELOLA DASHBOARD DIKEMBALIKAN DI SINI -->
+            <div class="menu-item" id="menu-leaderboard" data-target="panel-leaderboard"><i class="fas fa-trophy"></i> Kelola Dashboard</div>
+            <div class="menu-item" id="menu-log" data-target="panel-log" style="display:none;"><i class="fas fa-history"></i> Log Aktivitas</div>
+            <div class="menu-item" id="menu-users" data-target="panel-users" style="display:none;"><i class="fas fa-users"></i> Kelola User</div>
+            <div class="menu-item" data-target="panel-profil"><i class="fas fa-user-shield"></i> Keamanan Akun</div>
         </div>
     </div>
 
-    <div>
-        <div class="bg-primary font-bold text-xs text-center rounded" style="display: inline-block; padding: 4px 15px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">OVERVIEW CABANG</div>
-        <div class="grid-7 bg-panel rounded" style="border-top-left-radius: 0; border: 1px solid var(--border-color);">
-            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> BOOKING YTD</div><h3 id="val-booking-amount" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-bullseye" style="color:#f97316;"></i> TARGET YTD</div><h3 id="val-target-atas" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-chart-line" style="color:#10b981;"></i> ACHIEV YTD</div><h3 id="val-achievement" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-users" style="color:#a855f7;"></i> CAPTIVE RATE</div><h3 id="val-captive" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-handshake" style="color:#60a5fa;"></i> PO + FDE</div><h3 id="val-pofde" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-file-invoice" style="color:#fb923c;"></i> IA</div><h3 id="val-ia" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,000 M</h3></div>
-            <div class="text-center stat-box"><div class="text-xxs font-bold" style="color: var(--text-muted);"><i class="fas fa-percent" style="color:#2563eb;"></i> WALR</div><h3 id="val-walr" class="text-lg font-extrabold c-primary" style="margin: 5px 0;">0,00%</h3></div>
+    <div class="main-content">
+        <div class="topbar">
+            <h2><i class="fas fa-calendar-alt"></i> Data Tanggal: <input type="date" id="input-tanggal-admin"></h2>
+            <div id="status-simpan" style="color: #10b981; font-weight: bold; display: none;"><i class="fas fa-check-circle"></i> Tersimpan ke TV!</div>
         </div>
-    </div>
 
-    <!-- AREA DISTRIBUSI & LEADERBOARD LENGKAP BERDERET -->
-    <div class="border-primary rounded flex-col bg-panel" style="margin-bottom: 15px;">
-        <div class="bg-primary text-center font-bold text-sm rounded" style="padding: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">DATA DISTRIBUSI & RINCIAN PORTOFOLIO (KLIK UNTUK FILTER)</div>
-        
-        <div class="porto-layout">
-            <div class="porto-chart-box" id="porto-canvas-wrapper">
-                <canvas id="portoChart"></canvas>
-                <div id="porto-center-text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
-                    <span style="font-size: 0.65rem; font-weight: bold; color: var(--text-muted);">TOTAL ALL PORTO</span>
-                    <span id="val-booking-donut" class="font-extrabold c-primary text-sm">0,000 M</span>
-                </div>
-            </div>
-            
-            <div class="porto-legend-box">
-                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 8px; text-transform: uppercase;">Legend / Filter Portofolio:</div>
-                <div id="porto-legend-container" style="display: flex; flex-direction: column; overflow-y: auto; max-height: 220px;"></div>
-            </div>
-            
-            <div id="dynamic-leaderboards" class="porto-detail-box">
-                <!-- Leaderboards Berderet Keseluruhan -->
-            </div>
-        </div>
-    </div>
+        <div id="alert-carryover-admin" style="display:none; background:#fef08a; color:#854d0e; padding:10px 15px; font-size:0.8rem; font-weight:bold; border-bottom:1px solid #fde047;"></div>
 
-    <div class="bg-panel rounded" style="border: 2px solid var(--border-color); padding: 15px;">
-        <div class="flex items-center gap-2" style="margin-bottom: 15px;">
-            <div class="bg-primary rounded-full flex items-center justify-center font-extrabold text-sm" style="width: 35px; height: 35px;">1</div>
-            <div>
-                <h2 id="trend-title" class="font-extrabold c-primary text-md" style="line-height: 1;">EXSUM SUMMARY BY TREND (YEAR-TO-DATE)</h2>
-                <p class="font-bold text-xs" style="color: var(--text-muted); margin-top: 3px;">APAKAH TARGET TAHUNAN BISA TERCAPAI?</p>
-            </div>
-        </div>
-        
-        <div class="grid-trend">
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div class="border-primary rounded" style="background-color: var(--bg-body); opacity: 0.9;">
-                    <div class="bg-primary text-center font-bold text-xs rounded" style="padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">POSISI SAAT INI</div>
-                    <div style="padding: 10px; font-size: 0.9rem; font-weight: bold; display: flex; flex-direction: column; gap: 6px;">
-                        <div class="flex justify-between" style="color: var(--text-muted);"><span id="val-target-tahun" style="font-weight: normal;">Target Tahun</span><span id="val-target-kiri">0,000 M</span></div>
-                        <div class="flex justify-between c-primary"><span style="font-weight: normal;">Realisasi Booking</span><span id="val-trend-realisasi">0,000 M</span></div>
-                        <div class="flex justify-between" style="color: #10b981;"><span style="font-weight: normal;">Achiev YTD</span><span id="val-trend-achiev">0,00%</span></div>
-                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Target</span><span id="val-trend-sisa">0,000 M</span></div>
-                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Hari Berjalan</span><span id="val-hari-berjalan">0 Hari</span></div>
-                        <div class="flex justify-between" style="color: var(--text-muted);"><span style="font-weight: normal;">Sisa Hari Closing</span><span id="val-sisa-hari">0 Hari</span></div>
-                    </div>
-                </div>
-                <div id="box-kesimpulan" class="flex items-center justify-center gap-2 rounded" style="padding: 10px; box-shadow: var(--panel-shadow);">
-                    <i id="icon-kesimpulan" class="fas fa-exclamation-triangle text-xl"></i>
-                    <div id="text-kesimpulan" class="font-extrabold text-xs" style="line-height: 1.2;">KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TIDAK AKAN TERCAPAI.</span></div>
-                </div>
-            </div>
-
-            <div>
-                <div class="rounded" style="border: 2px solid #10b981; background-color: rgba(16, 185, 129, 0.05); height: 100%; display: flex; flex-direction: column;">
-                    <div class="rounded" style="background-color: #10b981; color: white; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">TREND HARIAN SAAT INI</div>
-                    <div class="text-center" style="padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-                        <div class="font-bold text-xs" style="color: var(--text-muted);">Rata-rata booking per hari:</div>
-                        <div id="val-rata-harian" class="font-extrabold text-md" style="margin: 8px 0;">0,000 M / hari</div>
-                        <hr style="border-color: rgba(16,185,129,0.2); margin: 10px 0;">
-                        <div class="font-bold text-xs" style="color: var(--text-muted);">Proyeksi Akhir Tahun:</div>
-                        <div id="val-proyeksi" class="font-extrabold text-sm" style="color: #10b981; margin: 8px 0;">0,000 M (0,0%)</div>
-                    </div>
-                </div>
-            </div>
-
-            <div style="position: relative; padding: 0 10px;" id="trend-visual-container">
-                <div id="trend-label" class="font-bold text-xs text-center" style="color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">TREND BOOKING YTD</div>
-                
-                <div id="trend-canvas-wrapper" style="height: 180px;"><canvas id="trendChart"></canvas></div>
-                
-                <div id="rocket-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
-                    <div style="position: relative; width: 100%; height: 40px; background: rgba(255,255,255,0.3); border-radius: 20px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5);">
-                        <div id="rocket-track" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #0ea5e9); border-radius: 20px; transition: width 1.5s ease; box-shadow: 0 0 10px rgba(14,165,233,0.5);"></div>
-                        <div id="rocket-icon" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; transition: left 1.5s ease; z-index: 10;">
-                            <div style="font-size: 2.8rem; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));">🚀</div>
-                            <div id="rocket-val-badge" class="font-bold rounded" style="background-color: #0ea5e9; color: white; padding: 2px 8px; margin-top: -5px; font-size: 0.75rem; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">0,000 M</div>
+        <div class="content-area">
+            <!-- PANEL 1: INPUT HARIAN -->
+            <div id="panel-input" class="panel active">
+                <div class="card">
+                    <h3 class="card-header"><i class="fas fa-chart-line"></i> Form Input Real-time</h3>
+                    <form id="form-harian">
+                        <div id="area-eksekutif" style="display: none; background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e2e8f0; position: relative;">
+                            <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 8px 0 0 8px;"></div>
+                            <h4 style="margin-bottom: 15px; color: var(--accent);"><i class="fas fa-crown"></i> KONTROL KHUSUS PIMPINAN</h4>
+                            <div class="form-grid">
+                                <div class="form-group"><label>Target Global YTD (Miliar)</label><input type="number" id="input-target" placeholder="Contoh: 1500" step="any"></div>
+                                <div class="form-group"><label>Captive Rate (%)</label><input type="number" id="input-captive" placeholder="Contoh: 45.5" step="any"></div>
+                                <div class="form-group"><label>Potensi PO + FDE (Miliar)</label><input type="number" id="input-pofde" placeholder="0" step="any"></div>
+                                <div class="form-group"><label>Pencapaian IA (Miliar)</label><input type="number" id="input-ia" placeholder="0" step="any"></div>
+                                <div class="form-group"><label>WALR (%)</label><input type="number" id="input-walr" placeholder="0" step="any"></div>
+                                <div class="form-group"><label>Custom Teks Periode (Opsional)</label><input type="text" id="input-periode-custom" placeholder="Contoh: JULI 2026"></div>
+                            </div>
                         </div>
-                        <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.7;">🏁</div>
+
+                        <h4 style="margin-bottom: 15px; color: var(--text-main);"><i class="fas fa-car"></i> KONTROL PORTOFOLIO TIM</h4>
+                        <div id="porto-wrapper" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px;"></div>
+                        <button type="button" id="btn-add-porto" class="btn-primary" style="display: none; font-size: 0.85rem;" onclick="tambahPorto()"><i class="fas fa-plus"></i> Tambah Portofolio</button>
+
+                        <div style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <button type="submit" class="btn-save"><i class="fas fa-satellite-dish"></i> UPDATE DASHBOARD</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PANEL 2: BUILDER LEADERBOARD DINAMIS -->
+            <div id="panel-leaderboard" class="panel">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); font-size: 1.2rem;"><i class="fas fa-trophy"></i> Rincian Data (Leaderboard)</h3>
+                        <button id="btn-tambah-kategori" class="btn-primary" onclick="tambahKategoriLeaderboard()"><i class="fas fa-plus"></i> Tambah Kategori Baru</button>
                     </div>
-                    <div class="flex justify-between font-bold text-xs" style="margin-top: 25px; color: var(--text-main);"><span>START (0)</span><span id="rocket-target-text" style="color: #0ea5e9;">FINISH</span></div>
+                    <form id="form-leaderboard">
+                        <div id="leaderboard-wrapper"></div>
+                        <div style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 20px;"><button type="submit" class="btn-save"><i class="fas fa-save"></i> SIMPAN RINCIAN</button></div>
+                    </form>
                 </div>
+            </div>
 
-                <div id="f1-container" style="display: none; height: 180px; flex-direction: column; justify-content: center; align-items: center; background: #111; border-radius: 8px; border: 2px solid #3f3f46; box-shadow: inset 0 0 20px rgba(0,0,0,0.9);">
-                    <div class="font-bold text-xs" style="color: #52525b; margin-bottom: 15px; letter-spacing: 1px;">RPM TELEMETRY (ACHIEVEMENT)</div>
-                    <div id="f1-led-bar" style="display: flex; gap: 4px; padding: 5px; background: #000; border-radius: 4px; border: 1px solid #27272a;"></div>
-                    <div id="f1-val-badge" class="font-extrabold" style="margin-top: 15px; font-size: 1.6rem; color: #10b981; text-shadow: 0 0 10px rgba(16,185,129,0.5);">0,000 M</div>
-                    <div class="font-bold" style="font-size: 0.65rem; color: #a1a1aa; margin-top: 5px;" id="f1-target-text">TARGET: 0,000 M</div>
+            <!-- PANEL 3: LOG AKTIVITAS -->
+            <div id="panel-log" class="panel">
+                <div class="card">
+                    <h3 class="card-header"><i class="fas fa-user-secret"></i> Log Aktivitas Tim (Pada Tanggal Ini)</h3>
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; height: 400px; overflow-y: auto;">
+                        <ul id="list-log" style="list-style: none; display: flex; flex-direction: column; gap: 15px;"></ul>
+                    </div>
                 </div>
+            </div>
 
-                <!-- TEMA KAPAL -->
-                <div id="kapal-container" style="display: none; height: 180px; flex-direction: column; justify-content: center;">
-                    <div style="position: relative; width: 100%; height: 60px; background: linear-gradient(to bottom, #7dd3fc, #0284c7); border-radius: 30px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.1); overflow: hidden; border-bottom: 5px solid #0c4a6e;">
-                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.15) 15px, rgba(255,255,255,0.15) 30px); animation: moveWaves 3s linear infinite;"></div>
-                        <i class="fas fa-warehouse" style="position: absolute; right: 15px; top: 10px; font-size: 35px; color: #cbd5e1; z-index: 1;"></i>
-                        <div id="kapal-icon" style="position: absolute; top: 8px; left: 0%; transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 2; font-size: 35px; color: #0f172a; filter: drop-shadow(3px 3px 2px rgba(0,0,0,0.4)); display: flex; flex-direction: column; align-items: center;">
-                            <i class="fas fa-ship"></i>
-                            <div id="kapal-val-badge" style="position: absolute; bottom: -20px; font-size: 0.7rem; background: white; padding: 2px 6px; border-radius: 8px; font-weight: bold; border: 1px solid #0284c7; white-space: nowrap;">0%</div>
+            <!-- PANEL 4: KELOLA USER -->
+            <div id="panel-users" class="panel">
+                <div class="card">
+                    <h3 class="card-header"><i class="fas fa-users-cog"></i> Manajemen Akses Tim (PIC)</h3>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 300px;">
+                            <h4 style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primary);">Buat Akun Tim Baru</h4>
+                            <div class="form-group"><label>Nama Lengkap PIC</label><input type="text" id="pic-nama" placeholder="Contoh: Ncar Team"></div>
+                            <div class="form-group"><label>Email Login</label><input type="email" id="pic-email" placeholder="Contoh: ncar@dmj.com"></div>
+                            <div class="form-group"><label>Password (Min. 6 Karakter)</label><input type="text" id="pic-pass" placeholder="Contoh: rahasia123"></div>
+                            <div class="form-group"><label>Hak Akses Portofolio</label><select id="pic-role"><option value="all">Super Admin (Akses Penuh)</option></select></div>
+                            <button class="btn-primary" id="btn-daftar-pic" style="width: 100%;"><i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password</button>
+                        </div>
+                        <div style="flex: 1; min-width: 300px; border-left: 1px solid #e2e8f0; padding-left: 20px;">
+                            <h4 style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primary);">Daftar Tim Terdaftar (Real-time)</h4>
+                            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.9rem; max-height: 400px; overflow-y: auto;">
+                                <ul id="list-tim" style="list-style: none; display: flex; flex-direction: column; gap: 15px;"><li>Memuat daftar...</li></ul>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex justify-between font-bold text-xs" style="margin-top: 15px; color: var(--text-main);">
-                        <span>BERANGKAT</span><span id="kapal-target-text" style="color: #0284c7;">DERMAGA (FINISH)</span>
+                </div>
+            </div>
+
+            <!-- PANEL 5: KEAMANAN AKUN -->
+            <div id="panel-profil" class="panel">
+                <div class="card">
+                    <h3 class="card-header"><i class="fas fa-user-shield"></i> Ganti Password Akun</h3>
+                    <div style="max-width: 400px;">
+                        <form id="form-ganti-password">
+                            <div class="form-group"><label>Password Baru (Min. 6 Karakter)</label><input type="password" id="new-pw" required></div>
+                            <div class="form-group"><label>Konfirmasi Password Baru</label><input type="password" id="confirm-pw" required></div>
+                            <button type="submit" class="btn-primary" style="width: 100%;"><i class="fas fa-key"></i> Simpan Password Baru</button>
+                        </form>
                     </div>
                 </div>
-
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div class="font-bold text-center text-xs c-primary rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 8px; opacity: 0.9;">BERAPA YANG HARUS DICAPAI?</div>
-                <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
-                    <div class="flex items-center gap-1 c-primary"><i class="fas fa-chart-pie"></i> Sisa Target</div><div id="val-kanan-sisa">0,000 M</div>
-                </div>
-                <div class="flex justify-between items-center font-bold text-xs rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 12px 15px; opacity: 0.9;">
-                    <div class="flex items-center gap-1 c-primary"><i class="far fa-calendar-alt"></i> Sisa Hari</div><div id="val-sisa-hari-kanan">0 Hari</div>
-                </div>
-                <div class="text-center rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); padding: 15px 10px; margin-top: auto;">
-                    <div class="font-bold text-xs" style="color: var(--text-muted);">Kebutuhan rata-rata / hari:</div><div id="val-keb-harian" class="font-extrabold text-md" style="color: #10b981; margin-top: 5px;">0,000 M</div>
-                </div>
-            </div>
         </div>
     </div>
 
-    <div class="insight-panel">
-        <div class="insight-title"><i class="fas fa-lightbulb c-accent"></i> SMART INSIGHTS CABANG</div>
-        <ul id="smart-insights-list" class="insight-list"><li>Sedang memuat kesimpulan data...</li></ul>
-    </div>
-</div>
-
-<div class="sticky-footer bg-primary flex justify-between items-center font-bold" style="padding: 10px 15px; font-size: 0.85rem;">
-    <span style="font-style: italic;"><i class="fas fa-heart c-accent"></i> #MUF Wujudkan semua mimpi</span>
-    <span>Versi 3.8 (Master Full Complete Edition) | Copyright &copy; SRISP x DMJ 2026</span>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, query, where, collection, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    
-    const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
-    if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
-    let documentIdHarian = `${yyyy}-${mm}-${dd}`;
-    document.getElementById('tv-date-picker').value = documentIdHarian;
-
-    let globalDataSnapshot = null;
-    let unsubHarian = null;
-
-    window.toM = function(val) { return (val / 1000).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M'; }
-    const colorPalette = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#0ea5e9', '#f43f5e', '#14b8a6', '#eab308', '#d946ef', '#64748b'];
-    
-    setInterval(() => {
-        const now = new Date();
-        document.getElementById('realtime-clock').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
-    }, 1000);
-
-    let portoChartObj = null; let trendChartObj = null; 
-
-    const savedTheme = localStorage.getItem('dmj_dashboard_theme') || 'klasik';
-    document.getElementById('theme-selector').value = savedTheme;
-    document.body.setAttribute('data-theme', savedTheme);
-    Chart.defaults.color = savedTheme === 'gamifikasi' ? '#0f766e' : (savedTheme === 'klasik' ? '#64748b' : '#94a3b8');
-
-    document.getElementById('theme-selector').addEventListener('change', (e) => {
-        const selectedTheme = e.target.value;
-        localStorage.setItem('dmj_dashboard_theme', selectedTheme);
-        document.body.setAttribute('data-theme', selectedTheme);
-        Chart.defaults.color = selectedTheme === 'gamifikasi' ? '#0f766e' : (savedTheme === 'klasik' ? '#64748b' : '#94a3b8');
-        if(globalDataSnapshot) renderDashboard(globalDataSnapshot);
-    });
-
-    const speedometerNeedle = {
-        id: 'speedometerNeedle',
-        afterDraw(chart) {
-            const { ctx } = chart;
-            const dataTotal = chart.config.data.datasets[0].data.reduce((a, b) => a + b, 0);
-            const currentValue = chart.config.data.datasets[0].data[0];
-            let angle = Math.PI + (Math.PI * (currentValue / (dataTotal || 1)));
-            if (currentValue >= dataTotal && dataTotal > 0) angle = Math.PI * 2; 
-
-            const meta = chart.getDatasetMeta(0);
-            if(!meta.data.length) return;
-            const cx = meta.data[0].x; const cy = meta.data[0].y; const outerRadius = meta.data[0].outerRadius;
-
-            const primaryColor = getComputedStyle(document.body).getPropertyValue('--c-primary').trim();
-            const textMainColor = getComputedStyle(document.body).getPropertyValue('--text-main').trim();
-            const fontAngka = getComputedStyle(document.body).getPropertyValue('--font-angka').trim();
-
-            ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle);
-            ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(outerRadius - 15, 0); ctx.lineTo(0, 6);
-            ctx.fillStyle = primaryColor; ctx.fill();
-            
-            ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.fillStyle = primaryColor; ctx.fill();
-            ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill();
-            ctx.restore();
-
-            ctx.font = `900 1.5rem ${fontAngka}`; ctx.fillStyle = textMainColor; ctx.textAlign = 'center';
-            ctx.fillText(window.toM(currentValue), cx, cy + 30);
-            ctx.font = 'bold 0.8rem Arial'; ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim(); ctx.fillText('PENCAPAIAN YTD', cx, cy + 48);
-        }
-    };
-
-    async function muatDataTV() {
-        if(unsubHarian) unsubHarian(); 
-        const splash = document.getElementById('splash-screen');
-        if (splash) { splash.style.opacity = '1'; }
-
-        unsubHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), async (docSnap) => {
-            if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
-            
-            let finalData = {};
-            let isCarryOver = false;
-            let sourceDate = documentIdHarian;
-
-            let hasValidData = false;
-            if (docSnap.exists() && docSnap.data().portofolio_dinamis) {
-                const portoTest = docSnap.data().portofolio_dinamis;
-                let sumTest = Object.values(portoTest).reduce((a, b) => a + Number(b || 0), 0);
-                if (sumTest > 0 || docSnap.data().target > 0) {
-                    hasValidData = true;
-                }
-            }
-
-            if (hasValidData) {
-                finalData = docSnap.data();
-            } else {
-                const q = query(collection(db, "laporan_harian"), where("__name__", "<", documentIdHarian), orderBy("__name__", "desc"), limit(1));
-                const prevSnap = await getDocs(q);
-                if (!prevSnap.empty) {
-                    finalData = prevSnap.docs[0].data();
-                    sourceDate = prevSnap.docs[0].id;
-                    isCarryOver = true;
-                } else {
-                    finalData = docSnap.exists() ? docSnap.data() : {};
-                }
-            }
-
-            globalDataSnapshot = finalData;
-
-            const alertBox = document.getElementById('alert-carryover');
-            if (isCarryOver) {
-                alertBox.innerHTML = `<i class="fas fa-info-circle"></i> Data tanggal ${documentIdHarian} belum di-update. Menampilkan riwayat terakhir dari tanggal: <strong>${sourceDate}</strong>`;
-                alertBox.style.display = 'block';
-            } else {
-                if (alertBox) alertBox.style.display = 'none';
-            }
-
-            renderDashboard(globalDataSnapshot);
+    <!-- SCRIPT NAVIGASI TAB OTOMATIS -->
+    <script>
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                item.classList.add('active');
+                document.getElementById(item.getAttribute('data-target')).classList.add('active');
+            });
         });
-    }
+    </script>
 
-    document.getElementById('tv-date-picker').addEventListener('change', (e) => {
-        documentIdHarian = e.target.value;
-        muatDataTV();
-    });
-
-    muatDataTV();
-
-    function renderDashboard(data) {
-        const theme = document.getElementById('theme-selector').value;
-
-        let dateObj = new Date(documentIdHarian); 
-        const thn = dateObj.getFullYear();
-        const blnNames = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, onSnapshot, arrayUnion, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
         
-        let textPeriode = `YTD ${dateObj.getDate()} ${blnNames[dateObj.getMonth()]} ${thn}`;
-        if(data.periode_custom && data.periode_custom.trim() !== '') {
-            textPeriode = data.periode_custom.trim().toUpperCase();
-        }
-        document.getElementById('val-periode').innerText = textPeriode;
+        const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp"); const secondaryAuth = getAuth(secondaryApp);
 
-        window.dataLeaderboardLengkap = data.leaderboard_dinamis || {};
+        // SETUP DATE PICKER
+        const today = new Date(); const yyyy = today.getFullYear(); let mm = today.getMonth() + 1; let dd = today.getDate();
+        if (dd < 10) dd = '0' + dd; if (mm < 10) mm = '0' + mm; 
         
-        window.gambarKotakLeaderboard = function(kategoriFilter) {
-            const dynamicContainer = document.getElementById('dynamic-leaderboards');
-            dynamicContainer.innerHTML = ''; 
-            let keysToRender = [];
-            
-            const semuaKategori = Object.keys(window.dataLeaderboardLengkap);
+        let documentIdHarian = `${yyyy}-${mm}-${dd}`;
+        document.getElementById('input-tanggal-admin').value = documentIdHarian;
 
-            if (kategoriFilter === 'ALL') {
-                keysToRender = semuaKategori;
-            } else {
-                keysToRender = semuaKategori.filter(k => k.toUpperCase().includes(kategoriFilter.toUpperCase()));
+        let currentUserData = null;
+        let harianData = {}; 
+        let currentPortos = [];
+        let currentLeaderboards = {}; 
+
+        const formatM = (angka) => (angka).toLocaleString('id-ID', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + ' M';
+
+        document.getElementById('form-ganti-password').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pw1 = document.getElementById('new-pw').value;
+            const pw2 = document.getElementById('confirm-pw').value;
+            if(pw1 !== pw2) { alert("Password tidak cocok!"); return; }
+            if(pw1.length < 6) { alert("Minimal 6 karakter"); return; }
+            try {
+                await updatePassword(auth.currentUser, pw1);
+                alert("Password berhasil diubah!");
+                document.getElementById('form-ganti-password').reset();
+            } catch(error) {
+                if(error.code === 'auth/requires-recent-login') { alert("Demi keamanan, silakan Keluar (Logout) dan Login kembali untuk mengganti password."); } 
+                else { alert("Gagal: " + error.message); }
+            }
+        });
+
+        window.cekSelisih = function(kat) {
+            let totalCMO = 0;
+            if(currentLeaderboards[kat]) {
+                currentLeaderboards[kat].forEach(item => {
+                    totalCMO += Number(item.val) || 0;
+                });
             }
 
-            if(keysToRender.length === 0) {
-                dynamicContainer.innerHTML = `<div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; color: var(--text-muted); font-weight: bold; font-size: 0.85rem; text-align:center; padding: 20px;"><i class="fas fa-info-circle" style="font-size: 1.5rem; margin-bottom: 8px; color: var(--c-accent);"></i> Belum ada rincian data untuk portofolio ini.</div>`;
+            let totalPorto = 0;
+            let matchedPortoName = "";
+
+            if (kat.toUpperCase().includes('ALL')) {
+                matchedPortoName = "ALL PORTO";
+                currentPortos.forEach(p => { totalPorto += Number(p.value) || 0; });
+            } else {
+                currentPortos.forEach(p => {
+                    if(p.name && p.name.trim() !== '' && kat.toUpperCase().includes(p.name.toUpperCase())) {
+                        totalPorto = Number(p.value) || 0;
+                        matchedPortoName = p.name;
+                    }
+                });
+            }
+
+            const indicatorEl = document.getElementById(`indicator-${kat}`);
+            if(!indicatorEl) return;
+
+            if(!matchedPortoName) {
+                indicatorEl.style.display = 'none'; 
                 return;
             }
+            
+            indicatorEl.style.display = 'block';
 
-            keysToRender.forEach(kat => {
-                let catItems = window.dataLeaderboardLengkap[kat] || [];
-                catItems.sort((a,b) => b.val - a.val);
-                let maxVal = catItems.length > 0 ? catItems[0].val : 1; if(maxVal === 0) maxVal = 1;
-                
-                let totalCMO = catItems.reduce((sum, item) => sum + (Number(item.val) || 0), 0);
-                let targetPortoUtama = 0;
-                
-                if(data && data.portofolio_dinamis) {
-                    for(let pName in data.portofolio_dinamis) {
-                        if(kat.toUpperCase().includes(pName.toUpperCase())) {
-                            targetPortoUtama = Number(data.portofolio_dinamis[pName]) || 0;
-                        }
+            if (totalPorto === 0 && totalCMO === 0) {
+                indicatorEl.className = 'info-box status-idle';
+                indicatorEl.innerHTML = 'Menunggu input rincian data...';
+            } else {
+                const selisih = totalPorto - totalCMO;
+                const selisihFix = Math.round(selisih * 1000000) / 1000000; 
+
+                if (selisihFix === 0) {
+                    indicatorEl.className = 'info-box status-success';
+                    indicatorEl.innerHTML = `✅ Alokasi Balance (Total: ${formatM(totalPorto)})`;
+                } else if (selisihFix > 0) {
+                    indicatorEl.className = 'info-box status-warning';
+                    indicatorEl.innerHTML = `⚠️ Selisih <strong>${formatM(selisihFix)}</strong> belum dialokasikan ke rincian di bawah. (Target ${matchedPortoName}: ${formatM(totalPorto)})`;
+                } else {
+                    indicatorEl.className = 'info-box status-danger';
+                    indicatorEl.innerHTML = `❌ Over-alokasi! Total input melebihi Portofolio sebesar <strong>${formatM(Math.abs(selisihFix))}</strong>.`;
+                }
+            }
+        };
+
+        window.tambahKategoriLeaderboard = function() {
+            let name = prompt("Masukkan nama Dashboard/Kategori baru\n(Contoh: TOP 5 MKT - NCAR):");
+            if(name && name.trim() !== '') {
+                name = name.trim().toUpperCase();
+                if(!currentLeaderboards[name]) { currentLeaderboards[name] = []; renderLeaderboards(); } else { alert("Kategori tersebut sudah ada!"); }
+            }
+        };
+        window.hapusKategoriLeaderboard = function(kat) { if(confirm(`Hapus seluruh dashboard "${kat}"?`)) { delete currentLeaderboards[kat]; renderLeaderboards(); } };
+        window.tambahBarisLeaderboard = function(kat) { currentLeaderboards[kat].push({name: '', val: 0}); renderLeaderboards(); };
+        window.hapusBarisLeaderboard = function(kat, idx) { currentLeaderboards[kat].splice(idx, 1); renderLeaderboards(); };
+        
+        window.updateBarisLeaderboard = function(kat, idx, field, val) {
+            if(field === 'name') currentLeaderboards[kat][idx].name = val.toUpperCase();
+            if(field === 'val') {
+                currentLeaderboards[kat][idx].val = Number(val);
+                cekSelisih(kat); 
+            }
+        };
+
+        function renderLeaderboards() {
+            const container = document.getElementById('leaderboard-wrapper'); container.innerHTML = '';
+            
+            for(let kat in currentLeaderboards) {
+                if (currentUserData.role !== 'superadmin' && currentUserData.portofolio !== 'all') {
+                    if (!kat.toUpperCase().includes(currentUserData.portofolio.toUpperCase())) {
+                        continue; 
                     }
                 }
 
-                let selisihAlokasi = targetPortoUtama - totalCMO;
-                selisihAlokasi = Math.round(selisihAlokasi * 1000000) / 1000000;
-
-                let listHTML = '';
-                catItems.slice(0, 5).forEach((item, index) => {
-                    let badgeClass = index === 0 ? 'b-1' : index === 1 ? 'b-2' : index === 2 ? 'b-3' : 'b-other';
-                    let barWidth = (item.val / maxVal) * 100;
-                    let barColor = '#10b981'; 
-                    listHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px;">
-                        <div class="flex items-center" style="width: 35%; font-size: 0.75rem; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"><span class="badge-num ${badgeClass}">${index+1}</span> ${item.name}</div>
-                        <div class="flex items-center" style="width: 65%; justify-content: flex-end;">
-                            <div style="width: 50%; margin-right: 8px; background-color: var(--border-color); height: 5px; border-radius: var(--radius); overflow: hidden;"><div style="width: ${barWidth}%; background-color: ${barColor}; height: 100%;"></div></div>
-                            <div class="c-primary font-bold font-extrabold" style="width: 45%; text-align: right; font-size: 0.8rem;">${window.toM(item.val)}</div></div></div>`;
+                let itemsHtml = '';
+                currentLeaderboards[kat].forEach((item, idx) => {
+                    itemsHtml += `<div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" value="${item.name}" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'name', this.value)" placeholder="Nama" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;"><input type="number" value="${item.val}" step="any" onkeyup="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" onchange="updateBarisLeaderboard('${kat}', ${idx}, 'val', this.value)" placeholder="Nilai (M)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;"><button type="button" onclick="hapusBarisLeaderboard('${kat}', ${idx})" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;" title="Hapus Baris"><i class="fas fa-trash"></i></button></div>`;
                 });
-
-                let warningHtml = '';
-                if (targetPortoUtama > 0 && selisihAlokasi > 0) {
-                    warningHtml = `<div style="background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; margin-top: 8px; text-align: center;">
-                        <i class="fas fa-exclamation-triangle"></i> Sebesar ${window.toM(selisihAlokasi)} belum dialokasikan ke rincian data.
-                    </div>`;
-                }
                 
-                let iconClass = theme === 'kapal' ? "fas fa-anchor" : "fas fa-trophy";
+                let btnHapusKat = (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all')
+                    ? `<button type="button" onclick="hapusKategoriLeaderboard('${kat}')" style="background:none; border:none; color:#dc2626; font-size:0.9rem; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hapus Kategori</button>`
+                    : ``;
 
-                const box = document.createElement('div'); 
-                box.style.cssText = "background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);";
-                box.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-weight: 800; font-size: 0.8rem; color: var(--c-primary); border-bottom: 2px solid var(--c-primary); margin-bottom: 10px; padding-bottom: 4px;">
-                        <span><i class="${iconClass} c-accent" style="margin-right: 5px;"></i> ${kat}</span>
-                        <span style="font-size: 0.7rem; background: var(--c-primary); color: white; padding: 2px 6px; border-radius: 4px;">Target: ${window.toM(targetPortoUtama)}</span>
-                    </div>
-                    <div>${listHTML || '<div style="font-size:0.75rem; color:var(--text-muted); text-align:center; font-style:italic;">Data kosong</div>'}</div>
-                    ${warningHtml}
-                `;
-                dynamicContainer.appendChild(box);
-            });
-        };
-
-        let totalBooking = 0; let portoData = [];
-        if (data.portofolio_dinamis) {
-            for (const [name, val] of Object.entries(data.portofolio_dinamis)) { totalBooking += (val || 0); portoData.push({ name, val: val || 0 }); }
-        }
-        portoData.sort((a,b) => b.val - a.val);
-
-        const TARGET = data.target || 0;
-        const ACHIEV = TARGET > 0 ? ((totalBooking / TARGET) * 100).toFixed(2) : "0.00";
-        
-        document.getElementById('val-booking-amount').innerText = window.toM(totalBooking);
-        document.getElementById('val-target-atas').innerText = window.toM(TARGET);
-        document.getElementById('val-achievement').innerText = ACHIEV + "%";
-        document.getElementById('val-captive').innerText = (data.captive || 0).toFixed(2) + "%";
-        document.getElementById('val-walr').innerText = (data.walr || 0).toFixed(2) + "%";
-        document.getElementById('val-pofde').innerText = window.toM(data.pofde || 0);
-        document.getElementById('val-ia').innerText = window.toM(data.ia || 0);
-        document.getElementById('val-booking-donut').innerText = window.toM(totalBooking);
-
-        let chartLabels = []; let chartValues = []; let chartColors = [];
-        
-        let legendHTML = `<div class="porto-legend-item active" onclick="window.filterLeaderboard('ALL', this)" style="justify-content: center; color: var(--c-accent); border: 1px dashed var(--c-accent); margin-bottom: 15px;">
-            <i class="fas fa-star" style="margin-right: 5px;"></i> LIHAT SEMUA RINCIAN
-        </div>`;
-        
-        portoData.forEach((item, index) => {
-            const color = colorPalette[index % colorPalette.length];
-            chartLabels.push(item.name); chartValues.push(item.val); chartColors.push(color);
-            
-            let bulletIcon = `<span class="color-dot" style="background-color:${color}"></span>`;
-            if (theme === 'kapal') {
-                bulletIcon = `<i class="fas fa-dharmachakra" style="color:${color}; margin-right:8px;"></i>`;
+                container.innerHTML += `
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-bottom:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;">
+                            <h4 style="color:var(--primary);"><i class="fas fa-trophy c-accent"></i> ${kat}</h4>
+                            ${btnHapusKat}
+                        </div>
+                        <div id="items-${kat}">${itemsHtml}</div>
+                        <div id="indicator-${kat}" class="info-box status-idle" style="display: none;">Menghitung alokasi...</div>
+                        <button type="button" onclick="tambahBarisLeaderboard('${kat}')" style="background:var(--secondary); color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-top:10px;"><i class="fas fa-plus"></i> Tambah Rincian Data</button>
+                    </div>`;
             }
 
-            legendHTML += `<div class="porto-legend-item" onclick="window.filterLeaderboard('${item.name}', this)">
-                <div class="flex items-center">${bulletIcon} ${item.name}</div> 
-                <span>${window.toM(item.val)}</span>
-            </div>`;
-        });
-        document.getElementById('porto-legend-container').innerHTML = legendHTML || '<div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Belum ada portofolio.</div>';
-
-        window.filterLeaderboard = function(portoName, element) {
-            document.querySelectorAll('.porto-legend-item').forEach(el => el.classList.remove('active'));
-            if(element) element.classList.add('active');
-            window.gambarKotakLeaderboard(portoName);
-        };
-
-        window.gambarKotakLeaderboard('ALL');
-
-        if(portoChartObj) portoChartObj.destroy();
-        const ctxPorto = document.getElementById('portoChart').getContext('2d');
-        const centerText = document.getElementById('porto-center-text');
-        
-        if (theme === 'klasik' || theme === 'kapal') { 
-            centerText.style.display = 'flex'; 
-            portoChartObj = new Chart(ctxPorto, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderWidth: 0, cutout: '75%' }] }, options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: false } } } }); 
-        } else if (theme === 'akselerasi' || theme === 'formula1') { 
-            centerText.style.display = 'none'; 
-            portoChartObj = new Chart(ctxPorto, { 
-                type: 'bar', 
-                data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors, borderRadius: (theme==='formula1'? 0:2) }] }, 
-                options: { 
-                    indexAxis: 'y', maintainAspectRatio: false, responsive: true, 
-                    scales: { 
-                        x: { display: false }, 
-                        y: { grid: { display: false }, ticks: { font: {size: 10, weight: 'bold', family: (theme==='formula1'? "'Courier New', monospace" : "Arial")} } } 
-                    }, 
-                    plugins: { legend: { display: false } } 
-                } 
-            }); 
-        } else if (theme === 'gamifikasi') { 
-            centerText.style.display = 'none'; 
-            portoChartObj = new Chart(ctxPorto, { type: 'polarArea', data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: chartColors.map(c => c + 'AA'), borderColor: 'rgba(255,255,255,0.5)' }] }, options: { maintainAspectRatio: false, responsive: true, scales: { r: { grid: {color: 'rgba(15,118,110,0.1)'}, ticks: { display: false, backdropColor: 'transparent' } } }, plugins: { legend: { display: false } } } }); 
-        }
-
-        const startOfYear = new Date(thn, 0, 1); const endOfYear = new Date(thn, 11, 31);
-        const diffTime = Math.abs(dateObj - startOfYear);
-        const hariBerjalan = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        const totalDaysInYear = Math.ceil(Math.abs(endOfYear - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
-        const sisaHari = Math.max(0, totalDaysInYear - hariBerjalan);
-
-        document.getElementById('val-target-tahun').innerText = `Target Tahun ${thn}`;
-        document.getElementById('val-hari-berjalan').innerText = `${hariBerjalan} Hari`;
-        document.getElementById('val-sisa-hari').innerText = `${sisaHari} Hari`;
-        document.getElementById('val-sisa-hari-kanan').innerText = `${sisaHari} Hari`;
-
-        const sisaTarget = Math.max(0, TARGET - totalBooking);
-        const rataHarian = hariBerjalan > 0 ? (totalBooking / hariBerjalan) : 0; 
-        const proyeksiAkhirTahun = rataHarian * totalDaysInYear;
-        const persentaseProyeksi = TARGET > 0 ? ((proyeksiAkhirTahun / TARGET) * 100).toFixed(1) : 0;
-        const kebutuhanHarian = sisaHari > 0 ? (sisaTarget / sisaHari) : 0;
-
-        document.getElementById('val-target-kiri').innerText = window.toM(TARGET);
-        document.getElementById('val-trend-realisasi').innerText = window.toM(totalBooking);
-        document.getElementById('val-trend-achiev').innerText = ACHIEV + "%";
-        document.getElementById('val-trend-sisa').innerText = window.toM(sisaTarget);
-        document.getElementById('val-kanan-sisa').innerText = window.toM(sisaTarget);
-        document.getElementById('val-rata-harian').innerText = window.toM(rataHarian) + " / hari";
-        document.getElementById('val-proyeksi').innerText = window.toM(proyeksiAkhirTahun) + " (" + persentaseProyeksi + "%)";
-        document.getElementById('val-keb-harian').innerText = window.toM(kebutuhanHarian) + " / hari";
-
-        const boxKesimpulan = document.getElementById('box-kesimpulan');
-        const iconKesimpulan = document.getElementById('icon-kesimpulan');
-        const textKesimpulan = document.getElementById('text-kesimpulan');
-
-        const pctProy = parseFloat(persentaseProyeksi);
-        if (TARGET > 0) {
-            if (pctProy >= 110) {
-                boxKesimpulan.style.backgroundColor = "rgba(16, 185, 129, 0.1)"; boxKesimpulan.style.border = "2px solid #10b981";
-                iconKesimpulan.className = "fas fa-rocket text-xl"; iconKesimpulan.style.color = "#10b981";
-                textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">LUAR BIASA! TARGET AKAN TERLAMPAUI JAUH.</span>';
-                textKesimpulan.style.color = "#10b981";
-            } else if (pctProy >= 100) {
-                boxKesimpulan.style.backgroundColor = "rgba(5, 150, 105, 0.1)"; boxKesimpulan.style.border = "2px solid #059669";
-                iconKesimpulan.className = "fas fa-check-circle text-xl"; iconKesimpulan.style.color = "#059669";
-                textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET TAHUNAN AKAN TERCAPAI.</span>';
-                textKesimpulan.style.color = "#059669";
-            } else if (pctProy >= 90) {
-                boxKesimpulan.style.backgroundColor = "rgba(217, 119, 6, 0.1)"; boxKesimpulan.style.border = "2px solid #d97706";
-                iconKesimpulan.className = "fas fa-exclamation-triangle text-xl"; iconKesimpulan.style.color = "#d97706";
-                textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">WASPADA! BUTUH DORONGAN HARIAN.</span>';
-                textKesimpulan.style.color = "#d97706";
-            } else {
-                boxKesimpulan.style.backgroundColor = "rgba(220, 38, 38, 0.1)"; boxKesimpulan.style.border = "2px solid #dc2626";
-                iconKesimpulan.className = "fas fa-times-circle text-xl"; iconKesimpulan.style.color = "#dc2626";
-                textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET KRITIS / TIDAK AKAN TERCAPAI.</span>';
-                textKesimpulan.style.color = "#dc2626";
-            }
-        } else {
-            boxKesimpulan.style.backgroundColor = "rgba(220, 38, 38, 0.1)"; boxKesimpulan.style.border = "2px solid #dc2626";
-            iconKesimpulan.className = "fas fa-times-circle text-xl"; iconKesimpulan.style.color = "#dc2626";
-            textKesimpulan.innerHTML = 'KESIMPULAN TREND<br><span style="text-transform: uppercase;">TARGET KRITIS / TIDAK AKAN TERCAPAI.</span>';
-            textKesimpulan.style.color = "#dc2626";
-        }
-
-        let insights = [];
-        if (portoData.length > 0 && totalBooking > 0) { 
-            let topP = portoData[0]; 
-            insights.push(`<li><span style="font-size:1.2rem;">🔥</span> <div>Portofolio Paling Berpengaruh: <strong class="c-primary">${topP.name}</strong> mendominasi dengan kontribusi <strong class="c-primary">${window.toM(topP.val)}</strong> (${((topP.val / totalBooking) * 100).toFixed(1)}%).</div></li>`); 
-            
-            let botP = portoData[portoData.length - 1]; 
-            insights.push(`<li><span style="font-size:1.2rem;">🚨</span> <div>Portofolio Butuh Perhatian: <strong style="color:#dc2626">${botP.name}</strong> dengan pencapaian terendah sebesar <strong style="color:#dc2626">${window.toM(botP.val)}</strong>.</div></li>`); 
-        }
-        
-        if (proyeksiAkhirTahun >= TARGET && TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">🌟</span> <div>Tren saat ini <strong>sangat baik</strong>. Pertahankan ritme rata-rata harian cabang.</div></li>`);
-        else if (TARGET > 0) insights.push(`<li><span style="font-size:1.2rem;">⚠️</span> <div>Butuh akselerasi! Kejar rata-rata harian cabang menjadi <strong style="color:#dc2626">${window.toM(kebutuhanHarian)} / hari</strong>.</div></li>`);
-        
-        if((data.pofde || 0) > 0) insights.push(`<li><span style="font-size:1.2rem;">💰</span> <div>Terdapat potensi sebesar <strong class="c-accent">${window.toM(data.pofde)}</strong> (PO+FDE) yang siap dikawal menjadi realisasi bulan ini.</div></li>`);
-        
-        document.getElementById('smart-insights-list').innerHTML = insights.join('');
-
-        if(trendChartObj) trendChartObj.destroy();
-        const ctxTrend = document.getElementById('trendChart').getContext('2d');
-        const trendCanvasWrapper = document.getElementById('trend-canvas-wrapper');
-        const rocketContainer = document.getElementById('rocket-container');
-        const f1Container = document.getElementById('f1-container');
-        const kapalContainer = document.getElementById('kapal-container');
-        const trendLabel = document.getElementById('trend-label');
-
-        let pct = TARGET > 0 ? (totalBooking / TARGET) * 100 : 0;
-
-        if (theme === 'klasik') {
-            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none'; kapalContainer.style.display = 'none';
-            trendLabel.innerText = "TREND BOOKING YTD (AKUMULATIF)";
-            
-            let xLabels = []; let realisasiData = []; let proyeksiData = [];
-            for(let i=1; i<=12; i++) {
-                xLabels.push(blnNames[i-1]);
-                let accDays = Math.ceil((new Date(thn, i, 0) - startOfYear) / (1000*60*60*24));
-                if(i <= dateObj.getMonth() + 1) { realisasiData.push(rataHarian * accDays); proyeksiData.push(rataHarian * accDays); } 
-                else { realisasiData.push(null); proyeksiData.push(rataHarian * accDays); }
-            }
-            trendChartObj = new Chart(ctxTrend, { type: 'line', data: { labels: xLabels, datasets: [ { label: 'Realisasi', data: realisasiData, borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 2, tension: 0.1, pointRadius: 2 }, { label: 'Proyeksi', data: proyeksiData, borderColor: '#3b82f6', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 0 } ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: {color: 'rgba(150,150,150,0.1)'}, max: Math.max(TARGET, proyeksiAkhirTahun) * 1.1, beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + ' M', font: { size: 10 } } }, x: { grid: {display: false}, ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } });
-        } 
-        else if (theme === 'akselerasi') {
-            trendCanvasWrapper.style.display = 'block'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none'; kapalContainer.style.display = 'none';
-            trendLabel.innerText = "SPEEDOMETER PENCAPAIAN TARGET";
-            
-            let sisaB = Math.max(0, TARGET - totalBooking);
-            let warnaSpeed = ACHIEV >= 100 ? '#10b981' : ACHIEV >= 50 ? '#fbbf24' : '#dc2626'; 
-            const bgColorTrack = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
-
-            trendChartObj = new Chart(ctxTrend, { type: 'doughnut', data: { labels: ['Tercapai', 'Sisa'], datasets: [{ data: [totalBooking, sisaB], backgroundColor: [warnaSpeed, bgColorTrack], borderWidth: 0 }] }, options: { rotation: 270, circumference: 180, cutout: '75%', responsive: true, maintainAspectRatio: false, layout: { padding: { bottom: 50 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } }, plugins: [speedometerNeedle] });
-        } 
-        else if (theme === 'gamifikasi') {
-            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'flex'; f1Container.style.display = 'none'; kapalContainer.style.display = 'none';
-            trendLabel.innerText = "AKSELERASI ROKET PENCAPAIAN TAHUNAN";
-            if(pct > 100) pct = 100;
-            document.getElementById('rocket-target-text').innerText = `FINISH (${window.toM(TARGET)})`;
-            document.getElementById('rocket-val-badge').innerText = window.toM(totalBooking); 
-            setTimeout(() => { document.getElementById('rocket-track').style.width = pct + '%'; document.getElementById('rocket-icon').style.left = pct + '%'; }, 100);
-        }
-        else if (theme === 'formula1') {
-            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'none'; f1Container.style.display = 'flex'; kapalContainer.style.display = 'none';
-            trendLabel.innerText = "F1 TELEMETRY SYSTEM";
-            document.getElementById('f1-val-badge').innerText = window.toM(totalBooking);
-            document.getElementById('f1-target-text').innerText = `TARGET: ${window.toM(TARGET)}`;
-
-            let totalLeds = 15; let activeLeds = Math.round((pct / 100) * totalLeds);
-            if (pct > 0 && activeLeds === 0) activeLeds = 1; if (activeLeds > totalLeds) activeLeds = totalLeds;
-
-            let ledHtml = '';
-            for(let i=0; i<totalLeds; i++) {
-                let bg = '#333'; let glow = 'none';
-                if(i < activeLeds) {
-                    if(i < 5) { bg = '#10b981'; glow = '0 0 8px #10b981'; } else if(i < 10) { bg = '#eab308'; glow = '0 0 8px #eab308'; } else if(i < 13) { bg = '#ef4444'; glow = '0 0 8px #ef4444'; } else { bg = '#3b82f6'; glow = '0 0 10px #3b82f6'; } 
+            setTimeout(() => {
+                for(let kat in currentLeaderboards) { 
+                    if (document.getElementById(`indicator-${kat}`)) cekSelisih(kat); 
                 }
-                ledHtml += `<div class="f1-led" style="background-color: ${bg}; box-shadow: ${glow};"></div>`;
+            }, 100);
+        }
+
+        document.getElementById('form-leaderboard').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                let cleanLeaderboard = {};
+                for(let kat in currentLeaderboards) { let cleanedItems = currentLeaderboards[kat].filter(item => item.name.trim() !== ''); cleanLeaderboard[kat] = cleanedItems; }
+                const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second: '2-digit'}) + ' WIB';
+                const logMsg = { waktu: timeStr, user: currentUserData.nama, aksi: "Mengupdate Data Leaderboard" };
+
+                await setDoc(doc(db, "laporan_harian", documentIdHarian), { leaderboard_dinamis: cleanLeaderboard, logs_aktivitas: arrayUnion(logMsg) }, { merge: true });
+                alert("Rincian data berhasil disimpan!");
+            } catch (error) { alert("Gagal menyimpan rincian data."); }
+        });
+
+        window.updateRoleDropdown = function() {
+            const roleSelect = document.getElementById('pic-role'); if(!roleSelect) return;
+            const selectedRole = roleSelect.value; roleSelect.innerHTML = '';
+            currentPortos.forEach(p => { const namaPorto = p.name.trim().toUpperCase(); if(namaPorto !== '') roleSelect.innerHTML += `<option value="${namaPorto}">PIC ${namaPorto}</option>`; });
+            roleSelect.innerHTML += `<option value="all">Super Admin (Akses Penuh)</option>`;
+            if(Array.from(roleSelect.options).some(opt => opt.value === selectedRole)) roleSelect.value = selectedRole;
+        };
+
+        window.tambahPorto = function() { currentPortos.push({name: '', value: ''}); renderPortoForm(); };
+        window.hapusPorto = function(idx) { if(confirm("Hapus portofolio ini dari daftar?")) { currentPortos.splice(idx, 1); renderPortoForm(); } };
+        
+        window.updatePorto = function(idx, field, val) {
+            if(field === 'name') { currentPortos[idx].name = val.toUpperCase(); updateRoleDropdown(); }
+            if(field === 'value') {
+                currentPortos[idx].value = val;
+                for(let kat in currentLeaderboards) { if(document.getElementById(`indicator-${kat}`)) cekSelisih(kat); }
             }
-            document.getElementById('f1-led-bar').innerHTML = ledHtml;
+        };
+
+        function renderPortoForm() {
+            const wrapper = document.getElementById('porto-wrapper'); wrapper.innerHTML = '';
+            const isAdmin = currentUserData && (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all');
+            document.getElementById('btn-add-porto').style.display = isAdmin ? 'inline-block' : 'none';
+            const statusUp = harianData.status_update || {};
+
+            currentPortos.forEach((p, idx) => {
+                if (!isAdmin && currentUserData.portofolio !== p.name) return; 
+                let badgeHTML = `<div style="font-size:0.75rem; color:#dc2626; margin-top:5px;"><i class="fas fa-times-circle"></i> Belum update hari ini</div>`;
+                
+                if(statusUp[p.name]) badgeHTML = `<div style="font-size:0.75rem; color:#10b981; margin-top:5px;"><i class="fas fa-check-circle"></i> Update: ${statusUp[p.name].waktu} oleh Admin</div>`;
+
+                const div = document.createElement('div');
+                div.style.cssText = 'display:flex; flex-wrap: wrap; gap:10px; align-items:center; background:#f8fafc; padding:15px; border:1px solid #e2e8f0; border-radius:8px;';
+                div.innerHTML = `
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Nama Portofolio</label>
+                        <input type="text" value="${p.name}" ${isAdmin ? '' : 'readonly'} onkeyup="updatePorto(${idx}, 'name', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-weight:bold;">
+                    </div>
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="font-size:0.75rem; color:#64748b; font-weight:bold; display:block; margin-bottom:5px;">Pencapaian (Miliar)</label>
+                        <input type="number" value="${p.value}" step="any" placeholder="0" onkeyup="updatePorto(${idx}, 'value', this.value)" onchange="updatePorto(${idx}, 'value', this.value)" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
+                        ${badgeHTML}
+                    </div>
+                    ${isAdmin ? `<div style="padding-top: 22px;"><button type="button" onclick="hapusPorto(${idx})" style="background:#dc2626; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;" title="Exit/Hapus Portofolio"><i class="fas fa-times"></i></button></div>` : ''}
+                `;
+                wrapper.appendChild(div);
+            });
+            updateRoleDropdown();
         }
-        else if (theme === 'kapal') {
-            trendCanvasWrapper.style.display = 'none'; rocketContainer.style.display = 'none'; f1Container.style.display = 'none'; kapalContainer.style.display = 'flex';
-            trendLabel.innerText = "PELAYARAN MENUJU TARGET (YTD)";
-            document.getElementById('kapal-target-text').innerText = `DERMAGA (${window.toM(TARGET)})`;
-            document.getElementById('kapal-val-badge').innerText = `${pct.toFixed(1)}%`;
+
+        function renderLogs(logs) {
+            const container = document.getElementById('list-log');
+            if(!logs || logs.length === 0) { container.innerHTML = '<li style="text-align:center; color:#94a3b8; font-style:italic;">Belum ada aktivitas di tanggal ini.</li>'; return; }
+            container.innerHTML = '';
+            [...logs].reverse().forEach(log => {
+                container.innerHTML += `<li style="border-bottom:1px solid #cbd5e1; padding-bottom:8px;"><div style="font-size:0.75rem; color:#64748b;"><i class="far fa-clock"></i> ${log.waktu}</div><div style="font-weight:bold; color:var(--primary);">${log.user} <span style="font-weight:normal; color:#64748b;">${log.aksi}</span></div></li>`;
+            });
+        }
+
+        let unsubscribeHarian = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocSnap = await getDoc(doc(db, "users", user.email));
+                if (userDocSnap.exists()) {
+                    currentUserData = userDocSnap.data();
+                    terapkanHakAkses(currentUserData);
+                    muatDataHarian(); 
+                } else { alert("Akses Ditolak."); keluar(true); }
+            } else { window.location.href = 'login.html'; }
+        });
+
+        function terapkanHakAkses(userData) {
+            document.getElementById('user-display-name').innerText = userData.nama;
+            document.getElementById('user-role-badge').innerText = `Akses: ${userData.portofolio.toUpperCase()}`;
             
-            let visualPct = pct > 92 ? 92 : pct;
-            setTimeout(() => { document.getElementById('kapal-icon').style.left = visualPct + '%'; }, 100);
+            document.getElementById('menu-leaderboard').style.display = 'flex';
+
+            if (userData.role === 'superadmin' || userData.portofolio === 'all') {
+                document.getElementById('area-eksekutif').style.display = 'block';
+                document.getElementById('menu-users').style.display = 'flex';
+                document.getElementById('menu-log').style.display = 'flex'; 
+                document.getElementById('btn-tambah-kategori').style.display = 'inline-block';
+            } else {
+                document.getElementById('area-eksekutif').style.display = 'none';
+                document.getElementById('menu-users').style.display = 'none';
+                document.getElementById('menu-log').style.display = 'none'; 
+                document.getElementById('btn-tambah-kategori').style.display = 'none';
+            }
         }
-    }
-</script>
+
+        // === CARRY-OVER ADMIN: ambil dokumen tanggal terakhir sebelum tanggal aktif ===
+        let cachePrev = { tanggal: null, data: null };
+
+        async function ambilDataSebelumnya(tanggal) {
+            if (cachePrev.tanggal === tanggal) return cachePrev.data;
+            let hasil = null;
+            try {
+                const q = query(collection(db, "laporan_harian"), where("__name__", "<", tanggal), orderBy("__name__", "desc"), limit(1));
+                const snap = await getDocs(q);
+                if (!snap.empty) hasil = { id: snap.docs[0].id, data: snap.docs[0].data() };
+            } catch (err) { console.warn("Carry-over admin gagal:", err); }
+            cachePrev = { tanggal: tanggal, data: hasil };
+            return hasil;
+        }
+
+        function muatDataHarian() {
+            document.getElementById('loader').style.display = 'flex';
+            if(unsubscribeHarian) unsubscribeHarian(); 
+            cachePrev = { tanggal: null, data: null };
+            
+            unsubscribeHarian = onSnapshot(doc(db, "laporan_harian", documentIdHarian), async (docSnap) => {
+                if(docSnap.exists()) { harianData = docSnap.data(); } else { harianData = {}; }
+
+                const prev = await ambilDataSebelumnya(documentIdHarian);
+                const dPrev = prev ? prev.data : {};
+                const adaWarisan = prev !== null;
+
+                // Metrik pimpinan: pakai nilai hari ini, kalau kosong ambil dari hari terakhir
+                const ambil = (field) => (harianData[field] !== undefined && harianData[field] !== '' && harianData[field] !== 0)
+                    ? harianData[field]
+                    : (dPrev[field] !== undefined ? dPrev[field] : '');
+
+                document.getElementById('input-target').value = ambil('target') || '';
+                document.getElementById('input-captive').value = ambil('captive') || '';
+                document.getElementById('input-pofde').value = ambil('pofde') || '';
+                document.getElementById('input-ia').value = ambil('ia') || '';
+                document.getElementById('input-walr').value = ambil('walr') || '';
+                document.getElementById('input-periode-custom').value = ambil('periode_custom') || '';
+
+                // Daftar portofolio: gabungan nama hari ini + nama hari terakhir (tidak ada yang hilang)
+                const portoHariIni = harianData.portofolio_dinamis || {};
+                const portoPrev = dPrev.portofolio_dinamis || {};
+                const semuaNama = [...Object.keys(portoHariIni)];
+                for (const nama of Object.keys(portoPrev)) { if (!semuaNama.includes(nama)) semuaNama.push(nama); }
+
+                if (semuaNama.length > 0) {
+                    currentPortos = semuaNama.map(nama => {
+                        const nilaiHariIni = Number(portoHariIni[nama] || 0);
+                        const nilaiPrev = Number(portoPrev[nama] || 0);
+                        return { name: nama, value: nilaiHariIni > 0 ? nilaiHariIni : (nilaiPrev > 0 ? nilaiPrev : '') };
+                    });
+                } else {
+                    currentPortos = ['UCAR','NMCY','MMCY','CBSIMCY','UMCY','NCAR','CBSICAR','MCAR','CMCY','CCAR'].map(n => ({name: n, value: ''}));
+                }
+
+                // Leaderboard: kategori hari ini menimpa, kategori lama yang belum ada ikut terbawa
+                const lbPrev = dPrev.leaderboard_dinamis || {};
+                const lbHariIni = harianData.leaderboard_dinamis || {};
+                currentLeaderboards = JSON.parse(JSON.stringify(lbPrev));
+                for (const kat in lbHariIni) currentLeaderboards[kat] = lbHariIni[kat];
+
+                // Banner pemberitahuan: tampil bila ada data yang benar-benar diwarisi
+                const banner = document.getElementById('alert-carryover-admin');
+                const adaNamaDiwarisi = Object.keys(portoPrev).some(nama => !Object.keys(portoHariIni).includes(nama));
+                const adaNilaiDiwarisi = semuaNama.some(nama => Number(portoHariIni[nama] || 0) === 0 && Number(portoPrev[nama] || 0) > 0);
+                console.log('[carry-over] tanggal aktif:', documentIdHarian, '| sumber:', prev ? prev.id : 'tidak ada', '| porto hari ini:', Object.keys(portoHariIni).length, '| porto sumber:', Object.keys(portoPrev).length, '| total tampil:', semuaNama.length);
+                if (adaWarisan && (adaNamaDiwarisi || adaNilaiDiwarisi)) {
+                    banner.innerHTML = `<i class="fas fa-info-circle"></i> Sebagian form diisi otomatis dari data tanggal <strong>${prev.id}</strong>. Perbarui angka yang berubah, lalu tekan Update Dashboard.`;
+                    banner.style.display = 'block';
+                } else {
+                    banner.style.display = 'none';
+                }
+
+                renderPortoForm();
+                renderLeaderboards();
+                renderLogs(harianData.logs_aktivitas || []);
+                document.getElementById('loader').style.display = 'none';
+            });
+        }
+
+        document.getElementById('input-tanggal-admin').addEventListener('change', (e) => {
+            documentIdHarian = e.target.value;
+            muatDataHarian();
+        });
+
+        document.getElementById('form-harian').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dataUpdate = {};
+            const tgt = document.getElementById('input-target'); const cpt = document.getElementById('input-captive');
+            const pof = document.getElementById('input-pofde'); const ia = document.getElementById('input-ia'); 
+            const wlr = document.getElementById('input-walr'); const per = document.getElementById('input-periode-custom');
+
+            if(!tgt.disabled && tgt.value) dataUpdate.target = Number(tgt.value);
+            if(!cpt.disabled && cpt.value) dataUpdate.captive = Number(cpt.value);
+            if(!pof.disabled && pof.value) dataUpdate.pofde = Number(pof.value);
+            if(!ia.disabled && ia.value) dataUpdate.ia = Number(ia.value);
+            if(!wlr.disabled && wlr.value) dataUpdate.walr = Number(wlr.value);
+            if(!per.disabled) dataUpdate.periode_custom = per.value;
+
+            const portoDinamis = {};
+            currentPortos.forEach(p => { if(p.name.trim() !== '') portoDinamis[p.name.trim().toUpperCase()] = p.value ? Number(p.value) : 0; });
+            
+            const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second: '2-digit'}) + ' WIB';
+            let statusObj = harianData.status_update || {};
+            currentPortos.forEach(p => {
+                if(p.name.trim() !== '') {
+                    if ((currentUserData.role === 'pic' && currentUserData.portofolio === p.name) || currentUserData.role === 'superadmin') {
+                        statusObj[p.name] = { waktu: timeStr, user: currentUserData.nama };
+                    }
+                }
+            });
+            const logMsg = { waktu: timeStr, user: currentUserData.nama, aksi: "Mengupdate Data Harian" };
+
+            dataUpdate.portofolio_dinamis = portoDinamis;
+            dataUpdate.status_update = statusObj;
+            dataUpdate.logs_aktivitas = arrayUnion(logMsg);
+
+            try {
+                await setDoc(doc(db, "laporan_harian", documentIdHarian), dataUpdate, { merge: true });
+                const status = document.getElementById('status-simpan');
+                status.style.display = 'block'; setTimeout(() => { status.style.display = 'none'; }, 3000);
+            } catch (error) { alert("Gagal menyimpan."); }
+        });
+
+        window.cabutAksesUser = async function(emailPIC) {
+            if(confirm(`Tolak akses login untuk email ${emailPIC}. Lanjutkan?`)) {
+                try { await deleteDoc(doc(db, "users", emailPIC)); alert("Akses dicabut!"); } catch (error) { alert("Error"); }
+            }
+        };
+
+        document.getElementById('btn-daftar-pic').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-daftar-pic');
+            const nama = document.getElementById('pic-nama').value; const email = document.getElementById('pic-email').value;
+            const pass = document.getElementById('pic-pass').value; const role = document.getElementById('pic-role').value;
+            if(!nama || !email || !pass) return; if(pass.length < 6) return;
+            try {
+                btn.innerHTML = 'Memproses...';
+                await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+                await setDoc(doc(db, "users", email), { nama: nama, portofolio: role, role: role === 'all' ? 'superadmin' : 'pic' });
+                await secondaryAuth.signOut(); alert("Berhasil!");
+                document.getElementById('pic-nama').value = ''; document.getElementById('pic-email').value = ''; document.getElementById('pic-pass').value = '';
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
+            } catch (error) { alert(error.message); btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim'; }
+        });
+
+        onSnapshot(collection(db, "users"), (snapshot) => {
+            const listContainer = document.getElementById('list-tim'); listContainer.innerHTML = '';
+            const emailAktif = auth.currentUser ? auth.currentUser.email : '';
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data(); const email = docSnap.id;
+                const badgeColor = data.role === 'superadmin' ? 'var(--primary)' : 'var(--accent)';
+                const roleText = data.role === 'superadmin' ? 'Super Admin' : `PIC ${data.portofolio}`;
+                let tombolHapus = email !== emailAktif ? `<button onclick="cabutAksesUser('${email}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:12px;" title="Cabut Akses"><i class="fas fa-trash"></i></button>` : '';
+                listContainer.innerHTML += `<li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;"><div><strong style="display:block; color: var(--text-main);">${data.nama}</strong><span style="font-size:0.75rem; color:var(--text-light);">${email}</span></div><div style="display: flex; align-items: center;"><span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>${tombolHapus}</div></li>`;
+            });
+        });
+
+        function keluar(force = false) { 
+            if (force || confirm("Apakah Anda yakin ingin keluar dari Panel Admin?")) {
+                signOut(auth).then(() => { window.location.href = 'login.html'; }); 
+            }
+        }
+        document.getElementById('btn-logout').addEventListener('click', () => keluar(false));
+    </script>
 </body>
 </html>
