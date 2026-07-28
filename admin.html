@@ -80,6 +80,7 @@
         <div class="sidebar-header">
             <img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'">
             <h3>EXECUTIVE PORTAL</h3>
+            <div style="font-size: 0.7rem; color: #94a3b8; margin-top: -4px; margin-bottom: 6px; letter-spacing: 0.5px;">v2.2 &middot; carry-over</div>
             <div class="user-info">
                 <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 3px;">Login sebagai:</div>
                 <span id="user-display-name">Memuat...</span>
@@ -517,7 +518,7 @@
                         return { name: nama, value: nilaiHariIni > 0 ? nilaiHariIni : (nilaiPrev > 0 ? nilaiPrev : '') };
                     });
                 } else {
-                    currentPortos = [{name: 'NCAR', value: ''}, {name: 'CCAR', value: ''}, {name: 'NMCY', value: ''}, {name: 'USECAR', value: ''}];
+                    currentPortos = ['UCAR','NMCY','MMCY','CBSIMCY','UMCY','NCAR','CBSICAR','MCAR','CMCY','CCAR'].map(n => ({name: n, value: ''}));
                 }
 
                 // Leaderboard: kategori hari ini menimpa, kategori lama yang belum ada ikut terbawa
@@ -526,11 +527,13 @@
                 currentLeaderboards = JSON.parse(JSON.stringify(lbPrev));
                 for (const kat in lbHariIni) currentLeaderboards[kat] = lbHariIni[kat];
 
-                // Banner pemberitahuan
+                // Banner pemberitahuan: tampil bila ada data yang benar-benar diwarisi
                 const banner = document.getElementById('alert-carryover-admin');
-                const belumAdaUpdateHariIni = Object.keys(harianData.status_update || {}).length === 0;
-                if (adaWarisan && belumAdaUpdateHariIni) {
-                    banner.innerHTML = `<i class="fas fa-info-circle"></i> Form diisi otomatis dari data tanggal <strong>${prev.id}</strong>. Perbarui angka yang berubah, lalu tekan Update Dashboard.`;
+                const adaNamaDiwarisi = Object.keys(portoPrev).some(nama => !Object.keys(portoHariIni).includes(nama));
+                const adaNilaiDiwarisi = semuaNama.some(nama => Number(portoHariIni[nama] || 0) === 0 && Number(portoPrev[nama] || 0) > 0);
+                console.log('[carry-over] tanggal aktif:', documentIdHarian, '| sumber:', prev ? prev.id : 'tidak ada', '| porto hari ini:', Object.keys(portoHariIni).length, '| porto sumber:', Object.keys(portoPrev).length, '| total tampil:', semuaNama.length);
+                if (adaWarisan && (adaNamaDiwarisi || adaNilaiDiwarisi)) {
+                    banner.innerHTML = `<i class="fas fa-info-circle"></i> Sebagian form diisi otomatis dari data tanggal <strong>${prev.id}</strong>. Perbarui angka yang berubah, lalu tekan Update Dashboard.`;
                     banner.style.display = 'block';
                 } else {
                     banner.style.display = 'none';
