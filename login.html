@@ -199,7 +199,7 @@
 
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
 
             // Loading state
@@ -222,6 +222,10 @@
                     errorBox.style.display = 'block';
                     if(error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
                         errorText.innerText = "Kredensial tidak valid. Silakan periksa kembali Email dan Password Anda.";
+                    } else if(error.code === 'auth/too-many-requests') {
+                        errorText.innerText = "Terlalu banyak percobaan gagal. Tunggu beberapa menit lalu coba lagi.";
+                    } else if(error.code === 'auth/network-request-failed') {
+                        errorText.innerText = "Koneksi internet bermasalah. Periksa jaringan Anda.";
                     } else {
                         errorText.innerText = "Terjadi kesalahan: " + error.message;
                     }

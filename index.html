@@ -282,7 +282,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, query, where, collection, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, onSnapshot, query, where, collection, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
     const app = initializeApp(firebaseConfig);
@@ -374,11 +374,25 @@
             if (hasValidData) {
                 finalData = docSnap.data();
             } else {
-                const q = query(collection(db, "laporan_harian"), where("__name__", "<", documentIdHarian), orderBy("__name__", "desc"), limit(1));
-                const prevSnap = await getDocs(q);
-                if (!prevSnap.empty) {
-                    finalData = prevSnap.docs[0].data();
-                    sourceDate = prevSnap.docs[0].id;
+                // Telusuri mundur maksimal 14 hari dengan getDoc langsung (tanpa query __name__)
+                let ketemu = null;
+                try {
+                    const dCari = new Date(documentIdHarian + 'T00:00:00');
+                    for (let i = 0; i < 14; i++) {
+                        dCari.setDate(dCari.getDate() - 1);
+                        const idCari = `${dCari.getFullYear()}-${String(dCari.getMonth()+1).padStart(2,'0')}-${String(dCari.getDate()).padStart(2,'0')}`;
+                        const snapCari = await getDoc(doc(db, "laporan_harian", idCari));
+                        if (snapCari.exists()) {
+                            const isi = snapCari.data();
+                            const jml = Object.keys(isi.portofolio_dinamis || {}).length;
+                            if (jml > 0) { ketemu = { id: idCari, data: isi }; break; }
+                        }
+                    }
+                } catch (err) { console.warn('Carry-over TV gagal:', err); }
+
+                if (ketemu) {
+                    finalData = ketemu.data;
+                    sourceDate = ketemu.id;
                     isCarryOver = true;
                 } else {
                     finalData = docSnap.exists() ? docSnap.data() : {};

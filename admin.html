@@ -82,7 +82,7 @@
         <div class="sidebar-header">
             <img src="logo.png" alt="DMJ Logo" onerror="this.style.display='none'">
             <h3>EXECUTIVE PORTAL</h3>
-            <div style="font-size: 0.7rem; color: #94a3b8; margin-top: -4px; margin-bottom: 6px; letter-spacing: 0.5px;">v2.5 &middot; carry-over</div>
+            <div style="font-size: 0.7rem; color: #94a3b8; margin-top: -4px; margin-bottom: 6px; letter-spacing: 0.5px;">v2.8 &middot; carry-over</div>
             <div class="user-info">
                 <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 3px;">Login sebagai:</div>
                 <span id="user-display-name">Memuat...</span>
@@ -236,7 +236,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, onSnapshot, arrayUnion, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, onSnapshot, arrayUnion, deleteField, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
         
         const firebaseConfig = { apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4", authDomain: "dmj-muf.firebaseapp.com", projectId: "dmj-muf", storageBucket: "dmj-muf.firebasestorage.app", messagingSenderId: "151482891980", appId: "1:151482891980:web:2b69494a0e6ced5deecc69" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
@@ -387,6 +387,9 @@
             try {
                 let cleanLeaderboard = {};
                 for(let kat in currentLeaderboards) { let cleanedItems = currentLeaderboards[kat].filter(item => item.name.trim() !== ''); cleanLeaderboard[kat] = cleanedItems; }
+                // Kategori yang dihapus dari form ikut dibuang dari Firestore
+                const lbTersimpan = harianData.leaderboard_dinamis || {};
+                Object.keys(lbTersimpan).forEach(kat => { if(!(kat in currentLeaderboards)) cleanLeaderboard[kat] = deleteField(); });
                 const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second: '2-digit'}) + ' WIB';
                 const logMsg = { waktu: timeStr, user: currentUserData.nama, aksi: "Mengupdate Data Leaderboard" };
 
@@ -458,10 +461,15 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDocSnap = await getDoc(doc(db, "users", user.email));
+                // Cari dokumen user: coba email apa adanya, lalu versi huruf kecil
+                let userDocSnap = await getDoc(doc(db, "users", user.email));
+                if (!userDocSnap.exists() && user.email !== user.email.toLowerCase()) {
+                    userDocSnap = await getDoc(doc(db, "users", user.email.toLowerCase()));
+                }
                 if (userDocSnap.exists()) {
                     currentUserData = userDocSnap.data();
                     terapkanHakAkses(currentUserData);
+                    if (currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all') pantauDaftarUser();
                     muatDataHarian(); 
                 } else { alert("Akses Ditolak."); keluar(true); }
             } else { window.location.href = 'login.html'; }
@@ -600,18 +608,37 @@
             if(!wlr.disabled && wlr.value) dataUpdate.walr = Number(wlr.value);
             if(!per.disabled) dataUpdate.periode_custom = per.value;
 
-            const portoDinamis = {};
-            currentPortos.forEach(p => { if(p.name.trim() !== '') portoDinamis[p.name.trim().toUpperCase()] = p.value ? Number(p.value) : 0; });
-            
+            const isAdminPenuh = currentUserData.role === 'superadmin' || currentUserData.portofolio === 'all';
+            const portoTersimpan = harianData.portofolio_dinamis || {};
             const timeStr = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second: '2-digit'}) + ' WIB';
             let statusObj = harianData.status_update || {};
+
+            const portoDinamis = {};
+            const namaAktif = [];
             currentPortos.forEach(p => {
-                if(p.name.trim() !== '') {
-                    if ((currentUserData.role === 'pic' && currentUserData.portofolio === p.name) || currentUserData.role === 'superadmin') {
-                        statusObj[p.name] = { waktu: timeStr, user: currentUserData.nama };
-                    }
+                const nama = p.name.trim().toUpperCase();
+                if(nama === '') return;
+                namaAktif.push(nama);
+                // PIC hanya boleh menulis portofolionya sendiri; angka tim lain tidak disentuh
+                const bolehTulis = isAdminPenuh || currentUserData.portofolio === nama;
+                if(!bolehTulis) return;
+                const nilaiBaru = p.value ? Number(p.value) : 0;
+                portoDinamis[nama] = nilaiBaru;
+                // Status hanya ditandai bila angkanya memang berubah
+                if(Number(portoTersimpan[nama] || 0) !== nilaiBaru) {
+                    statusObj[nama] = { waktu: timeStr, user: currentUserData.nama };
                 }
             });
+
+            // Hapus benaran: key yang sudah tidak ada di form dibuang dari Firestore
+            if(isAdminPenuh) {
+                Object.keys(portoTersimpan).forEach(nama => {
+                    if(!namaAktif.includes(nama)) {
+                        portoDinamis[nama] = deleteField();
+                        if(statusObj[nama]) delete statusObj[nama];
+                    }
+                });
+            }
             const logMsg = { waktu: timeStr, user: currentUserData.nama, aksi: "Mengupdate Data Harian" };
 
             dataUpdate.portofolio_dinamis = portoDinamis;
@@ -638,14 +665,17 @@
             if(!nama || !email || !pass) return; if(pass.length < 6) return;
             try {
                 btn.innerHTML = 'Memproses...';
-                await createUserWithEmailAndPassword(secondaryAuth, email, pass);
-                await setDoc(doc(db, "users", email), { nama: nama, portofolio: role, role: role === 'all' ? 'superadmin' : 'pic' });
+                const emailBersih = email.trim().toLowerCase();
+                await createUserWithEmailAndPassword(secondaryAuth, emailBersih, pass);
+                await setDoc(doc(db, "users", emailBersih), { nama: nama, portofolio: role, role: role === 'all' ? 'superadmin' : 'pic' });
                 await secondaryAuth.signOut(); alert("Berhasil!");
                 document.getElementById('pic-nama').value = ''; document.getElementById('pic-email').value = ''; document.getElementById('pic-pass').value = '';
                 btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim & Buat Password';
             } catch (error) { alert(error.message); btn.innerHTML = '<i class="fas fa-user-plus"></i> Daftarkan Tim'; }
         });
 
+        // Daftar user hanya dipantau oleh superadmin (PIC tidak punya izin baca koleksi users)
+        window.pantauDaftarUser = function() {
         onSnapshot(collection(db, "users"), (snapshot) => {
             const listContainer = document.getElementById('list-tim'); listContainer.innerHTML = '';
             const emailAktif = auth.currentUser ? auth.currentUser.email : '';
@@ -657,6 +687,7 @@
                 listContainer.innerHTML += `<li style="display: flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;"><div><strong style="display:block; color: var(--text-main);">${data.nama}</strong><span style="font-size:0.75rem; color:var(--text-light);">${email}</span></div><div style="display: flex; align-items: center;"><span style="background: ${badgeColor}; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight:bold;">${roleText}</span>${tombolHapus}</div></li>`;
             });
         });
+        };
 
         function keluar(force = false) { 
             if (force || confirm("Apakah Anda yakin ingin keluar dari Panel Admin?")) {
