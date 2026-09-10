@@ -162,7 +162,22 @@
   }
 
   ::-webkit-scrollbar{height:8px; width:8px;}
-  ::-webkit-scrollbar-thumb{background:#c7cfe6; border-radius:6px;}
+  ::-webkit-scrollbar-thumb{background:#c7cfe6; border-radius:6px;}  .h2h-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:760px){ .h2h-grid{grid-template-columns:1fr;} }
+  .h2h-col{border:1px solid var(--line); border-radius:12px; padding:16px 18px;}
+  .h2h-col.current{border-color:var(--navy); background:linear-gradient(180deg,#f5f7ff,#fff);}
+  .h2h-col .h2h-title{font-size:.78rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px;}
+  .h2h-col .h2h-value{font-size:1.7rem; font-weight:700; color:var(--navy); font-family:'Space Grotesk',sans-serif;}
+  .h2h-col .h2h-sub{font-size:.78rem; color:var(--muted); margin-top:4px;}
+  .h2h-delta{display:flex; align-items:center; gap:10px; justify-content:center; margin:16px 0; flex-wrap:wrap;}
+  .h2h-delta-badge{font-weight:700; font-size:1rem; padding:8px 18px; border-radius:24px; display:flex; align-items:center; gap:6px;}
+  .h2h-delta-badge.up{background:#eafbf3; color:#0f7a4f; border:1px solid #bdeed7;}
+  .h2h-delta-badge.down{background:#fdeceb; color:#b3352c; border:1px solid #f7c6c1;}
+  .h2h-delta-badge.flat{background:#f3f4f6; color:#64748b; border:1px solid #e2e8f0;}
+  .h2h-table-wrap{margin-top:18px; max-height:280px; overflow:auto;}
+  .h2h-bar-row{display:grid; grid-template-columns:70px 1fr 1fr; gap:10px; align-items:center; font-size:.8rem; padding:6px 0;}
+  .h2h-bar-track{height:16px; background:#f1f3fa; border-radius:4px; position:relative; overflow:hidden;}
+  .h2h-bar-fill{height:100%; border-radius:4px;}
 </style>
 </head>
 <body>
@@ -185,7 +200,7 @@
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
-      <div class="updated-pill" id="versionPill" style="background:rgba(245,165,36,.15); border-color:rgba(245,165,36,.4); color:#ffd898;">v1.5 — 10 Sep 2026</div>
+      <div class="updated-pill" id="versionPill" style="background:rgba(245,165,36,.15); border-color:rgba(245,165,36,.4); color:#ffd898;">v1.7 — 10 Sep 2026</div>
       <div class="updated-pill" id="updatedPill">⏱ Belum ada update</div>
       <div class="updated-pill" id="userPill" style="display:none;"></div>
       <label class="upload-btn" for="fileUpload">⬆ Upload Excel Harian</label>
@@ -230,6 +245,14 @@
   <div id="dashboardBody" style="display:none;">
 
     <div class="kpis" id="kpiRow"></div>
+
+    <section class="block" id="h2hSection">
+      <div class="block-head">
+        <h2>⚔️ Head to Head — Bulan Berjalan vs Bulan Sebelumnya</h2>
+        <div class="tag" id="h2hLabel"></div>
+      </div>
+      <div id="h2hBody"></div>
+    </section>
 
     <section class="block">
       <div class="block-head">
@@ -296,8 +319,21 @@
    v1.5  Target RKAP kini per-bulan (support 2 format file target),
          mengikuti filter Bulan aktif. Akses import & edit target
          dikunci hanya untuk role Super Admin (bukan password statis).
+   v1.6  Perbaikan besar: deteksi sheet terbaik otomatis (multi-sheet,
+         hindari sheet "grouped" yang bikin banyak data tidak
+         diketahui), acuan bulan pakai Tanggal PPD, filter Bulan
+         auto-pilih bulan terbaru, section Head to Head (bulan
+         berjalan vs bulan lalu) per total & per portofolio.
+         Koreksi otomatis baris yang kolomnya bergeser (pakai "No
+         Kontrak" sebagai jangkar validasi per-baris).
+   v1.7  PERBAIKAN PENTING: penyimpanan data sebelumnya (window.storage)
+         ternyata API khusus pratinjau Claude yang TIDAK berfungsi di
+         hosting sungguhan — jadi data sebenarnya tidak pernah
+         tersimpan. Diganti total ke Firestore (koleksi
+         'dashboard_shared'): data harian & target kini tersimpan
+         terpusat, semua user yang login melihat data yang sama.
    ============================================================ */
-console.log('%cMUF Dashboard v1.5 — 10 Sep 2026', 'color:#f5a524; font-weight:bold; font-size:12px;');
+console.log('%cMUF Dashboard v1.7 — 10 Sep 2026', 'color:#f5a524; font-weight:bold; font-size:12px;');
 
 const STORAGE_DATA_KEY = 'muf-dashboard-rawdata';
 const STORAGE_TARGET_KEY = 'muf-dashboard-targets';
@@ -354,6 +390,30 @@ function locateHeaderRow(rows, maxScan){
   return best.score > 0 ? best.idx : 0;
 }
 
+function pickBestSheet(wb){
+  let best = null;
+  for (const sheetName of wb.SheetNames){
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1, raw:true, defval:''});
+    if (!rows.length) continue;
+    const headerRowIdx = locateHeaderRow(rows, 20);
+    const header = rows[headerRowIdx] || [];
+    const idxMarketing = findColIndex(header, ['Marketing']);
+    const idxPort = findColIndex(header, ['Portofolio Code']);
+    const idxNilai = findColIndex(header, ['Nilai Pencairan', 'Grand Total', 'Nilai Cair', 'Plafond', 'Total Pencairan']);
+    if (idxMarketing === -1 || idxPort === -1 || idxNilai === -1) continue;
+    // Skor kelengkapan: hitung baris data yang Portofolio Code-nya TERISI.
+    // Menghindari sheet "grouped/subtotal" yang selnya kosong di baris non-pertama grup.
+    let score = 0;
+    for (let i=headerRowIdx+1; i<rows.length; i++){
+      if (String(rows[i][idxPort]||'').trim()) score++;
+    }
+    if (!best || score > best.score){
+      best = {sheetName, rows, headerRowIdx, header, score};
+    }
+  }
+  return best;
+}
+
 function findColIndex(headerRow, candidates){
   const normed = headerRow.map(normHeader);
   for (const cand of candidates){
@@ -390,11 +450,13 @@ function handleFile(file){
     try {
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, {type:'array'});
-      const sheet = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(sheet, {header:1, raw:true, defval:''});
-      if (!rows.length) { alert('File kosong atau format tidak terbaca.'); return; }
-      const headerRowIdx = locateHeaderRow(rows, 20);
-      const header = rows[headerRowIdx];
+
+      const best = pickBestSheet(wb);
+      if (!best){
+        alert('Tidak ada sheet di file ini yang punya kolom "Marketing", "Portofolio Code", dan "Nilai Pencairan/Grand Total" sekaligus. Sheet yang ada: ' + wb.SheetNames.join(', '));
+        return;
+      }
+      const {rows, headerRowIdx, header, sheetName} = best;
 
       const idx = {
         marketing: findColIndex(header, ['Marketing']),
@@ -403,47 +465,73 @@ function handleFile(file){
         cabang: findColIndex(header, ['Cabang']),
         outlet: findColIndex(header, ['Outlet']),
         status: findColIndex(header, ['Status']),
+        tglPPD: findColIndex(header, ['Tanggal PPD']),
         tglOrder: findColIndex(header, ['Tanggal Order']),
         merk: findColIndex(header, ['Merk Kendaraan']),
-        cancel: findColIndex(header, ['Cancel'])
+        cancel: findColIndex(header, ['Cancel']),
+        noKontrak: findColIndex(header, ['No Kontrak'])
       };
-
-      if (idx.marketing === -1 || idx.portofolio === -1 || idx.nilai === -1){
-        const missing = [];
-        if (idx.marketing===-1) missing.push('Marketing');
-        if (idx.portofolio===-1) missing.push('Portofolio Code');
-        if (idx.nilai===-1) missing.push('Nilai Pencairan');
-        const headerPreview = header.filter(h=>String(h||'').trim()).slice(0,15).join(', ');
-        alert('Kolom berikut tidak ditemukan: ' + missing.join(', ') + '.\n\nBaris yang terdeteksi sebagai header (baris ke-' + (headerRowIdx+1) + '):\n' + headerPreview + (header.length>15?', ...':'') + '\n\nCek apakah nama kolom di file Anda sedikit berbeda dari daftar di atas.');
-        return;
-      }
+      // Sebagian file punya baris yang selnya bergeser satu kolom ke kanan (biasanya
+      // gara-gara ada sel kosong tersisip sebelum "No Kontrak"). "No Kontrak" punya pola
+      // yang khas (diawali 0, digit panjang) sehingga dipakai sebagai jangkar untuk
+      // mendeteksi & mengoreksi pergeseran ini per-baris, khusus untuk kolom yang
+      // posisinya SETELAH No Kontrak (Marketing, Portofolio, Nilai, Status, dst).
+      const ANCHOR_PATTERN = /^0\d{9,13}$/;
 
       const parsed = [];
+      let shiftedRowsCount = 0;
       for (let i=headerRowIdx+1;i<rows.length;i++){
         const r = rows[i];
         if (!r || r.length===0) continue;
-        const marketing = String(r[idx.marketing]||'').trim();
-        const portofolio = String(r[idx.portofolio]||'').trim();
-        const nilai = parseNumber(r[idx.nilai]);
+
+        let shift = 0;
+        if (idx.noKontrak > -1){
+          const val = String(r[idx.noKontrak]||'').trim();
+          if (!ANCHOR_PATTERN.test(val)){
+            for (let d=1; d<=3; d++){
+              const right = String(r[idx.noKontrak+d]||'').trim();
+              const left = String(r[idx.noKontrak-d]||'').trim();
+              if (ANCHOR_PATTERN.test(right)){ shift = d; break; }
+              if (ANCHOR_PATTERN.test(left)){ shift = -d; break; }
+            }
+          }
+        }
+        if (shift !== 0) shiftedRowsCount++;
+        const get = (colIdx) => (colIdx === -1) ? undefined : (colIdx >= idx.noKontrak ? r[colIdx+shift] : r[colIdx]);
+
+        const marketing = String(get(idx.marketing)||'').trim();
+        const portofolio = String(get(idx.portofolio)||'').trim();
+        const nilai = parseNumber(get(idx.nilai));
         if (!marketing && !portofolio && !nilai) continue;
-        const cancel = idx.cancel>-1 ? String(r[idx.cancel]||'').trim().toUpperCase() : 'N';
+        const cancel = idx.cancel>-1 ? String(get(idx.cancel)||'').trim().toUpperCase() : 'N';
         if (cancel === 'Y') continue; // skip cancelled
+        // Tanggal acuan bulan: pakai Tanggal PPD (tanggal realisasi/pencairan) jika ada,
+        // fallback ke Tanggal Order kalau kosong.
+        const tglPPDVal = idx.tglPPD>-1 ? parseDateFlexible(get(idx.tglPPD)) : null;
+        const tglOrderVal = idx.tglOrder>-1 ? parseDateFlexible(get(idx.tglOrder)) : null;
         parsed.push({
           marketing: marketing || '(Tidak diketahui)',
           portofolio: portofolio || '(Tidak diketahui)',
           nilai: nilai,
-          cabang: idx.cabang>-1 ? String(r[idx.cabang]||'').trim() : '',
-          outlet: idx.outlet>-1 ? String(r[idx.outlet]||'').trim() : '',
-          status: idx.status>-1 ? String(r[idx.status]||'').trim() : '',
-          merk: idx.merk>-1 ? String(r[idx.merk]||'').trim() : '',
-          tglOrder: idx.tglOrder>-1 ? parseDateFlexible(r[idx.tglOrder]) : null
+          cabang: idx.cabang>-1 ? String(get(idx.cabang)||'').trim() : '',
+          outlet: idx.outlet>-1 ? String(get(idx.outlet)||'').trim() : '',
+          status: idx.status>-1 ? String(get(idx.status)||'').trim() : '',
+          merk: idx.merk>-1 ? String(get(idx.merk)||'').trim() : '',
+          tglOrder: tglPPDVal || tglOrderVal
         });
       }
 
-      if (!parsed.length){ alert('Tidak ada baris data valid yang terbaca.'); return; }
+      if (shiftedRowsCount > 0){
+        console.log('Koreksi pergeseran kolom diterapkan pada', shiftedRowsCount, 'baris.');
+      }
+
+      if (!parsed.length){
+        alert('Tidak ada baris data valid yang terbaca dari sheet "' + sheetName + '".');
+        return;
+      }
 
       RAW_ROWS = parsed;
-      persistData(file.name);
+      persistData(file.name + ' (sheet: ' + sheetName + ')');
       buildFilters();
       renderAll();
     } catch(err){
@@ -456,36 +544,50 @@ function handleFile(file){
 
 async function persistData(fileName){
   try{
-    await window.storage.set('rows', JSON.stringify(RAW_ROWS.map(r=>({...r, tglOrder: r.tglOrder ? r.tglOrder.toISOString() : null}))), false);
-    await window.storage.set('meta', JSON.stringify({fileName, updatedAt: new Date().toISOString()}), false);
-  }catch(err){ console.warn('storage save failed', err); }
+    // Trim field yang tidak dipakai render (outlet, merk) supaya ukuran dokumen Firestore hemat.
+    const rowsForStorage = RAW_ROWS.map(r=>({
+      marketing: r.marketing, portofolio: r.portofolio, nilai: r.nilai,
+      cabang: r.cabang, status: r.status,
+      tglOrder: r.tglOrder ? r.tglOrder.toISOString() : null
+    }));
+    if (!window.FS_SAVE_DATA) throw new Error('Koneksi Firestore belum siap');
+    await window.FS_SAVE_DATA(rowsForStorage, fileName);
+    document.getElementById('fileInfo').textContent = 'Sumber data: ' + fileName;
+    document.getElementById('updatedPill').textContent = '⏱ Update terakhir: ' + new Date().toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'});
+  }catch(err){
+    console.error('Gagal simpan ke Firestore:', err);
+    alert('Data berhasil dibaca & ditampilkan, TAPI GAGAL disimpan ke Firestore (' + err.message + ').\nOrang lain belum akan melihat data ini sampai berhasil tersimpan — coba upload ulang.');
+  }
 }
 
 async function persistTargets(){
-  try{ await window.storage.set('targets', JSON.stringify(TARGETS), false); }
-  catch(err){ console.warn('storage save failed', err); }
+  try{
+    if (!window.FS_SAVE_TARGETS) throw new Error('Koneksi Firestore belum siap');
+    await window.FS_SAVE_TARGETS(TARGETS);
+  }catch(err){
+    console.error('Gagal simpan target ke Firestore:', err);
+    alert('Gagal menyimpan target ke Firestore: ' + err.message);
+  }
 }
 
 async function loadPersisted(){
   try{
-    const rowsRes = await window.storage.get('rows', false);
-    if (rowsRes && rowsRes.value){
-      const arr = JSON.parse(rowsRes.value);
-      RAW_ROWS = arr.map(r => ({...r, tglOrder: r.tglOrder ? new Date(r.tglOrder) : null}));
+    if (window.FS_LOAD_DATA){
+      const data = await window.FS_LOAD_DATA();
+      if (data && Array.isArray(data.rows)){
+        RAW_ROWS = data.rows.map(r => ({...r, tglOrder: r.tglOrder ? new Date(r.tglOrder) : null}));
+        document.getElementById('fileInfo').textContent = 'Sumber data: ' + (data.fileName||'-') + (data.updatedBy?(' · diupload oleh '+data.updatedBy):'');
+        document.getElementById('updatedPill').textContent = '⏱ Update terakhir: ' + new Date(data.updatedAt).toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'});
+      }
     }
-  }catch(e){}
+  }catch(e){ console.warn('Gagal memuat data dari Firestore:', e); }
+
   try{
-    const metaRes = await window.storage.get('meta', false);
-    if (metaRes && metaRes.value){
-      const meta = JSON.parse(metaRes.value);
-      document.getElementById('fileInfo').textContent = 'Sumber data: ' + meta.fileName;
-      document.getElementById('updatedPill').textContent = '⏱ Update terakhir: ' + new Date(meta.updatedAt).toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'});
+    if (window.FS_LOAD_TARGETS){
+      const t = await window.FS_LOAD_TARGETS();
+      if (t && t.targets) TARGETS = t.targets;
     }
-  }catch(e){}
-  try{
-    const tRes = await window.storage.get('targets', false);
-    if (tRes && tRes.value) TARGETS = JSON.parse(tRes.value);
-  }catch(e){}
+  }catch(e){ console.warn('Gagal memuat target dari Firestore:', e); }
 
   if (RAW_ROWS.length){
     buildFilters();
@@ -493,11 +595,13 @@ async function loadPersisted(){
   }
 }
 
+const BULAN_NAMES = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+let AVAILABLE_MONTHS = [];
+
 function buildFilters(){
   document.getElementById('filtersBar').style.display = 'flex';
   const bulanSel = document.getElementById('filterBulan');
   const cabangSel = document.getElementById('filterCabang');
-  const bulanNames = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 
   const bulanSet = new Set();
   const cabangSet = new Set();
@@ -505,12 +609,16 @@ function buildFilters(){
     if (r.tglOrder) bulanSet.add(r.tglOrder.getFullYear()+'-'+String(r.tglOrder.getMonth()+1).padStart(2,'0'));
     if (r.cabang) cabangSet.add(r.cabang);
   });
+  AVAILABLE_MONTHS = Array.from(bulanSet).sort();
 
   bulanSel.innerHTML = '<option value="ALL">Semua Bulan</option>' +
-    Array.from(bulanSet).sort().map(b=>{
+    AVAILABLE_MONTHS.map(b=>{
       const [y,m] = b.split('-');
-      return `<option value="${b}">${bulanNames[parseInt(m)-1]} ${y}</option>`;
+      return `<option value="${b}">${BULAN_NAMES[parseInt(m)-1].slice(0,3)} ${y}</option>`;
     }).join('');
+  // Otomatis pilih bulan TERBARU dari data (bukan "Semua Bulan"), supaya target
+  // bulanan yang sudah diimpor langsung relevan/terlihat begitu data diupload.
+  if (AVAILABLE_MONTHS.length) bulanSel.value = AVAILABLE_MONTHS[AVAILABLE_MONTHS.length-1];
 
   cabangSel.innerHTML = '<option value="ALL">Semua Cabang</option>' +
     Array.from(cabangSet).sort().map(c=>`<option value="${c}">${c}</option>`).join('');
@@ -530,6 +638,32 @@ function getFilteredRows(){
     if (status !== 'ALL' && r.status !== status) return false;
     return true;
   });
+}
+
+// Sama seperti getFilteredRows tapi TANPA filter bulan — dipakai untuk head-to-head
+// karena butuh data dari 2 bulan sekaligus (bulan berjalan & bulan sebelumnya).
+function getFilteredRowsAnyMonth(){
+  const cabang = document.getElementById('filterCabang').value;
+  const status = document.getElementById('filterStatus').value;
+  return RAW_ROWS.filter(r=>{
+    if (cabang !== 'ALL' && r.cabang !== cabang) return false;
+    if (status !== 'ALL' && r.status !== status) return false;
+    return true;
+  });
+}
+
+function monthKeyOf(date){
+  return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0');
+}
+function prevMonthKey(monthKey){
+  const [y,m] = monthKey.split('-').map(Number);
+  const d = new Date(y, m-2, 1); // m-1 (0-index) - 1 bulan
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+function monthLabel(monthKey){
+  if (!monthKey) return '-';
+  const [y,m] = monthKey.split('-');
+  return BULAN_NAMES[parseInt(m)-1] + ' ' + y;
 }
 
 function aggregateBy(rows, keyField){
@@ -573,9 +707,96 @@ function renderAll(){
     </div>
   `;
 
+  renderHeadToHead();
   renderMarketing(marketingAgg, totalNilai);
   renderPortfolio(portoAgg, totalNilai);
   renderTargets(portoAgg, totalNilai);
+}
+
+function renderHeadToHead(){
+  const filterBulan = document.getElementById('filterBulan').value;
+  const currentMonth = (filterBulan !== 'ALL') ? filterBulan : (AVAILABLE_MONTHS[AVAILABLE_MONTHS.length-1] || null);
+  const label = document.getElementById('h2hLabel');
+  const body = document.getElementById('h2hBody');
+
+  if (!currentMonth){
+    label.textContent = '';
+    body.innerHTML = '<div style="color:var(--muted); font-size:.85rem;">Pilih bulan tertentu di filter untuk melihat perbandingan.</div>';
+    return;
+  }
+  const prevMonth = prevMonthKey(currentMonth);
+  label.textContent = monthLabel(currentMonth) + ' vs ' + monthLabel(prevMonth);
+
+  const allRows = getFilteredRowsAnyMonth();
+  const curRows = allRows.filter(r => r.tglOrder && monthKeyOf(r.tglOrder) === currentMonth);
+  const prevRows = allRows.filter(r => r.tglOrder && monthKeyOf(r.tglOrder) === prevMonth);
+
+  const curTotal = curRows.reduce((s,r)=>s+r.nilai,0);
+  const prevTotal = prevRows.reduce((s,r)=>s+r.nilai,0);
+  const curUnit = curRows.length;
+  const prevUnit = prevRows.length;
+
+  const deltaAmt = curTotal - prevTotal;
+  const deltaPct = prevTotal ? (deltaAmt/prevTotal*100) : (curTotal>0 ? 100 : 0);
+  const deltaCls = deltaPct > 0.5 ? 'up' : (deltaPct < -0.5 ? 'down' : 'flat');
+  const deltaIcon = deltaCls==='up' ? '▲' : deltaCls==='down' ? '▼' : '■';
+
+  if (!prevRows.length && !curRows.length){
+    body.innerHTML = '<div style="color:var(--muted); font-size:.85rem;">Belum ada data transaksi untuk ' + monthLabel(currentMonth) + ' maupun ' + monthLabel(prevMonth) + '.</div>';
+    return;
+  }
+
+  let html = `
+    <div class="h2h-grid">
+      <div class="h2h-col">
+        <div class="h2h-title">${monthLabel(prevMonth)} (Bulan Lalu)</div>
+        <div class="h2h-value">${fmtRp(prevTotal)}</div>
+        <div class="h2h-sub">${fmtNum(prevUnit)} unit transaksi</div>
+      </div>
+      <div class="h2h-col current">
+        <div class="h2h-title">${monthLabel(currentMonth)} (Bulan Berjalan)</div>
+        <div class="h2h-value">${fmtRp(curTotal)}</div>
+        <div class="h2h-sub">${fmtNum(curUnit)} unit transaksi</div>
+      </div>
+    </div>
+    <div class="h2h-delta">
+      <div class="h2h-delta-badge ${deltaCls}">${deltaIcon} ${Math.abs(deltaPct).toFixed(1)}% ${deltaCls==='up'?'lebih tinggi':deltaCls==='down'?'lebih rendah':'relatif sama'} dari bulan lalu</div>
+      <div style="font-size:.8rem; color:var(--muted);">(selisih ${deltaAmt>=0?'+':''}${fmtRp(deltaAmt)})</div>
+    </div>
+  `;
+
+  // Perbandingan per kode portofolio
+  const curByPort = aggregateBy(curRows, 'portofolio');
+  const prevByPortMap = {};
+  aggregateBy(prevRows, 'portofolio').forEach(a=> prevByPortMap[a.key] = a.nilai);
+  const allPortKeys = new Set([...curByPort.map(a=>a.key), ...Object.keys(prevByPortMap)]);
+  const maxVal = Math.max(1, ...curByPort.map(a=>a.nilai), ...Object.values(prevByPortMap));
+
+  let rowsHtml = '';
+  Array.from(allPortKeys).sort((a,b)=>{
+    const av = (curByPort.find(x=>x.key===a)||{nilai:0}).nilai;
+    const bv = (curByPort.find(x=>x.key===b)||{nilai:0}).nilai;
+    return bv - av;
+  }).forEach(key=>{
+    const curVal = (curByPort.find(a=>a.key===key)||{nilai:0}).nilai;
+    const prevVal = prevByPortMap[key] || 0;
+    rowsHtml += `
+      <div class="h2h-bar-row">
+        <div style="font-weight:700; color:var(--navy);">${key}</div>
+        <div>
+          <div style="font-size:.7rem; color:var(--muted); margin-bottom:2px;">Lalu: ${fmtRp(prevVal)}</div>
+          <div class="h2h-bar-track"><div class="h2h-bar-fill" style="width:${(prevVal/maxVal*100)}%; background:#94a3b8;"></div></div>
+        </div>
+        <div>
+          <div style="font-size:.7rem; color:var(--muted); margin-bottom:2px;">Berjalan: ${fmtRp(curVal)}</div>
+          <div class="h2h-bar-track"><div class="h2h-bar-fill" style="width:${(curVal/maxVal*100)}%; background:${curVal>=prevVal?'#1b9e6b':'#d3483f'};"></div></div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `<div class="h2h-table-wrap">${rowsHtml}</div>`;
+  body.innerHTML = html;
 }
 
 function renderMarketing(agg, total){
@@ -907,7 +1128,7 @@ document.getElementById('resetFilters').addEventListener('click', ()=>{
   renderAll();
 });
 
-loadPersisted();
+// loadPersisted() dipanggil dari alur login (module script) setelah Firestore siap.
 </script>
 
 </div><!-- /#appRoot -->
@@ -915,7 +1136,7 @@ loadPersisted();
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4",
@@ -928,6 +1149,36 @@ loadPersisted();
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+
+  // ===== Jembatan Firestore: dipanggil dari script utama (non-module) via window.* =====
+  // Koleksi 'dashboard_shared' berisi 2 dokumen: 'latest_data' (upload Excel harian
+  // terakhir) dan 'targets' (Target RKAP). Karena satu dokumen untuk SEMUA user,
+  // begitu satu orang upload data/target, semua yang buka dashboard melihat versi sama.
+  function currentUserLabel(){
+    return (window.CURRENT_USER && window.CURRENT_USER.nama) || (auth.currentUser && auth.currentUser.email) || 'unknown';
+  }
+  window.FS_SAVE_DATA = async (rows, fileName) => {
+    await setDoc(doc(db, 'dashboard_shared', 'latest_data'), {
+      rows, fileName,
+      updatedAt: new Date().toISOString(),
+      updatedBy: currentUserLabel()
+    });
+  };
+  window.FS_LOAD_DATA = async () => {
+    const snap = await getDoc(doc(db, 'dashboard_shared', 'latest_data'));
+    return snap.exists() ? snap.data() : null;
+  };
+  window.FS_SAVE_TARGETS = async (targets) => {
+    await setDoc(doc(db, 'dashboard_shared', 'targets'), {
+      targets,
+      updatedAt: new Date().toISOString(),
+      updatedBy: currentUserLabel()
+    });
+  };
+  window.FS_LOAD_TARGETS = async () => {
+    const snap = await getDoc(doc(db, 'dashboard_shared', 'targets'));
+    return snap.exists() ? snap.data() : null;
+  };
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'login.html'; return; }
@@ -952,6 +1203,7 @@ loadPersisted();
     }
     document.getElementById('authLoader').style.display = 'none';
     document.getElementById('appRoot').style.display = 'block';
+    if (window.loadPersisted) window.loadPersisted();
   });
 
   document.getElementById('btnLogout').addEventListener('click', () => {
