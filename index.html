@@ -167,6 +167,14 @@
 </head>
 <body>
 
+<div id="authLoader" style="position:fixed; inset:0; background:#0a1d56; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; color:#fff; gap:14px;">
+  <div style="width:40px;height:40px;border:4px solid rgba(255,255,255,.25); border-top:4px solid #f5a524; border-radius:50%; animation:spinAuth 1s linear infinite;"></div>
+  <div style="font-size:.85rem; color:#c9d3f5;">Memeriksa akses...</div>
+</div>
+<style>@keyframes spinAuth{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
+
+<div id="appRoot" style="display:none;">
+
 <header class="top">
   <div class="top-row">
     <div class="brand">
@@ -178,8 +186,10 @@
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
       <div class="updated-pill" id="updatedPill">⏱ Belum ada update</div>
+      <div class="updated-pill" id="userPill" style="display:none;"></div>
       <label class="upload-btn" for="fileUpload">⬆ Upload Excel Harian</label>
       <input type="file" id="fileUpload" accept=".xlsx,.xls,.csv">
+      <button id="btnLogout" class="upload-btn" style="background:#dc2626; color:#fff;">⏻ Keluar</button>
     </div>
   </div>
 </header>
@@ -302,14 +312,37 @@ function parseNumber(v){
   return isNaN(n) ? 0 : n;
 }
 
+function normHeader(v){
+  return String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
+}
+
+function locateHeaderRow(rows, maxScan){
+  maxScan = Math.min(maxScan || 20, rows.length);
+  let best = {idx:0, score:-1};
+  for (let i=0;i<maxScan;i++){
+    const row = (rows[i]||[]).map(normHeader);
+    if (!row.length) continue;
+    let score = 0;
+    if (row.some(h=>h.includes('marketing'))) score++;
+    if (row.some(h=>h.includes('portofolio'))) score++;
+    if (row.some(h=>h.includes('nilai pencairan') || h.includes('pencairan'))) score++;
+    if (row.some(h=>h.includes('cabang'))) score++;
+    if (row.some(h=>h.includes('status'))) score++;
+    if (score > best.score){ best = {idx:i, score}; }
+    if (score >= 3) return i; // confident match, stop early
+  }
+  return best.score > 0 ? best.idx : 0;
+}
+
 function findColIndex(headerRow, candidates){
+  const normed = headerRow.map(normHeader);
   for (const cand of candidates){
-    const idx = headerRow.findIndex(h => String(h||'').trim().toLowerCase() === cand.toLowerCase());
+    const idx = normed.findIndex(h => h === normHeader(cand));
     if (idx > -1) return idx;
   }
   // fallback: contains match
   for (const cand of candidates){
-    const idx = headerRow.findIndex(h => String(h||'').trim().toLowerCase().includes(cand.toLowerCase()));
+    const idx = normed.findIndex(h => h.includes(normHeader(cand)));
     if (idx > -1) return idx;
   }
   return -1;
@@ -340,7 +373,8 @@ function handleFile(file){
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(sheet, {header:1, raw:true, defval:''});
       if (!rows.length) { alert('File kosong atau format tidak terbaca.'); return; }
-      const header = rows[0];
+      const headerRowIdx = locateHeaderRow(rows, 20);
+      const header = rows[headerRowIdx];
 
       const idx = {
         marketing: findColIndex(header, ['Marketing']),
@@ -355,12 +389,17 @@ function handleFile(file){
       };
 
       if (idx.marketing === -1 || idx.portofolio === -1 || idx.nilai === -1){
-        alert('Kolom "Marketing", "Portofolio Code", atau "Nilai Pencairan" tidak ditemukan di file ini. Pastikan format kolom sama seperti file harian biasanya.');
+        const missing = [];
+        if (idx.marketing===-1) missing.push('Marketing');
+        if (idx.portofolio===-1) missing.push('Portofolio Code');
+        if (idx.nilai===-1) missing.push('Nilai Pencairan');
+        const headerPreview = header.filter(h=>String(h||'').trim()).slice(0,15).join(', ');
+        alert('Kolom berikut tidak ditemukan: ' + missing.join(', ') + '.\n\nBaris yang terdeteksi sebagai header (baris ke-' + (headerRowIdx+1) + '):\n' + headerPreview + (header.length>15?', ...':'') + '\n\nCek apakah nama kolom di file Anda sedikit berbeda dari daftar di atas.');
         return;
       }
 
       const parsed = [];
-      for (let i=1;i<rows.length;i++){
+      for (let i=headerRowIdx+1;i<rows.length;i++){
         const r = rows[i];
         if (!r || r.length===0) continue;
         const marketing = String(r[idx.marketing]||'').trim();
@@ -650,5 +689,55 @@ document.getElementById('resetFilters').addEventListener('click', ()=>{
 
 loadPersisted();
 </script>
+
+</div><!-- /#appRoot -->
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB6wb8YS-LRnDk7h5UFGTwOR26wpCtxEW4",
+    authDomain: "dmj-muf.firebaseapp.com",
+    projectId: "dmj-muf",
+    storageBucket: "dmj-muf.firebasestorage.app",
+    messagingSenderId: "151482891980",
+    appId: "1:151482891980:web:2b69494a0e6ced5deecc69"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    try {
+      let userDocSnap = await getDoc(doc(db, "users", user.email));
+      if (!userDocSnap.exists() && user.email !== user.email.toLowerCase()) {
+        userDocSnap = await getDoc(doc(db, "users", user.email.toLowerCase()));
+      }
+      if (!userDocSnap.exists()) {
+        alert("Akses ditolak: akun ini belum terdaftar sebagai user portal.");
+        await signOut(auth);
+        window.location.href = 'login.html';
+        return;
+      }
+      const userData = userDocSnap.data();
+      document.getElementById('userPill').style.display = 'inline-block';
+      document.getElementById('userPill').textContent = '👤 ' + (userData.nama || user.email);
+    } catch (err) {
+      console.warn('Gagal memeriksa akses user, tetap izinkan masuk:', err);
+    }
+    document.getElementById('authLoader').style.display = 'none';
+    document.getElementById('appRoot').style.display = 'block';
+  });
+
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    if (confirm('Keluar dari dashboard?')) {
+      signOut(auth).then(() => { window.location.href = 'login.html'; });
+    }
+  });
+</script>
+
 </body>
 </html>
