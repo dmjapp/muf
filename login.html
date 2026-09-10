@@ -190,10 +190,10 @@
         const btnLoader = document.getElementById('btn-loader');
         const loginBtn = document.getElementById('login-btn');
 
-        // Cek jika sudah login, langsung lempar ke admin.html
+        // Cek jika sudah login, langsung lempar ke dashboard (index.html)
         auth.onAuthStateChanged((user) => {
             if (user) {
-                window.location.href = 'admin.html';
+                window.location.href = 'index.html';
             }
         });
 
