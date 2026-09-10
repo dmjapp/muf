@@ -185,12 +185,12 @@
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
-      <div class="updated-pill" id="versionPill" style="background:rgba(245,165,36,.15); border-color:rgba(245,165,36,.4); color:#ffd898;">v1.4 — 10 Sep 2026</div>
+      <div class="updated-pill" id="versionPill" style="background:rgba(245,165,36,.15); border-color:rgba(245,165,36,.4); color:#ffd898;">v1.5 — 10 Sep 2026</div>
       <div class="updated-pill" id="updatedPill">⏱ Belum ada update</div>
       <div class="updated-pill" id="userPill" style="display:none;"></div>
       <label class="upload-btn" for="fileUpload">⬆ Upload Excel Harian</label>
       <input type="file" id="fileUpload" accept=".xlsx,.xls,.csv">
-      <label class="upload-btn" for="targetUpload" style="background:#fff; color:var(--navy); border:2px solid var(--gold);">🎯 Import Target RKAP</label>
+      <label class="upload-btn" for="targetUpload" id="targetUploadLabel" style="background:#fff; color:var(--navy); border:2px solid var(--gold);">🎯 Import Target RKAP</label>
       <input type="file" id="targetUpload" accept=".xlsx,.xls">
       <button id="btnLogout" class="upload-btn" style="background:#dc2626; color:#fff;">⏻ Keluar</button>
     </div>
@@ -293,8 +293,11 @@
          Pencairan".
    v1.4  Fitur Import Target RKAP langsung dari file projection/
          RKAP (baca blok "TARGET RKAP ..."), badge versi di header.
+   v1.5  Target RKAP kini per-bulan (support 2 format file target),
+         mengikuti filter Bulan aktif. Akses import & edit target
+         dikunci hanya untuk role Super Admin (bukan password statis).
    ============================================================ */
-console.log('%cMUF Dashboard v1.4 — 10 Sep 2026', 'color:#f5a524; font-weight:bold; font-size:12px;');
+console.log('%cMUF Dashboard v1.5 — 10 Sep 2026', 'color:#f5a524; font-weight:bold; font-size:12px;');
 
 const STORAGE_DATA_KEY = 'muf-dashboard-rawdata';
 const STORAGE_TARGET_KEY = 'muf-dashboard-targets';
@@ -649,52 +652,103 @@ function renderPortfolio(agg, total){
   }).join('');
 }
 
+function getTargetForCode(code, filterBulan){
+  const manualKey = code + '|MANUAL_ALL';
+  if (filterBulan === 'ALL'){
+    if (TARGETS[manualKey] !== undefined) return TARGETS[manualKey];
+    let sum = 0, any = false;
+    Object.keys(TARGETS).forEach(k=>{
+      if (k.startsWith(code+'|') && k !== manualKey){ sum += TARGETS[k]; any = true; }
+    });
+    if (any) return sum;
+    if (TARGETS[code] !== undefined) return TARGETS[code]; // kompatibilitas versi lama
+    return 0;
+  }
+  return TARGETS[code+'|'+filterBulan] || 0;
+}
+
+function setTargetForCode(code, filterBulan, value){
+  if (filterBulan === 'ALL'){
+    if (value > 0) TARGETS[code+'|MANUAL_ALL'] = value; else delete TARGETS[code+'|MANUAL_ALL'];
+  } else {
+    if (value > 0) TARGETS[code+'|'+filterBulan] = value; else delete TARGETS[code+'|'+filterBulan];
+  }
+}
+
 function renderTargets(portoAgg, totalNilai){
   const panel = document.getElementById('targetPanel');
   panel.innerHTML = '';
+  const filterBulan = document.getElementById('filterBulan').value;
+  const allowed = canManageTargets();
 
-  // overall target card first
-  const overallTarget = TARGETS['__OVERALL__'] || 0;
+  const overallTarget = getTargetForCode('__OVERALL__', filterBulan);
   const overallPct = overallTarget ? Math.min(100, totalNilai/overallTarget*100) : 0;
   const overallColor = overallPct>=100?'#1b9e6b': overallPct>=70?'#f5a524':'#d3483f';
   panel.insertAdjacentHTML('beforeend', `
     <div class="target-card" style="border-color:${overallColor}55;">
-      <div class="name">🎯 Total Realisasi vs RKAP <span>${overallPct.toFixed(1)}%</span></div>
-      <input type="number" placeholder="Masukkan Target RKAP total (Rp)" value="${overallTarget||''}" data-target-key="__OVERALL__">
+      <div class="name">🎯 Total Realisasi vs RKAP <span>${overallTarget?overallPct.toFixed(1)+'%':'—'}</span></div>
+      <input type="number" placeholder="Masukkan Target RKAP total (Rp)" value="${overallTarget||''}" data-target-key="__OVERALL__" ${allowed?'':'readonly'}>
       <div class="achieve-track"><div class="achieve-fill" style="width:${overallPct}%; background:${overallColor}"></div></div>
       <div class="achieve-label"><span>${fmtRp(totalNilai)}</span><span>Target: ${overallTarget?fmtRp(overallTarget):'-'}</span></div>
     </div>
   `);
 
   portoAgg.forEach(a=>{
-    const tgt = TARGETS[a.key] || 0;
+    const tgt = getTargetForCode(a.key, filterBulan);
     const pct = tgt ? Math.min(100, a.nilai/tgt*100) : 0;
     const color = pct>=100?'#1b9e6b': pct>=70?'#f5a524':'#d3483f';
     panel.insertAdjacentHTML('beforeend', `
       <div class="target-card">
         <div class="name">${a.key} <span>${tgt? pct.toFixed(1)+'%':'—'}</span></div>
-        <input type="number" placeholder="Target RKAP ${a.key} (Rp)" value="${tgt||''}" data-target-key="${a.key}">
+        <input type="number" placeholder="Target RKAP ${a.key} (Rp)" value="${tgt||''}" data-target-key="${a.key}" ${allowed?'':'readonly'}>
         <div class="achieve-track"><div class="achieve-fill" style="width:${pct}%; background:${color}"></div></div>
         <div class="achieve-label"><span>${fmtRp(a.nilai)}</span><span>Target: ${tgt?fmtRp(tgt):'-'}</span></div>
       </div>
     `);
   });
 
+  if (!allowed){
+    panel.insertAdjacentHTML('afterbegin', `<div style="grid-column:1/-1; font-size:.78rem; color:var(--muted); background:#fff8e8; border:1px solid #f6e2ad; padding:8px 12px; border-radius:8px;">🔒 Target hanya bisa diubah oleh Super Admin. Anda bisa melihat progres tapi tidak mengedit angka target.</div>`);
+  }
+
   panel.querySelectorAll('input[data-target-key]').forEach(inp=>{
+    if (!allowed) return;
     inp.addEventListener('change', (e)=>{
       const key = e.target.getAttribute('data-target-key');
       const val = parseNumber(e.target.value);
-      if (val > 0) TARGETS[key] = val; else delete TARGETS[key];
+      setTargetForCode(key, filterBulan, val);
       persistTargets();
       renderAll();
     });
   });
 }
 
+// ===== KONTROL AKSES TARGET (hanya Super Admin) =====
+function canManageTargets(){
+  const u = window.CURRENT_USER;
+  return !!(u && (u.role === 'superadmin' || u.portofolio === 'all'));
+}
+
+function applyTargetLock(){
+  const allowed = canManageTargets();
+  const label = document.getElementById('targetUploadLabel');
+  const input = document.getElementById('targetUpload');
+  if (allowed){
+    label.style.opacity = '1'; label.style.cursor = 'pointer';
+    label.setAttribute('for','targetUpload');
+    label.title = '';
+  } else {
+    label.style.opacity = '.5'; label.style.cursor = 'not-allowed';
+    label.removeAttribute('for');
+    label.title = 'Hanya Super Admin yang dapat mengubah Target RKAP';
+    label.onclick = (e)=>{ e.preventDefault(); alert('Hanya Super Admin yang dapat mengimpor/mengubah Target RKAP. Hubungi admin jika target perlu diperbarui.'); };
+  }
+  input.disabled = !allowed;
+  renderAll();
+}
+
 // ===== IMPORT TARGET RKAP DARI FILE PROJECTION/RKAP =====
-// Alias: nama kategori di file RKAP -> kode portofolio yang dipakai di data transaksi harian.
-// Beberapa kategori RKAP (CAP BMRI xxx & CAP BSI xxx) digabung karena di data transaksi
-// hanya ada satu kode gabungan (CCAR / CMCY) untuk captive car/motor.
+// Alias: nama kategori di file RKAP/Proyeksi -> kode portofolio yang dipakai di data transaksi harian.
 const TARGET_ALIAS_GROUPS = {
   'CCAR': ['CAP BMRI CAR', 'CAP BSI CAR'],
   'CMCY': ['CAP BMRI MCY', 'CAP BSI MCY'],
@@ -705,17 +759,41 @@ const TARGET_ALIAS_GROUPS = {
   'UCAR': ['UCAR'],
   'UMCY': ['UMCY']
 };
+const MONTH_NAMES_ID = ['januari','februari','maret','april','mei','juni','juli','agustus','september','oktober','november','desember'];
+
+function excelDateToMonthKey(v){
+  if (v instanceof Date && !isNaN(v.getTime())) return v.getFullYear()+'-'+String(v.getMonth()+1).padStart(2,'0');
+  if (typeof v === 'number' && v > 20000 && v < 60000){ // rentang wajar tanggal Excel (~tahun 1954-2064)
+    const d = XLSX.SSF.parse_date_code(v);
+    if (d) return d.y+'-'+String(d.m).padStart(2,'0');
+  }
+  return null;
+}
+
+function applyMappedTargets(rawByName, monthKey){
+  const mapped = {};
+  Object.keys(TARGET_ALIAS_GROUPS).forEach(code=>{
+    const sum = TARGET_ALIAS_GROUPS[code].reduce((s,name)=> s + (rawByName[name]||0), 0);
+    if (sum > 0) mapped[code] = sum;
+  });
+  Object.keys(mapped).forEach(code=>{ TARGETS[code+'|'+monthKey] = mapped[code]; });
+  return mapped;
+}
 
 function handleTargetFile(file){
+  if (!canManageTargets()){ alert('Hanya Super Admin yang dapat mengimpor Target RKAP.'); return; }
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, {type:'array'});
-      let extracted = null;
+      let summaryLines = [];
+      let anyImported = false;
 
       for (const sheetName of wb.SheetNames){
         const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1, raw:true, defval:''});
+
+        // --- FORMAT A: baris berlabel "TARGET RKAP [BULAN]" (satu bulan per sheet) ---
         for (let r=0; r<rows.length; r++){
           const rowText = rows[r].map(v=>String(v||'')).join(' ').toLowerCase();
           if (rowText.includes('target rkap')){
@@ -726,49 +804,84 @@ function handleTargetFile(file){
             headerRow.forEach((h,i)=>{ if (/^tot(al)?$/i.test(String(h||'').trim())) colAmt = i; });
             if (colAmt === -1) continue;
 
+            let monthIdx = MONTH_NAMES_ID.findIndex(m => rowText.includes(m));
+            const yearMatch = rowText.match(/20\d{2}/);
+            const year = yearMatch ? yearMatch[0] : String(new Date().getFullYear());
+            const monthKey = monthIdx>-1 ? year+'-'+String(monthIdx+1).padStart(2,'0') : 'ALL';
+
             const rawByName = {};
             let overall = 0;
             for (let rr=r; rr<rows.length; rr++){
               const row = rows[rr];
               const name = String(row[colPort]||'').trim();
               if (!name) break;
-              const amt = parseNumber(row[colAmt]) * 1000000; // asumsi nilai dalam Juta Rupiah
+              const amt = parseNumber(row[colAmt]) * 1000000;
               if (/^grand total$/i.test(name)){ overall = amt; break; }
               rawByName[name.toUpperCase()] = amt;
             }
-            extracted = {rawByName, overall, sheetName};
-            break;
+            const mapped = applyMappedTargets(rawByName, monthKey);
+            if (overall > 0) TARGETS['__OVERALL__|'+monthKey] = overall;
+            anyImported = true;
+            summaryLines.push('Format RKAP bulanan ("' + sheetName + '", periode ' + monthKey + '): ' + Object.keys(mapped).length + ' kode portofolio.');
           }
         }
-        if (extracted) break;
+
+        // --- FORMAT B: blok "Amount Finance (Rp Juta)" dengan kolom per bulan (Jan-Des) ---
+        for (let r=0; r<rows.length; r++){
+          const label = String(rows[r][2]||'').trim().toLowerCase();
+          if (/^amount finance/.test(label)){
+            // Header tanggal bulan biasanya beberapa baris di atas (bukan selalu tepat r-1)
+            let headerRow = null;
+            for (let hr=r-1; hr>=Math.max(0,r-40); hr--){
+              const cand = rows[hr] || [];
+              const dateHits = cand.filter(h=>excelDateToMonthKey(h)).length;
+              if (dateHits >= 3){ headerRow = cand; break; }
+            }
+            if (!headerRow) continue;
+
+            const monthCols = [];
+            headerRow.forEach((h,i)=>{
+              const mk = excelDateToMonthKey(h);
+              if (mk) monthCols.push({idx:i, monthKey:mk});
+            });
+            if (!monthCols.length) continue;
+
+            const rawByMonth = {};
+            monthCols.forEach(mc=> rawByMonth[mc.monthKey] = {});
+            let totalRowFound = false;
+
+            for (let rr=r+1; rr<rows.length; rr++){
+              const row = rows[rr];
+              let name = String(row[2]||'').trim();
+              if (!name) break;
+              if (/^total/i.test(name)){ totalRowFound = true; }
+              name = name.replace(/^[a-z]\.\s*/i,'').trim().toUpperCase();
+              monthCols.forEach(mc=>{
+                const amt = parseNumber(row[mc.idx]) * 1000000;
+                if (totalRowFound){ if (amt>0) rawByMonth[mc.monthKey]['__TOTAL__'] = amt; }
+                else { rawByMonth[mc.monthKey][name] = amt; }
+              });
+              if (totalRowFound) break;
+            }
+
+            monthCols.forEach(mc=>{
+              const mapped = applyMappedTargets(rawByMonth[mc.monthKey], mc.monthKey);
+              const tot = rawByMonth[mc.monthKey]['__TOTAL__'];
+              if (tot) TARGETS['__OVERALL__|'+mc.monthKey] = tot;
+            });
+            anyImported = true;
+            summaryLines.push('Format proyeksi bulanan ("' + sheetName + '"): ' + monthCols.length + ' bulan (' + monthCols[0].monthKey + ' s/d ' + monthCols[monthCols.length-1].monthKey + ').');
+          }
+        }
       }
 
-      if (!extracted){
-        alert('Tidak ditemukan blok "TARGET RKAP" di file ini. Pastikan file punya baris berlabel "TARGET RKAP [BULAN]" di salah satu sheet-nya.');
+      if (!anyImported){
+        alert('Tidak ditemukan blok target yang dikenali di file ini (dicari label "TARGET RKAP..." atau "Amount Finance").');
         return;
       }
 
-      const mapped = {};
-      const unmapped = [];
-      Object.keys(TARGET_ALIAS_GROUPS).forEach(code=>{
-        const sum = TARGET_ALIAS_GROUPS[code].reduce((s,name)=> s + (extracted.rawByName[name]||0), 0);
-        if (sum > 0) mapped[code] = sum;
-      });
-      const mappedSourceNames = new Set(Object.values(TARGET_ALIAS_GROUPS).flat());
-      Object.keys(extracted.rawByName).forEach(name=>{
-        if (!mappedSourceNames.has(name) && extracted.rawByName[name] > 0) unmapped.push(name);
-      });
-
-      Object.assign(TARGETS, mapped);
-      if (extracted.overall > 0) TARGETS['__OVERALL__'] = extracted.overall;
       persistTargets();
-
-      let msg = 'Target RKAP berhasil diimpor dari sheet "' + extracted.sheetName + '":\n\n';
-      Object.keys(mapped).forEach(code=> msg += '• ' + code + ': ' + fmtRp(mapped[code]) + '\n');
-      if (extracted.overall) msg += '• TOTAL: ' + fmtRp(extracted.overall) + '\n';
-      if (unmapped.length) msg += '\nKategori berikut belum ada kode padanan di data transaksi (tidak diimpor): ' + unmapped.join(', ');
-      alert(msg);
-
+      alert('Target RKAP berhasil diimpor:\n\n' + summaryLines.join('\n') + '\n\nTarget otomatis menyesuaikan filter Bulan yang aktif di dashboard.');
       if (RAW_ROWS.length) renderAll();
     } catch(err){
       console.error(err);
@@ -830,8 +943,10 @@ loadPersisted();
         return;
       }
       const userData = userDocSnap.data();
+      window.CURRENT_USER = userData;
       document.getElementById('userPill').style.display = 'inline-block';
-      document.getElementById('userPill').textContent = '👤 ' + (userData.nama || user.email);
+      document.getElementById('userPill').textContent = '👤 ' + (userData.nama || user.email) + (canManageTargets() ? ' · Super Admin' : '');
+      applyTargetLock();
     } catch (err) {
       console.warn('Gagal memeriksa akses user, tetap izinkan masuk:', err);
     }
