@@ -3,118 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Analisa Pembiayaan Harian - PT Mandiri Utama Finance</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- CDN Chart.js untuk Grafik Interaktif -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>SmartMaint - Aplikasi Maintenance Digital</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="bg-slate-50 font-sans antialiased">
 
-    <!-- Header / Navbar -->
-    <header class="header">
-        <div class="logo-container">
-            <h2>MANDIRI UTAMA FINANCE</h2>
-            <span>Daily Financing Analysis Dashboard</span>
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="hidden md:flex flex-col w-64 bg-slate-900 text-slate-300 border-r border-slate-800 transition-all duration-300 z-30">
+            <!-- Brand Logo -->
+            <div class="flex items-center justify-between h-16 px-6 bg-slate-950 text-white">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-brand-600 p-2 rounded-lg text-white">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                    <span class="text-lg font-bold tracking-wide">Smart<span class="text-brand-500">Maint</span></span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                <a href="#" class="flex items-center px-4 py-3 text-sm font-medium text-white bg-brand-600 rounded-xl shadow-lg shadow-brand-600/25">
+                    <i class="fa-solid fa-chart-pie w-5 mr-3"></i> Dashboard
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm font-medium hover:bg-slate-800 hover:text-white rounded-xl transition">
+                    <i class="fa-solid fa-desktop w-5 mr-3"></i> Aset & Mesin
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm font-medium hover:bg-slate-800 hover:text-white rounded-xl transition">
+                    <i class="fa-solid fa-ticket w-5 mr-3"></i> Work Order (Tiket)
+                    <span class="ml-auto bg-amber-500 text-slate-950 text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm font-medium hover:bg-slate-800 hover:text-white rounded-xl transition">
+                    <i class="fa-solid fa-calendar-check w-5 mr-3"></i> Jadwal Preventif
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm font-medium hover:bg-slate-800 hover:text-white rounded-xl transition">
+                    <i class="fa-solid fa-boxes-stacked w-5 mr-3"></i> Suku Cadang (Sparepart)
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm font-medium hover:bg-slate-800 hover:text-white rounded-xl transition">
+                    <i class="fa-solid fa-chart-line w-5 mr-3"></i> Laporan & Analitik
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer / User Profile Mini -->
+            <div class="p-4 bg-slate-950 border-t border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <img class="w-10 h-10 rounded-full border border-slate-700" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Avatar">
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-semibold text-white truncate">Sarah Jenkins</p>
+                        <p class="text-xs text-slate-400 truncate">Lead Maintenance</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT CONTAINER -->
+        <div class="flex flex-col flex-1 h-full overflow-hidden">
+            
+            <!-- TOP NAVBAR -->
+            <header class="flex items-center justify-between h-16 px-6 bg-white border-b border-slate-200 z-20">
+                <div class="flex items-center space-x-4">
+                    <button id="menu-toggle" class="text-slate-500 hover:text-slate-700 md:hidden focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <!-- Search Input -->
+                    <div class="relative hidden sm:block">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                        </span>
+                        <input type="text" placeholder="Cari mesin, tiket, atau teknisi..." class="w-64 lg:w-80 pl-10 pr-4 py-2 text-sm bg-slate-100 border-none rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <!-- Right Action Icons -->
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition">
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
+                        <i class="fa-regular fa-bell text-lg"></i>
+                    </button>
+                    <button class="hidden sm:flex items-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-md shadow-brand-600/20 transition">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Buat Tiket Baru</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- MAIN VIEWPORT -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+                
+                <!-- Welcome Section -->
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-slate-900">Dashboard Pemeliharaan</h1>
+                    <p class="text-sm text-slate-500">Berikut adalah ringkasan operasional dan status kesehatan mesin hari ini.</p>
+                </div>
+
+                <!-- METRICS CARDS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Card 1 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-medium text-slate-500">Total Mesin/Aset</span>
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                                <i class="fa-solid fa-server"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <h2 class="text-3xl font-bold text-slate-900">128</h2>
+                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
+                                <i class="fa-solid fa-arrow-up mr-1"></i> 100% Aktif
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-medium text-slate-500">Tiket Kerusakan (Open)</span>
+                            <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <h2 class="text-3xl font-bold text-slate-900">7</h2>
+                            <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">
+                                Perlu Tindakan
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-medium text-slate-500">Preventive Maintenance</span>
+                            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <h2 class="text-3xl font-bold text-slate-900">94%</h2>
+                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
+                                Tepat Waktu
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-medium text-slate-500">Rata-rata Waktu Perbaikan</span>
+                            <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                                <i class="fa-solid fa-stopwatch"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <h2 class="text-3xl font-bold text-slate-900">2.4 <span class="text-lg font-normal text-slate-500">Jam</span></h2>
+                            <span class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-lg">
+                                <i class="fa-solid fa-arrow-down mr-1"></i> Efisien
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT TICKETS TABLE SECTION -->
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="flex items-center justify-between p-6 border-b border-slate-100">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Daftar Tiket Perbaikan Terbaru</h3>
+                            <p class="text-xs text-slate-500">Pemantauan status kerusakan mesin dan penugasan teknisi.</p>
+                        </div>
+                        <button class="text-sm font-semibold text-brand-600 hover:text-brand-700">Lihat Semua</button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-400 text-xs uppercase tracking-wider font-semibold">
+                                    <th class="py-3 px-6">ID Tiket & Aset</th>
+                                    <th class="py-3 px-6">Masalah</th>
+                                    <th class="py-3 px-6">Prioritas</th>
+                                    <th class="py-3 px-6">Teknisi</th>
+                                    <th class="py-3 px-6">Status</th>
+                                    <th class="py-3 px-6 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                                <tr class="hover:bg-slate-50/50 transition">
+                                    <td class="py-4 px-6">
+                                        <div class="font-bold text-slate-900">#TK-8092</div>
+                                        <div class="text-xs text-slate-400">Mesin Press Hydraulik A-01</div>
+                                    </td>
+                                    <td class="py-4 px-6 font-medium text-slate-700">Kebocoran Oli pada Silinder Utama</td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-50 text-rose-600">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span> Tinggi
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">RA</div>
+                                            <span>Rian Anggara</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700">
+                                            Dalam Pengerjaan
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <button class="p-2 text-slate-400 hover:text-slate-600 rounded-lg"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition">
+                                    <td class="py-4 px-6">
+                                        <div class="font-bold text-slate-900">#TK-8091</div>
+                                        <div class="text-xs text-slate-400">Conveyor Line B</div>
+                                    </td>
+                                    <td class="py-4 px-6 font-medium text-slate-700">Motor Penggerak Mengeluarkan Suara Bising</td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-600">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Sedang
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">DP</div>
+                                            <span>Dodi Pratama</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700">
+                                            Menunggu Sparepart
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <button class="p-2 text-slate-400 hover:text-slate-600 rounded-lg"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition">
+                                    <td class="py-4 px-6">
+                                        <div class="font-bold text-slate-900">#TK-8088</div>
+                                        <div class="text-xs text-slate-400">Generator Utama 500KVA</div>
+                                    </td>
+                                    <td class="py-4 px-6 font-medium text-slate-700">Kalibrasi & Penggantian Filter Bulanan</td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span> Rendah
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">AN</div>
+                                            <span>Ahmad Nurdin</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700">
+                                            Selesai
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <button class="p-2 text-slate-400 hover:text-slate-600 rounded-lg"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
         </div>
-        <div class="user-info">
-            <span id="current-date">--/--/----</span>
-            <span class="badge">Live System</span>
-        </div>
-    </header>
-
-    <div class="container">
-        <!-- Section Filter -->
-        <section class="filter-section">
-            <div class="filter-group">
-                <label for="filter-date">Tanggal Laporan:</label>
-                <input type="date" id="filter-date">
-            </div>
-            <div class="filter-group">
-                <label for="filter-region">Wilayah / Region:</label>
-                <select id="filter-region">
-                    <option value="all">Semua Wilayah</option>
-                    <option value="jakarta">DKI Jakarta & Banten</option>
-                    <option value="jabar">Jawa Barat</option>
-                    <option value="jateng">Jawa Tengah</option>
-                    <option value="jatim">Jawa Timur</option>
-                    <option value="sumatera">Sumatera</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="filter-category">Kategori Produk:</label>
-                <select id="filter-category">
-                    <option value="all">Semua Kategori</option>
-                    <option value="mobil_baru">Mobil Baru</option>
-                    <option value="mobil_bekas">Mobil Bekas</option>
-                    <option value="motor_baru">Motor Baru</option>
-                    <option value="motor_bekas">Motor Bekas</option>
-                    <option value="multiguna">Multiguna / Fasilitas Dana</option>
-                </select>
-            </div>
-            <button id="btn-filter" class="btn-primary">Terapkan Filter</button>
-        </section>
-
-        <!-- Section KPI Cards -->
-        <section class="kpi-section">
-            <div class="card">
-                <h3>Total Booking (Hari Ini)</h3>
-                <p class="kpi-value" id="kpi-booking">Rp 14.85 Milyar</p>
-                <span class="kpi-sub positive">↑ +8.4% dari kemarin</span>
-            </div>
-            <div class="card">
-                <h3>Target Daily</h3>
-                <p class="kpi-value" id="kpi-target">Rp 15.00 Milyar</p>
-                <span class="kpi-sub neutral">Pencapaian: 99.0%</span>
-            </div>
-            <div class="card">
-                <h3>Jumlah Unit (Aplikasi In)</h3>
-                <p class="kpi-value" id="kpi-unit">182 Unit</p>
-                <span class="kpi-sub positive">145 Approved (79.6%)</span>
-            </div>
-            <div class="card">
-                <h3>Rasio NPF (Daily Avg)</h3>
-                <p class="kpi-value" id="kpi-npf">0.82%</p>
-                <span class="kpi-sub safe">Aman (< 1.5%)</span>
-            </div>
-        </section>
-
-        <!-- Section Charts -->
-        <section class="charts-section">
-            <div class="chart-card large">
-                <h3>Tren Pembiayaan Harian (7 Hari Terakhir)</h3>
-                <canvas id="dailyTrendChart"></canvas>
-            </div>
-            <div class="chart-card small">
-                <h3>Komposisi Pembiayaan per Kategori</h3>
-                <canvas id="categoryChart"></canvas>
-            </div>
-        </section>
-
-        <!-- Section Data Table -->
-        <section class="table-section">
-            <h3>Detail Analisa Kinerja per Cabang/Regional</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Cabang / Wilayah</th>
-                            <th>Target (Rp)</th>
-                            <th>Realisasi (Rp)</th>
-                            <th>Pencapaian (%)</th>
-                            <th>Total Unit</th>
-                            <th>NPF Rate (%)</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body">
-                        <!-- Data diisi secara dinamis melalui JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
     </div>
 
-    <!-- Hubungkan ke file JS terpisah -->
-    <script src="app.js"></script>
+    <!-- JavaScript Sederhana untuk Responsif Sidebar Mobile -->
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('fixed');
+            sidebar.classList.toggle('inset-y-0');
+            sidebar.classList.toggle('left-0');
+        });
+    </script>
 </body>
 </html>
