@@ -185,10 +185,13 @@
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
+      <div class="updated-pill" id="versionPill" style="background:rgba(245,165,36,.15); border-color:rgba(245,165,36,.4); color:#ffd898;">v1.4 — 10 Sep 2026</div>
       <div class="updated-pill" id="updatedPill">⏱ Belum ada update</div>
       <div class="updated-pill" id="userPill" style="display:none;"></div>
       <label class="upload-btn" for="fileUpload">⬆ Upload Excel Harian</label>
       <input type="file" id="fileUpload" accept=".xlsx,.xls,.csv">
+      <label class="upload-btn" for="targetUpload" style="background:#fff; color:var(--navy); border:2px solid var(--gold);">🎯 Import Target RKAP</label>
+      <input type="file" id="targetUpload" accept=".xlsx,.xls">
       <button id="btnLogout" class="upload-btn" style="background:#dc2626; color:#fff;">⏻ Keluar</button>
     </div>
   </div>
@@ -279,6 +282,20 @@
 <footer class="note">Dashboard ini memproses file Excel sepenuhnya di browser Anda — data tidak diunggah ke server manapun. Update setiap sore dengan mengunggah ulang file terbaru.</footer>
 
 <script>
+/* ============================================================
+   MUF EXECUTIVE DASHBOARD — CHANGELOG
+   v1.0  Dashboard awal: upload Excel harian, performa marketing
+         & portofolio, % kontribusi.
+   v1.1  Ditambah gerbang login Firebase (pakai akun lama admin.html).
+   v1.2  Deteksi baris header otomatis (scan 20 baris pertama),
+         perbaikan pesan error jadi lebih informatif.
+   v1.3  Alias kolom nilai: dukung "Grand Total" selain "Nilai
+         Pencairan".
+   v1.4  Fitur Import Target RKAP langsung dari file projection/
+         RKAP (baca blok "TARGET RKAP ..."), badge versi di header.
+   ============================================================ */
+console.log('%cMUF Dashboard v1.4 — 10 Sep 2026', 'color:#f5a524; font-weight:bold; font-size:12px;');
+
 const STORAGE_DATA_KEY = 'muf-dashboard-rawdata';
 const STORAGE_TARGET_KEY = 'muf-dashboard-targets';
 const STORAGE_META_KEY = 'muf-dashboard-meta';
@@ -674,11 +691,101 @@ function renderTargets(portoAgg, totalNilai){
   });
 }
 
+// ===== IMPORT TARGET RKAP DARI FILE PROJECTION/RKAP =====
+// Alias: nama kategori di file RKAP -> kode portofolio yang dipakai di data transaksi harian.
+// Beberapa kategori RKAP (CAP BMRI xxx & CAP BSI xxx) digabung karena di data transaksi
+// hanya ada satu kode gabungan (CCAR / CMCY) untuk captive car/motor.
+const TARGET_ALIAS_GROUPS = {
+  'CCAR': ['CAP BMRI CAR', 'CAP BSI CAR'],
+  'CMCY': ['CAP BMRI MCY', 'CAP BSI MCY'],
+  'MCAR': ['MSME CAR'],
+  'MMCY': ['MSME MCY'],
+  'NCAR': ['NCAR'],
+  'NMCY': ['NMCY'],
+  'UCAR': ['UCAR'],
+  'UMCY': ['UMCY']
+};
+
+function handleTargetFile(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      let extracted = null;
+
+      for (const sheetName of wb.SheetNames){
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1, raw:true, defval:''});
+        for (let r=0; r<rows.length; r++){
+          const rowText = rows[r].map(v=>String(v||'')).join(' ').toLowerCase();
+          if (rowText.includes('target rkap')){
+            const headerRow = rows[r-1] || [];
+            let colPort = headerRow.findIndex(h=>/portofolio|portfolio/i.test(String(h||'')));
+            if (colPort === -1) colPort = 2;
+            let colAmt = -1;
+            headerRow.forEach((h,i)=>{ if (/^tot(al)?$/i.test(String(h||'').trim())) colAmt = i; });
+            if (colAmt === -1) continue;
+
+            const rawByName = {};
+            let overall = 0;
+            for (let rr=r; rr<rows.length; rr++){
+              const row = rows[rr];
+              const name = String(row[colPort]||'').trim();
+              if (!name) break;
+              const amt = parseNumber(row[colAmt]) * 1000000; // asumsi nilai dalam Juta Rupiah
+              if (/^grand total$/i.test(name)){ overall = amt; break; }
+              rawByName[name.toUpperCase()] = amt;
+            }
+            extracted = {rawByName, overall, sheetName};
+            break;
+          }
+        }
+        if (extracted) break;
+      }
+
+      if (!extracted){
+        alert('Tidak ditemukan blok "TARGET RKAP" di file ini. Pastikan file punya baris berlabel "TARGET RKAP [BULAN]" di salah satu sheet-nya.');
+        return;
+      }
+
+      const mapped = {};
+      const unmapped = [];
+      Object.keys(TARGET_ALIAS_GROUPS).forEach(code=>{
+        const sum = TARGET_ALIAS_GROUPS[code].reduce((s,name)=> s + (extracted.rawByName[name]||0), 0);
+        if (sum > 0) mapped[code] = sum;
+      });
+      const mappedSourceNames = new Set(Object.values(TARGET_ALIAS_GROUPS).flat());
+      Object.keys(extracted.rawByName).forEach(name=>{
+        if (!mappedSourceNames.has(name) && extracted.rawByName[name] > 0) unmapped.push(name);
+      });
+
+      Object.assign(TARGETS, mapped);
+      if (extracted.overall > 0) TARGETS['__OVERALL__'] = extracted.overall;
+      persistTargets();
+
+      let msg = 'Target RKAP berhasil diimpor dari sheet "' + extracted.sheetName + '":\n\n';
+      Object.keys(mapped).forEach(code=> msg += '• ' + code + ': ' + fmtRp(mapped[code]) + '\n');
+      if (extracted.overall) msg += '• TOTAL: ' + fmtRp(extracted.overall) + '\n';
+      if (unmapped.length) msg += '\nKategori berikut belum ada kode padanan di data transaksi (tidak diimpor): ' + unmapped.join(', ');
+      alert(msg);
+
+      if (RAW_ROWS.length) renderAll();
+    } catch(err){
+      console.error(err);
+      alert('Gagal membaca file target: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
 document.getElementById('fileUpload').addEventListener('change', (e)=>{
   if (e.target.files && e.target.files[0]) handleFile(e.target.files[0]);
 });
 ['filterBulan','filterCabang','filterStatus'].forEach(id=>{
   document.getElementById(id).addEventListener('change', renderAll);
+});
+document.getElementById('targetUpload').addEventListener('change', (e)=>{
+  if (e.target.files && e.target.files[0]) handleTargetFile(e.target.files[0]);
 });
 document.getElementById('resetFilters').addEventListener('click', ()=>{
   document.getElementById('filterBulan').value = 'ALL';
